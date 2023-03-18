@@ -4,18 +4,13 @@ on:
     branches:
       - master
 jobs:
-  publish:
+  build-node:
     runs-on: ubuntu-latest
+    container:
+      image: node:16
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-      - name: node
-        uses: actions/setup-node@v2
-        with:
-          node-version: 14
-          registry-url: https://registry.npmjs.org
-      - name: publish
-        run: npm install
-        working-directory: my-package
-        env:
-          NPM_AUTH_TOKEN: ${{secrets.NPM}}
+      - run: node --version
+      - run: npm --version
+      - uses: actions/checkout@v2
+      - run: npm install
+      - run: node app.js
