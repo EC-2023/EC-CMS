@@ -1,13 +1,39 @@
-import React, { Fragment } from "react";
-import { Link, useLocation } from "react-router-dom"; 
+import React, { Fragment, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import { userPostFetch } from "../../redux/action"
+import { useDispatch } from 'react-redux';
+import {userLoginFetch} from '../../redux/action';
 
 const LoginRegister = () => {
-  let { pathname } = useLocation();
+  const { pathname } = useLocation();
+  const dispatch = useDispatch();
+
+  const [formValues, setFormValues] = useState({
+    username: "",
+    password: ""
+  });
+
+  const handleChange = (event) => {
+    setFormValues({
+      ...formValues,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    dispatch(userLoginFetch(formValues));
+  };
+
+  const handleRegister = async (event) => {
+    event.preventDefault();
+    dispatch(userPostFetch(formValues));
+  };
 
   return (
     <Fragment>
@@ -17,11 +43,14 @@ const LoginRegister = () => {
       />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
-        <Breadcrumb 
+        <Breadcrumb
           pages={[
-            {label: "Home", path: process.env.PUBLIC_URL + "/" },
-            {label: "Login Register", path: process.env.PUBLIC_URL + pathname }
-          ]} 
+            { label: "Home", path: process.env.PUBLIC_URL + "/" },
+            {
+              label: "Login Register",
+              path: process.env.PUBLIC_URL + pathname,
+            },
+          ]}
         />
         <div className="login-register-area pt-100 pb-100">
           <div className="container">
@@ -45,16 +74,20 @@ const LoginRegister = () => {
                       <Tab.Pane eventKey="login">
                         <div className="login-form-container">
                           <div className="login-register-form">
-                            <form>
+                            <form onSubmit={handleLogin}>
                               <input
                                 type="text"
-                                name="user-name"
+                                name="username"
                                 placeholder="Username"
+                                value={formValues.username}
+                                onChange={handleChange}
                               />
                               <input
                                 type="password"
-                                name="user-password"
+                                name="password"
                                 placeholder="Password"
+                                value={formValues.password}
+                                onChange={handleChange}
                               />
                               <div className="button-box">
                                 <div className="login-toggle-btn">
@@ -65,51 +98,57 @@ const LoginRegister = () => {
                                   </Link>
                                 </div>
                                 <button type="submit">
-                                  <span>Login</span>
-                                </button>
-                              </div>
-                            </form>
+                              <span>Login</span>
+                            </button>
                           </div>
-                        </div>
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="register">
-                        <div className="login-form-container">
-                          <div className="login-register-form">
-                            <form>
-                              <input
-                                type="text"
-                                name="user-name"
-                                placeholder="Username"
-                              />
-                              <input
-                                type="password"
-                                name="user-password"
-                                placeholder="Password"
-                              />
-                              <input
-                                name="user-email"
-                                placeholder="Email"
-                                type="email"
-                              />
-                              <div className="button-box">
-                                <button type="submit">
-                                  <span>Register</span>
-                                </button>
-                              </div>
-                            </form>
+                        </form>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="register">
+                    <div className="login-form-container">
+                      <div className="login-register-form">
+                        <form onSubmit={handleRegister}>
+                          <input
+                            type="text"
+                            name="username"
+                            placeholder="Username"
+                            value={formValues.username}
+                            onChange={handleChange}
+                          />
+                          <input
+                            type="password"
+                            name="password"
+                            placeholder="Password"
+                            value={formValues.password}
+                            onChange={handleChange}
+                          />
+                          <input
+                            type="email"
+                            name="email"
+                            placeholder="Email"
+                            value={formValues.email}
+                            onChange={handleChange}
+                          />
+                          <div className="button-box">
+                            <button type="submit">
+                              <span>Register</span>
+                            </button>
                           </div>
-                        </div>
-                      </Tab.Pane>
-                    </Tab.Content>
-                  </Tab.Container>
-                </div>
-              </div>
+                        </form>
+                      </div>
+                    </div>
+                  </Tab.Pane>
+                </Tab.Content>
+              </Tab.Container>
             </div>
           </div>
         </div>
-      </LayoutOne>
-    </Fragment>
-  );
+      </div>
+    </div>
+  </LayoutOne>
+</Fragment>
+);
 };
 
 export default LoginRegister;
