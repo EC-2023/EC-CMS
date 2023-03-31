@@ -1,17 +1,19 @@
-import React, { Fragment, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { Fragment, useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
-import SEO from "../../components/seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { userPostFetch } from "../../redux/action"
-import { useDispatch } from 'react-redux';
-import {userLoginFetch} from '../../redux/action';
+import SEO from "./seo";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
+import AuthService from "../services/auth_service";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginRegister = () => {
+
   const { pathname } = useLocation();
-  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
 
   const [formValues, setFormValues] = useState({
     username: "",
@@ -25,18 +27,42 @@ const LoginRegister = () => {
     });
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
-    dispatch(userLoginFetch(formValues));
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await toast.promise(
+        AuthService.login(formValues.username, formValues.password),
+        {
+          pending: 'Logging in...',
+          success: 'Logged in successfully!',
+          error: 'Login failed. Please try again.',
+          position: 'top-right',
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        }
+      );
+      console.log(result); // Kết quả trả về từ AuthService.login()
+      setTimeout(() => {
+        navigate('/my-account');
+      }, 2000);
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleRegister = async (event) => {
     event.preventDefault();
-    dispatch(userPostFetch(formValues));
   };
 
   return (
     <Fragment>
+    <ToastContainer />
       <SEO
         titleTemplate="Login"
         description="Login page of flone react minimalist eCommerce template."

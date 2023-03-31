@@ -1,9 +1,9 @@
-import { Fragment } from "react"; 
+import { Fragment, useEffect } from "react"; 
 import { useLocation } from "react-router-dom"; 
 import Accordion from "react-bootstrap/Accordion";
-import SEO from "../../components/seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import SEO from "./seo";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
 
 const MyAccount = () => {
   let { pathname } = useLocation();

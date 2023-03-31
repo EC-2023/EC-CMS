@@ -1,10 +1,52 @@
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
 import MenuCart from "./sub-components/MenuCart";
+import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const IconGroup = ({ iconWhiteClass }) => {
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () =>{
+    localStorage.removeItem("user");
+    toast.success('Đăng xuất thành công!', {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+
+    setTimeout(() => {
+      navigate("/login-register");
+    }, 2000);
+  }
+
+  useEffect(() => {
+    // Kiểm tra nếu có token trong localStorage thì set isLoggedIn = true
+    const user = JSON.parse(localStorage.getItem('user'));
+    try{
+      if (user.accessToken) {
+        console.log(user.accessToken);  
+        setIsLoggedIn(true);
+      }
+    }
+    catch{
+
+    }
+
+  }, []);
+
+
   const handleClick = e => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
@@ -21,6 +63,7 @@ const IconGroup = ({ iconWhiteClass }) => {
 
   return (
     <div className={clsx("header-right-wrap", iconWhiteClass)} >
+    <ToastContainer/>
       <div className="same-style header-search d-none d-lg-block">
         <button className="search-active" onClick={e => handleClick(e)}>
           <i className="pe-7s-search" />
@@ -43,19 +86,34 @@ const IconGroup = ({ iconWhiteClass }) => {
         </button>
         <div className="account-dropdown">
           <ul>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>Login</Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                Register
-              </Link>
-            </li>
+          {!isLoggedIn && (
+              <>
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/login-register"}>
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/login-register"}>
+                    Register
+                  </Link>
+                </li>
+              </>
+            )}
             <li>
               <Link to={process.env.PUBLIC_URL + "/my-account"}>
                 my account
               </Link>
             </li>
+            {isLoggedIn && (
+              <>
+                <li>
+                  <Link onClick={handleLogout}>
+                    LogOut
+                  </Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
