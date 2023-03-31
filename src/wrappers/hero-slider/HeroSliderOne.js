@@ -15,21 +15,32 @@ const params = {
 };
 
 
+// const HeroSliderOne = () => {
+//   return (
+//     <div className="slider-area">
+//       <div className="slider-active nav-style-1">
+//         {heroSliderData && (
+//           <Swiper options={params}>
+//             {heroSliderData.map((single, key) => (
+//               <SwiperSlide key={key}>
+//                 <HeroSliderOneSingle
+//                   data={single}
+//                 />
+//               </SwiperSlide>
+//             ))}
+//           </Swiper>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
 const HeroSliderOne = () => {
+  const firstData = heroSliderData[0]; // Lấy dữ liệu đầu tiên từ heroSliderData
   return (
     <div className="slider-area">
       <div className="slider-active nav-style-1">
-        {heroSliderData && (
-          <Swiper options={params}>
-            {heroSliderData.map((single, key) => (
-              <SwiperSlide key={key}>
-                <HeroSliderOneSingle
-                  data={single}
-                />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        )}
+        <HeroSliderOneSingle data={firstData} />
       </div>
     </div>
   );

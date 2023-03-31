@@ -11,7 +11,7 @@ class AuthService {
       })
       .then(response => {
         if (response.data.accessToken) {
-          localStorage.setItem("user", JSON.stringify(response.data));
+          this.saveToken(response.data.accessToken);
         }
 
         return response.data;
@@ -32,6 +32,16 @@ class AuthService {
 
   getCurrentUser() {
     return JSON.parse(localStorage.getItem('user'));;
+  }
+
+  saveToken(token) {
+    localStorage.setItem("user", JSON.stringify({ accessToken: token }));
+  }
+
+  refreshToken() {
+    const user = JSON.parse(localStorage.getItem('user'));
+    return axios
+      .post(API_URL + 'refresh', {}, { headers: { Authorization: `Bearer ${user.accessToken}` } })
   }
 }
 
