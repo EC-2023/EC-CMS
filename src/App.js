@@ -2,6 +2,8 @@ import { Suspense, lazy } from "react";
 import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+//admin
+const Admin = lazy(() => import("./components/Admin/Admin.js"));
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 const HomeFashionTwo = lazy(() => import("./pages/home/HomeFashionTwo"));
@@ -393,6 +395,10 @@ const App = () => {
               <Route
                 path={process.env.PUBLIC_URL + "/checkout"}
                 element={<Checkout/>}
+              /> 
+              <Route
+                path={process.env.PUBLIC_URL + "/admin"}
+                element={<Admin/>}
               /> 
 
               <Route path="*" element={<NotFound/>} />
