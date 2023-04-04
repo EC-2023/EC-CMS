@@ -118,41 +118,6 @@ const LoginRegister = () => {
                                 value={formValues.password}
                                 onChange={handleChange}
                               />
-                              <input
-                                type="text"
-                                name="fName"
-                                placeholder="First Name"
-                                value={formValues.fName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="mName"
-                                placeholder="Middle Name"
-                                value={formValues.mName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="lName"
-                                placeholder="Last Name"
-                                value={formValues.lName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="email"
-                                placeholder="email"
-                                value={formValues.email}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="number"
-                                name="phoneNumber"
-                                placeholder="phone"
-                                value={formValues.phoneNumber}
-                                onChange={handleChange}
-                              />
                               <div className="button-box">
                                 <div className="login-toggle-btn">
                                   <Link to={process.env.PUBLIC_URL + "/"}>
@@ -186,10 +151,38 @@ const LoginRegister = () => {
                                 onChange={handleChange}
                               />
                               <input
-                                type="email"
+                                type="text"
+                                name="fName"
+                                placeholder="First Name"
+                                value={formValues.fName}
+                                onChange={handleChange}
+                              />
+                              <input
+                                type="text"
+                                name="mName"
+                                placeholder="Middle Name"
+                                value={formValues.mName}
+                                onChange={handleChange}
+                              />
+                              <input
+                                type="text"
+                                name="lName"
+                                placeholder="Last Name"
+                                value={formValues.lName}
+                                onChange={handleChange}
+                              />
+                              <input
+                                type="text"
                                 name="email"
-                                placeholder="Email"
+                                placeholder="email"
                                 value={formValues.email}
+                                onChange={handleChange}
+                              />
+                              <input
+                                type="number"
+                                name="phoneNumber"
+                                placeholder="phone"
+                                value={formValues.phoneNumber}
                                 onChange={handleChange}
                               />
                               <div className="button-box">
