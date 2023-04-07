@@ -96,8 +96,8 @@ const BlogDetailsStandard = lazy(() =>
 // other pages
 const About = lazy(() => import("./pages/other/About"));
 const Contact = lazy(() => import("./pages/other/Contact"));
-const MyAccount = lazy(() => import("./components/userAccount/MyAccount"));
-const LoginRegister = lazy(() => import("./components/LoginRegister"));
+const MyAccount = lazy(() => import("./components/User/MyAccount"));
+const LoginRegister = lazy(() => import("./components/User/LoginRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));

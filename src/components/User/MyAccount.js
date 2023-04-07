@@ -7,13 +7,20 @@ import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import FormOverlay from "../other/form_overlay";
 import userAddress from "../../data/User/userAdress.json";
 import "./MyAccount.scss"
+import UploadImage from './UploadImage'
 
 const MyAccount = () => {
   let { pathname } = useLocation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isNew, setIsNew] = useState(false);
-  const [formData, setFormData] = useState({ name: "", age: "" });
+  const [userInfor, setUserInfor] = useState({
+    email: "",
+    fName: "",
+    lName: "",
+    mName: "",
+    phoneNumber: "",
+  });
   const [addressUser, setAddressUser] = useState(userAddress);
   const [editingAddressIndex, setEditingAddressIndex] = useState(null);
   const [newAddress, setNewAddress] = useState({
@@ -50,6 +57,13 @@ const MyAccount = () => {
           )
     );
   };
+
+  const handleUserInforChange = (event) =>{
+    setUserInfor({
+      ...userInfor,
+      [event.target.name]: event.target.value,
+    });
+  }
 
   const getAddress = (address) => {
     const { isDeleted, createdAt, updatedAt, Id, userId, ...newaddress } =
@@ -100,31 +114,31 @@ const MyAccount = () => {
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>First Name</label>
-                                <input type="text" />
+                                <input type="text" value={userInfor.fName} onChange={handleUserInforChange}/>
+                              </div>
+                            </div>
+                            <div className="col-lg-6 col-md-6">
+                              <div className="billing-info">
+                                <label>Middle Name</label>
+                                <input type="text" value={userInfor.mName} onChange={handleUserInforChange}/>
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>Last Name</label>
-                                <input type="text" />
+                                <input type="text" value={userInfor.lName} onChange={handleUserInforChange} />
                               </div>
                             </div>
                             <div className="col-lg-12 col-md-12">
                               <div className="billing-info">
                                 <label>Email Address</label>
-                                <input type="email" />
+                                <input type="email"  value={userInfor.email} onChange={handleUserInforChange}/>
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>Telephone</label>
-                                <input type="text" />
-                              </div>
-                            </div>
-                            <div className="col-lg-6 col-md-6">
-                              <div className="billing-info">
-                                <label>Fax</label>
-                                <input type="text" />
+                                <input type="text" value={userInfor.phoneNumber} onChange={handleUserInforChange} />
                               </div>
                             </div>
                           </div>
@@ -250,6 +264,18 @@ const MyAccount = () => {
                             </div>
                           </div>
                         </div>
+                      </Accordion.Body>
+                    </Accordion.Item>
+
+                    <Accordion.Item
+                      eventKey="4"
+                      className="single-my-account mb-20"
+                    >
+                      <Accordion.Header className="panel-heading">
+                        <span>4 .</span> Upload Ảnh đại diện
+                      </Accordion.Header>
+                      <Accordion.Body>
+                        <UploadImage/>
                       </Accordion.Body>
                     </Accordion.Item>
                   </Accordion>

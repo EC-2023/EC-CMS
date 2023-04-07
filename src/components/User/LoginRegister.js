@@ -2,10 +2,10 @@ import React, { Fragment, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
-import SEO from "./seo";
-import LayoutOne from "../layouts/LayoutOne";
-import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
-import AuthService from "../services/auth_service";
+import SEO from "../seo";
+import LayoutOne from "../../layouts/LayoutOne";
+import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import AuthService from "../../api/auth_service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,9 +14,12 @@ const LoginRegister = () => {
 
   const navigate = useNavigate();
 
+  const [error, setError] = useState({passowordWeak : false, rePasswordWrong : false})
+
   const [formValues, setFormValues] = useState({
     username: "",
     password: "",
+    rePassword :"",
     email: "",
     fName: "",
     lName: "",
@@ -29,6 +32,10 @@ const LoginRegister = () => {
       ...formValues,
       [event.target.name]: event.target.value,
     });
+    if(formValues.password.length < 6) setError({...error,rePassword : true})
+    else setError({...error,rePassword : false})
+    if(formValues.rePassword !== formValues.password) setError({...error,passowordWeak : true})
+    else setError({...error,passowordWeak : false})
   };
 
   const handleLogin = async (e) => {
@@ -150,6 +157,19 @@ const LoginRegister = () => {
                                 value={formValues.password}
                                 onChange={handleChange}
                               />
+                              {error.passowordWeak && (
+                                <p style={{backgroundColor:"yellow"}}>Mật khẩu quá ngắn</p>
+                              )}
+                              <input
+                                type="password"
+                                name="Re_Password"
+                                placeholder="Re_Password"
+                                value={formValues.rePassword}
+                                onChange={handleChange}
+                              />
+                              {error.passowordWeak && (
+                                <p style={{backgroundColor:"red"}}>Mật khẩu nhập lại không trùng khớp</p>
+                              )}
                               <input
                                 type="text"
                                 name="fName"
