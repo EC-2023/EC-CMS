@@ -6,6 +6,7 @@ import MenuCart from "./sub-components/MenuCart";
 import React, { useState, useEffect } from "react";
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import {RiBillLine} from 'react-icons/ri';
 
 const IconGroup = ({ iconWhiteClass }) => {
 
@@ -142,6 +143,11 @@ const IconGroup = ({ iconWhiteClass }) => {
         </button>
         {/* menu cart */}
         <MenuCart />
+      </div>
+      <div className="same-style cart-wrap d-none d-lg-block">
+        <Link to={process.env.PUBLIC_URL + "/order"}>
+          <RiBillLine/>
+        </Link>
       </div>
       <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>

@@ -105,6 +105,7 @@ const Compare = lazy(() => import("./pages/other/Compare"));
 const Checkout = lazy(() => import("./pages/other/Checkout"));
 
 const NotFound = lazy(() => import("./pages/other/NotFound"));
+const Order = lazy(() => import("./components/User/Order"))
 
 const App = () => {
   return (
@@ -399,6 +400,10 @@ const App = () => {
               <Route
                 path={process.env.PUBLIC_URL + "/admin"}
                 element={<Admin/>}
+              /> 
+              <Route
+                path={process.env.PUBLIC_URL + "/order"}
+                element={<Order/>}
               /> 
 
               <Route path="*" element={<NotFound/>} />
