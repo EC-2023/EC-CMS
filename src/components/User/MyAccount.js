@@ -6,8 +6,8 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import FormOverlay from "../other/form_overlay";
 import userAddress from "../../data/User/userAdress.json";
-import "./MyAccount.scss"
-import UploadImage from './UploadImage'
+import "./MyAccount.scss";
+import UploadImage from "./UploadImage";
 
 const MyAccount = () => {
   let { pathname } = useLocation();
@@ -49,7 +49,7 @@ const MyAccount = () => {
   };
 
   const handleAddressChange = (addressIndex, updatedAddress) => {
-    setAddressUser(prevState =>
+    setAddressUser((prevState) =>
       addressIndex === null
         ? [...prevState, updatedAddress]
         : prevState.map((address, index) =>
@@ -58,12 +58,12 @@ const MyAccount = () => {
     );
   };
 
-  const handleUserInforChange = (event) =>{
+  const handleUserInforChange = (event) => {
     setUserInfor({
       ...userInfor,
       [event.target.name]: event.target.value,
     });
-  }
+  };
 
   const getAddress = (address) => {
     const { isDeleted, createdAt, updatedAt, Id, userId, ...newaddress } =
@@ -114,37 +114,57 @@ const MyAccount = () => {
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>First Name</label>
-                                <input type="text" value={userInfor.fName} onChange={handleUserInforChange}/>
+                                <input
+                                  type="text"
+                                  value={userInfor.fName}
+                                  onChange={handleUserInforChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>Middle Name</label>
-                                <input type="text" value={userInfor.mName} onChange={handleUserInforChange}/>
+                                <input
+                                  type="text"
+                                  value={userInfor.mName}
+                                  onChange={handleUserInforChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>Last Name</label>
-                                <input type="text" value={userInfor.lName} onChange={handleUserInforChange} />
+                                <input
+                                  type="text"
+                                  value={userInfor.lName}
+                                  onChange={handleUserInforChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-12 col-md-12">
                               <div className="billing-info">
                                 <label>Email Address</label>
-                                <input type="email"  value={userInfor.email} onChange={handleUserInforChange}/>
+                                <input
+                                  type="email"
+                                  value={userInfor.email}
+                                  onChange={handleUserInforChange}
+                                />
                               </div>
                             </div>
                             <div className="col-lg-6 col-md-6">
                               <div className="billing-info">
                                 <label>Telephone</label>
-                                <input type="text" value={userInfor.phoneNumber} onChange={handleUserInforChange} />
+                                <input
+                                  type="text"
+                                  value={userInfor.phoneNumber}
+                                  onChange={handleUserInforChange}
+                                />
                               </div>
                             </div>
                           </div>
                           <div className="billing-back-btn">
                             <div className="billing-btn">
-                              <button type="submit">Continue</button>
+                              <button type="submit">Lưu</button>
                             </div>
                           </div>
                         </div>
@@ -217,7 +237,7 @@ const MyAccount = () => {
                                     </div>
                                   </div>
                                   <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
-                                    <div className="entries-edit-delete text-center">
+                                    <div className="entries-edit-delete text-center d-flex justify-content-center">
                                       <div>
                                         <button
                                           className="edit"
@@ -237,11 +257,15 @@ const MyAccount = () => {
                                             />
                                           )}
                                       </div>
-                                      <button
-                                        onClick={() => handleDeleteClick(index)}
-                                      >
-                                        Delete
-                                      </button>
+                                      <div>
+                                        <button
+                                          onClick={() =>
+                                            handleDeleteClick(index)
+                                          }
+                                        >
+                                          Delete
+                                        </button>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
@@ -250,17 +274,20 @@ const MyAccount = () => {
                           </div>
                           <div className="billing-back-btn ">
                             <div className="billing-btn entries-edit-delete text-center">
-                              <button onClick={handleAddClick} className="btn add">
+                              <button
+                                onClick={handleAddClick}
+                                className="btn add"
+                              >
                                 add
                               </button>
-                                {isNew && (
-                                  <FormOverlay
-                                    index={null}
-                                    closeEdit={closeEdit}
-                                    childState={getAddress(newAddress)}
-                                    handleAddressChange={handleAddressChange}
-                                  />
-                                )}
+                              {isNew && (
+                                <FormOverlay
+                                  index={null}
+                                  closeEdit={closeEdit}
+                                  childState={getAddress(newAddress)}
+                                  handleAddressChange={handleAddressChange}
+                                />
+                              )}
                             </div>
                           </div>
                         </div>
@@ -275,7 +302,7 @@ const MyAccount = () => {
                         <span>4 .</span> Upload Ảnh đại diện
                       </Accordion.Header>
                       <Accordion.Body>
-                        <UploadImage/>
+                        <UploadImage />
                       </Accordion.Body>
                     </Accordion.Item>
                   </Accordion>

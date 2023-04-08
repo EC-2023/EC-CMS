@@ -5,7 +5,6 @@ import Nav from "react-bootstrap/Nav";
 import SEO from "../seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import AuthService from "../../api/auth_service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -14,7 +13,7 @@ const LoginRegister = () => {
 
   const navigate = useNavigate();
 
-  const [error, setError] = useState({passowordWeak : false, rePasswordWrong : false})
+  const [error, setError] = useState({passowordWeak : true, rePasswordWrong : true})
 
   const [formValues, setFormValues] = useState({
     username: "",
@@ -27,35 +26,46 @@ const LoginRegister = () => {
     phoneNumber: "",
   });
 
+  useEffect(() => {
+    checkPassword();
+  }, [formValues]);
+
   const handleChange = (event) => {
     setFormValues({
       ...formValues,
       [event.target.name]: event.target.value,
     });
-    if(formValues.password.length < 6) setError({...error,rePassword : true})
-    else setError({...error,rePassword : false})
-    if(formValues.rePassword !== formValues.password) setError({...error,passowordWeak : true})
-    else setError({...error,passowordWeak : false})
+    checkPassword();
   };
+
+  const checkPassword = () => {
+    if(formValues.password.length <= 5) setError(prevState => ({...prevState, passowordWeak: true}));
+    else setError(prevState => ({...prevState, passowordWeak: false}));
+  
+    if(formValues.rePassword !== formValues.password) setError(prevState => ({...prevState, rePasswordWrong: true}));
+    else setError(prevState => ({...prevState, rePasswordWrong: false}));
+    
+  };
+  
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const result = await toast.promise(
-        AuthService.login(formValues.username, formValues.password),
-        {
-          pending: "Logging in...",
-          success: "Logged in successfully!",
-          error: "Login failed. Please try again.",
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        }
+        // AuthService.login(formValues.username, formValues.password),
+        // {
+        //   pending: "Logging in...",
+        //   success: "Logged in successfully!",
+        //   error: "Login failed. Please try again.",
+        //   position: "top-right",
+        //   autoClose: 2000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined,
+        //   theme: "light",
+        // }
       );
       console.log(result); // Kết quả trả về từ AuthService.login()
       setTimeout(() => {
@@ -150,6 +160,7 @@ const LoginRegister = () => {
                                 value={formValues.username}
                                 onChange={handleChange}
                               />
+                              {(error.passowordWeak && formValues.password.length >0) && (<span style={{backgroundColor: "yellow"}}> Mật khẩu ít nhất 6 kí tự</span>)}
                               <input
                                 type="password"
                                 name="password"
@@ -157,19 +168,14 @@ const LoginRegister = () => {
                                 value={formValues.password}
                                 onChange={handleChange}
                               />
-                              {error.passowordWeak && (
-                                <p style={{backgroundColor:"yellow"}}>Mật khẩu quá ngắn</p>
-                              )}
+                              {error.rePasswordWrong && formValues.rePassword.length >0 && (<span style={{backgroundColor: "orange"}}> Mật khẩu nhập lại không trùng khớp</span>)}
                               <input
                                 type="password"
-                                name="Re_Password"
+                                name="rePassword"
                                 placeholder="Re_Password"
                                 value={formValues.rePassword}
                                 onChange={handleChange}
                               />
-                              {error.passowordWeak && (
-                                <p style={{backgroundColor:"red"}}>Mật khẩu nhập lại không trùng khớp</p>
-                              )}
                               <input
                                 type="text"
                                 name="fName"
@@ -206,8 +212,8 @@ const LoginRegister = () => {
                                 onChange={handleChange}
                               />
                               <div className="button-box">
-                                <button type="submit">
-                                  <span>Register</span>
+                                <button onClick={() => alert()} type="submit" disabled={!error.rePasswordWrong && !error.passowordWeak}>
+                                <span className={`${(error.rePasswordWrong || error.passowordWeak) && 'text-decoration-line-through'}`} >Register</span>
                                 </button>
                               </div>
                             </form>
