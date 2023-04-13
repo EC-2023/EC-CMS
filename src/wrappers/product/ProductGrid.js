@@ -17,7 +17,6 @@ const ProductGrid = ({
   const { cartItems } = useSelector((state) => state.cart);
   const { wishlistItems } = useSelector((state) => state.wishlist);
   const { compareItems } = useSelector((state) => state.compare);
-  const prods = getProducts(products, category, type, limit)  
   useEffect(() => {
     const fetchProductList = async () => {
       try {
@@ -35,24 +34,19 @@ const ProductGrid = ({
 
   return (
     <Fragment>
-      {prods?.map(product => {
+      {products?.map(product => {
         return (
-          <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.id}>
+          <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.Id}>
             <ProductGridSingle
               spaceBottomClass={spaceBottomClass}
               product={product}
               currency={currency}
               cartItem={
-                cartItems.find((cartItem) => cartItem.id === product.id)
+                cartItems.find((cartItem) => cartItem.Id === product.Id)
               }
               wishlistItem={
                 wishlistItems.find(
-                  (wishlistItem) => wishlistItem.id === product.id
-                )
-              }
-              compareItem={
-                compareItems.find(
-                  (compareItem) => compareItem.id === product.id
+                  (wishlistItem) => wishlistItem.Id === product.Id
                 )
               }
             />
