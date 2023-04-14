@@ -32,6 +32,13 @@ const currencySlice = createSlice({
                     currencyName
                 };
             }
+            if (currencyName === "VNĐ") {
+                return state = {
+                    currencySymbol: "VNĐ",
+                    currencyRate: 1,
+                    currencyName
+                };
+            }
         }
     },
 });

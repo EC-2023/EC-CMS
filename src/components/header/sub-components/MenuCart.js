@@ -37,7 +37,7 @@ const MenuCart = () => {
                     <Link to={process.env.PUBLIC_URL + "/product/" + item.id}>
                       <img
                         alt=""
-                        src={process.env.PUBLIC_URL + item.image[0]}
+                        src={process.env.PUBLIC_URL + item.images[0].location}
                         className="img-fluid"
                       />
                     </Link>
