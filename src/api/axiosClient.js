@@ -3,7 +3,7 @@ import queryString from "query-string";
 // Set up default config for http requests here
   
 const axiosClient = axios.create({
-  baseURL: "http://ec-api.herokuapp.com/api/v1",
+  baseURL: "https://ec-api.herokuapp.com/api/v1",
   headers: {
     "content-type": "application/json",
   },
