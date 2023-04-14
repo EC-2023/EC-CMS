@@ -4,7 +4,6 @@ import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Rating from "./sub-components/ProductRating";
-import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
 import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
@@ -254,7 +253,7 @@ const ProductGridSingle = ({
             ""
           )}
           <div className="product-price">
-              <span>{product.price} </span>
+              <span style={{color:"green"}}>{product.price + " VNĐ"} </span>
           </div>
         </div>
       </div>

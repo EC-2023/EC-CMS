@@ -16,25 +16,10 @@ const MenuCart = () => {
         <Fragment>
           <ul>
             {cartItems.map((item) => {
-              const discountedPrice = getDiscountPrice(
-                item.price,
-                item.discount
-              );
-              const finalProductPrice = (
-                item.price * currency.currencyRate
-              ).toFixed(2);
-              const finalDiscountedPrice = (
-                discountedPrice * currency.currencyRate
-              ).toFixed(2);
-
-              discountedPrice != null
-                ? (cartTotalPrice += finalDiscountedPrice * item.quantity)
-                : (cartTotalPrice += finalProductPrice * item.quantity);
-
               return (
                 <li className="single-shopping-cart" key={item.cartItemId}>
                   <div className="shopping-cart-img">
-                    <Link to={process.env.PUBLIC_URL + "/product/" + item.id}>
+                    <Link to={process.env.PUBLIC_URL + "/product/" + item.Id}>
                       <img
                         alt=""
                         src={process.env.PUBLIC_URL + item.images[0].location}
@@ -45,7 +30,7 @@ const MenuCart = () => {
                   <div className="shopping-cart-title">
                     <h4>
                       <Link
-                        to={process.env.PUBLIC_URL + "/product/" + item.id}
+                        to={process.env.PUBLIC_URL + "/product/" + item.Id}
                       >
                         {" "}
                         {item.name}{" "}
@@ -53,9 +38,7 @@ const MenuCart = () => {
                     </h4>
                     <h6>Qty: {item.quantity}</h6>
                     <span>
-                      {discountedPrice !== null
-                        ? currency.currencySymbol + finalDiscountedPrice
-                        : currency.currencySymbol + finalProductPrice}
+                      {item.price + " VNĐ"}
                     </span>
                     {item.selectedProductColor &&
                     item.selectedProductSize ? (

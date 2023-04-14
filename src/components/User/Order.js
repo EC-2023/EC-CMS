@@ -86,18 +86,8 @@ const Wishlist = () => {
                         </thead>
                         <tbody>
                           {wishlistItems.map((wishlistItem, key) => {
-                            const discountedPrice = getDiscountPrice(
-                              wishlistItem.price,
-                              wishlistItem.discount
-                            );
-                            const finalProductPrice = (
-                              wishlistItem.price * currency.currencyRate
-                            ).toFixed(2);
-                            const finalDiscountedPrice = (
-                              discountedPrice * currency.currencyRate
-                            ).toFixed(2);
                             const cartItem = cartItems.find(
-                              (item) => item.id === wishlistItem.id
+                              (item) => item.Id === wishlistItem.Id
                             );
                             return (
                               <tr key={key}>
@@ -113,7 +103,7 @@ const Wishlist = () => {
                                       className="img-fluid"
                                       src={
                                         process.env.PUBLIC_URL +
-                                        wishlistItem.image[0]
+                                        wishlistItem.images[0].location
                                       }
                                       alt=""
                                     />
@@ -125,7 +115,7 @@ const Wishlist = () => {
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      wishlistItem.id
+                                      wishlistItem.Id
                                     }
                                   >
                                     {wishlistItem.name}
@@ -133,23 +123,11 @@ const Wishlist = () => {
                                 </td>
 
                                 <td className="product-price-cart">
-                                  {discountedPrice !== null ? (
-                                    <Fragment>
-                                      <span className="amount old">
-                                        {currency.currencySymbol +
-                                          finalProductPrice}
-                                      </span>
-                                      <span className="amount">
-                                        {currency.currencySymbol +
-                                          finalDiscountedPrice}
-                                      </span>
-                                    </Fragment>
-                                  ) : (
+                                  {
                                     <span className="amount">
-                                      {currency.currencySymbol +
-                                        finalProductPrice}
+                                      {wishlistItem.price + " VNĐ"}
                                     </span>
-                                  )}
+                                  }
                                 </td>
 
                                 <td className="product-wishlist-cart">
