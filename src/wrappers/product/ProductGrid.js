@@ -16,11 +16,10 @@ const ProductGrid = ({
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
   const { wishlistItems } = useSelector((state) => state.wishlist);
-  const { compareItems } = useSelector((state) => state.compare);
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const params = {size : 8, page : 0, orderBy : '-createAt'};
+        const params = {size : 7, page : 0, orderBy : '-createAt'};
         const response = await productAPI.getNewProduct(params);
         console.log(response);
         dispatch(setProducts(response.data));

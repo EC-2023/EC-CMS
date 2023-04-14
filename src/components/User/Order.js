@@ -6,13 +6,14 @@ import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { addToCart } from "../../store/slices/cart-slice";
+import "./Order.scss"
 import {
   deleteFromWishlist,
   deleteAllFromWishlist,
 } from "../../store/slices/wishlist-slice";
 import { BsFillBagFill, } from "react-icons/bs";
 import { CiDeliveryTruck } from 'react-icons/ci';
-import { BiArrowFromLeft } from 'react-icons/bi';
+import { CgLayoutGridSmall } from 'react-icons/cg';
 
 const Wishlist = () => {
   const dispatch = useDispatch();
@@ -33,19 +34,32 @@ const Wishlist = () => {
         <Breadcrumb
           pages={[
             { label: "Home", path: process.env.PUBLIC_URL + "/" },
-            { label: "Wishlist", path: process.env.PUBLIC_URL + pathname },
+            { label: "order", path: process.env.PUBLIC_URL + pathname },
           ]}
         />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
             {wishlistItems && wishlistItems.length >= 1 ? (
               <Fragment>
-                <div className="icon d-flex justify-content-center align-items-center">
-                  <div
+                <div className="icon d-flex justify-content-between align-items-center">
+                <div className="item"
                     style={{
                       borderRadius: "50%",
-                      width: "48px",
-                      height: "48px",
+                      width: "3.4em",
+                      height: "3.4em",
+                      backgroundColor: "green",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <CgLayoutGridSmall color="#fff" size={24} />
+                  </div>
+                  <div className="item"
+                    style={{
+                      borderRadius: "50%",
+                      width: "3.4em",
+                      height: "3.4em",
                       backgroundColor: "green",
                       display: "flex",
                       justifyContent: "center",
@@ -54,13 +68,11 @@ const Wishlist = () => {
                   >
                     <BsFillBagFill color="#fff" size={24} />
                   </div>
-
-                    <BiArrowFromLeft size={40}/>
-                  <div
+                  <div className="item"
                     style={{
                       borderRadius: "50%",
-                      width: "48px",
-                      height: "48px",
+                      width: "3.4em",
+                      height: "3.4em",
                       backgroundColor: "green",
                       display: "flex",
                       justifyContent: "center",

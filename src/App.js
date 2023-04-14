@@ -1,6 +1,9 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect} from "react";
 import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { setCurrency } from "./store/slices/currency-slice";
+import { useDispatch,useSelector } from "react-redux";
+
 
 //admin
 const Admin = lazy(() => import("./components/Admin/Admin.js"));
@@ -107,7 +110,14 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 const Order = lazy(() => import("./components/User/Order"))
 
+
+
 const App = () => {
+  const dispatch = useDispatch()
+  useEffect(() =>{
+    dispatch(setCurrency("VNĐ"))
+  },[])
+
   return (
       <Router>
         <ScrollToTop>

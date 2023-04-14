@@ -34,7 +34,7 @@ const currencySlice = createSlice({
             }
             if (currencyName === "VNĐ") {
                 return state = {
-                    currencySymbol: "VNĐ",
+                    currencySymbol: " VNĐ",
                     currencyRate: 1,
                     currencyName
                 };
