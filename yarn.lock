@@ -7720,6 +7720,13 @@ react-avatar-editor@^13.0.0:
     "@babel/runtime" "^7.12.5"
     prop-types "^15.7.2"
 
+react-bootstrap-icons@^1.10.3:
+  version "1.10.3"
+  resolved "https://registry.yarnpkg.com/react-bootstrap-icons/-/react-bootstrap-icons-1.10.3.tgz#5d64a93c7b172856b03c7d3cd5119a025b094966"
+  integrity sha512-j4hSby6gT9/enhl3ybB1tfr1slZNAYXDVntcRrmVjxB3//2WwqrzpESVqKhyayYVaWpEtnwf9wgUQ03cuziwrw==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-bootstrap@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/react-bootstrap/-/react-bootstrap-2.5.0.tgz#e25e649e37f080d38eeb92ad5b4ed562a1d7de62"
@@ -7886,10 +7893,10 @@ react-modal-video@^1.2.10:
   dependencies:
     react-transition-group "^2.2.1"
 
-react-paginate@^8.1.4:
-  version "8.1.4"
-  resolved "https://registry.yarnpkg.com/react-paginate/-/react-paginate-8.1.4.tgz#f62bfef4f07bb420f3a994e0284d1065a865a6b9"
-  integrity sha512-c3rxjcTEqeDQa6LqXifxLeFguY2qy2CHGRphVjHLFFMGfIHyaJ+v3bOvIlLYEeohwQ1q+cQpknjsqBVrkc/SNA==
+react-paginate@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/react-paginate/-/react-paginate-8.2.0.tgz#947c3dcb444a6c16c1bcf8361871aa135baa3dcd"
+  integrity sha512-sJCz1PW+9PNIjUSn919nlcRVuleN2YPoFBOvL+6TPgrH/3lwphqiSOgdrLafLdyLDxsgK+oSgviqacF4hxsDIw==
   dependencies:
     prop-types "^15"
 
@@ -7986,6 +7993,11 @@ react-scripts@^5.0.1:
     workbox-webpack-plugin "^6.4.1"
   optionalDependencies:
     fsevents "^2.3.2"
+
+react-table@^7.8.0:
+  version "7.8.0"
+  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.8.0.tgz#07858c01c1718c09f7f1aed7034fcfd7bda907d2"
+  integrity sha512-hNaz4ygkZO4bESeFfnfOft73iBUj8K5oKi1EcSHPAibEydfsX2MyU6Z8KCr3mv3C9Kqqh71U+DhZkFvibbnPbA==
 
 react-toastify@^9.1.2:
   version "9.1.2"
