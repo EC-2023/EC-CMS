@@ -7,6 +7,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserAPI from "../../api/UserAPI";
 
 const LoginRegister = () => {
   const { pathname } = useLocation();
@@ -51,23 +52,25 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const result = await toast.promise(
-        // AuthService.login(formValues.username, formValues.password),
-        // {
-        //   pending: "Logging in...",
-        //   success: "Logged in successfully!",
-        //   error: "Login failed. Please try again.",
-        //   position: "top-right",
-        //   autoClose: 2000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // }
-      );
-      console.log(result); // Kết quả trả về từ AuthService.login()
+      const params = {username : formValues.username,password : formValues.password};
+      // const result = await toast.promise(
+      //   UserAPI.login(params),
+      //   {
+      //     pending: "Logging in...",
+      //     success: "Logged in successfully!",
+      //     error: "Login failed. Please try again.",
+      //     position: "top-right",
+      //     autoClose: 2000,
+      //     hideProgressBar: false,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //     theme: "light",
+      //   }
+      // );
+      const response = await UserAPI.login(params);
+      console.log(response); // Kết quả trả về từ AuthService.login()
       setTimeout(() => {
         navigate("/my-account");
       }, 2000);

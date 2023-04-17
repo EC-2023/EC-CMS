@@ -5,7 +5,8 @@ import queryString from "query-string";
 const axiosClient = axios.create({
   baseURL: "https://ec-api.herokuapp.com/api/v1",
   headers: {
-    "content-type": "application/json",
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
   },
   paramsSerializer: {
     serialize: queryString.stringify // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
