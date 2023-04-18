@@ -12,7 +12,7 @@ const UserAPI = {
       'Content-Type': 'application/json'
     };
     const url = '/auth/login';
-    return axiosClient.post(url, {params});
+    return axiosClient.post(url, { username: params.username, password: params.password });
   }
 }
 
