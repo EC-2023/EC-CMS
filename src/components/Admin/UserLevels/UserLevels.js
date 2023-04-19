@@ -1,285 +1,344 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTable, useSortBy, usePagination } from 'react-table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ReactPaginate from 'react-paginate';
 import { Button, Modal, Form } from 'react-bootstrap';
 import { DropdownButton, Dropdown } from 'react-bootstrap';
 import { Breadcrumb } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { debounce } from 'lodash';
+import {
+  deleteUserLevel,
+  fetchUserLevels,
+  updateUserLevel,
+  selectUserLevels,
+  addUserLevel,
+  selectUserLevelById,
+} from '../../../store/slices/user-levels-slice';
+import { useCallback } from 'react';
+
 function UserLevels() {
-    const [products, setProducts] = React.useState([
-        {
-            id: 1,
-            name: 'Product 1',
-            price: 10,
+  const dispatch = useDispatch();
+  const userLevels = useSelector(selectUserLevels);
+
+  const [showAddModal, setShowAddModal] = React.useState(false);
+  const [showEditModal, setShowEditModal] = React.useState(false);
+  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+  const [selectedUserLevel, setSelectedUserLevel] = React.useState(null);
+  const [searchText, setSearchText] = React.useState('');
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [size, setSize] = React.useState(5);
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'ID',
+        accessor: 'id',
+        Cell: ({ row }) => {
+          const rowIndex = row.index + 1 + currentPage * size;
+          return <div>{rowIndex}</div>;
         },
-        {
-            id: 2,
-            name: 'Product 2',
-            price: 20,
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Min Point',
+        accessor: 'minPoint',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Discount',
+        accessor: 'discount',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Status',
+        accessor: 'isDeleted',
+        sortType: 'basic',
+        Cell: ({ value }) => {
+          return (
+            <div
+              style={{
+                color: !value ? 'green' : 'red',
+                fontWeight: 'bold',
+              }}
+            >
+              {!value ? 'ACTIVE' : 'INACTIVE'}
+            </div>
+          );
         },
-        // Add more rows as needed
-    ]);
+      },
+      {
+        Header: 'Action',
+        Cell: ({ row }) => {
+          const isActive = !row.original.isDeleted;
+          return (
+            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>}>
+              <Dropdown.Item style={{ color: 'blue' }} onClick={() => handleEditClick(row.original.Id)}>
+                Edit
+              </Dropdown.Item>
+              {isActive ? (
+                <Dropdown.Item style={{ color: 'red' }} onClick={() => handleDeleteClick(row.original.Id)}>
+                  Disable
+                </Dropdown.Item>
+              ) : (
+                <Dropdown.Item style={{ color: 'green' }} onClick={() => handleDeleteClick(row.original.Id)}>
+                  Enable
+                </Dropdown.Item>
+              )}
+            </DropdownButton>
+          );
+        },
+        id: 'action',
+      },
+    ],
+    [handleEditClick, userLevels]
+  );
+  // useEffect(() => {
+  //   dispatch(fetchUserLevels({ currentPage, pageSize: size }));
+  // }, [currentPage, dispatch, size]);
+  const { getTableProps, getTableBodyProps, headerGroups, page, pageOptions, state, prepareRow } = useTable(
+    {
+      columns,
+      data: userLevels.data,
+      initialState: { pageIndex: 0 },
+      manualPagination: true,
+      pageCount: Math.ceil(userLevels.pagination.total / size),
+    },
+    useSortBy,
+    usePagination
+  );
 
-    const [showAddModal, setShowAddModal] = React.useState(false);
-    const [showEditModal, setShowEditModal] = React.useState(false);
-    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState(null);
-    const [searchText, setSearchText] = React.useState('');
+  useEffect(() => {
+    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText }));
+  }, [currentPage, dispatch, searchText, size]);
 
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'ID',
-                accessor: 'id',
-            },
-            {
-                Header: 'Name',
-                accessor: 'name',
-            },
-            {
-                Header: 'Price',
-                accessor: 'price',
-                sortType: 'basic',
-            },
-            {
-                Header: 'Action',
-                Cell: ({ row }) => (
-                    <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>} >
-                        <Dropdown.Item onClick={() => handleEditClick(row.original.id)}>Edit</Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleDeleteClick(row.original.id)}>Delete</Dropdown.Item>
-                    </DropdownButton>
-                ),
-                id: 'action',
-            },
-        ],
-        []
-    );
+  const debouncedFetchUserLevels = debounce((searchText) => {
+    dispatch(fetchUserLevels(page, size, searchText));
+  }, 500);
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        nextPage,
-        previousPage,
-        canPreviousPage,
-        pageOptions,
-        state,
-        prepareRow,
-    } = useTable(
-        { columns, data: products },
-        useSortBy,
-        usePagination
-    );
+  const handleSearchChange = (event) => {
+    setSearchText(event.target.value);
+    debouncedFetchUserLevels(event.target.value);
+  };
 
-    const handleSearchChange = (event) => {
-        setSearchText(event.target.value);
-    };
+  const handleAddClick = () => {
+    console.log(userLevels.data);
+    setShowAddModal(true);
+  };
 
-    const filteredProducts = React.useMemo(() => {
-        return products.filter((product) =>
-            product.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-    }, [products, searchText]);
+  const handleAddClose = () => {
+    setShowAddModal(false);
+  };
 
-    const handleAddClick = () => {
-        setShowAddModal(true);
-    };
+  const handleAddSubmit = (event) => {
+    event.preventDefault();
+    const name = event.target.elements.name.value;
+    const minPoint = parseInt(event.target.elements.minPoint.value);
+    const discount = parseFloat(event.target.elements.discount.value);
+    const newUserLevel = { name, minPoint, discount };
+    dispatch(addUserLevel(newUserLevel));
+    setShowAddModal(false);
+  };
+  const handleEditClick = React.useCallback(
+    (userLevelId) => {
+      console.log(userLevels);
+      const userLevel = userLevels.data.find((userLevel) => userLevel.Id === userLevelId);
+      setSelectedUserLevel(userLevel);
+      setShowEditModal(true);
+    },
+    [userLevels]
+  );
+  const handleEditClose = () => {
+    setShowEditModal(false);
+  };
 
-    const handleAddClose = () => {
-        setShowAddModal(false);
-    };
+  const handleEditSubmit = (event) => {
+    event.preventDefault();
+    const name = event.target.elements.name.value;
+    const minPoint = parseInt(event.target.elements.minPoint.value);
+    const discount = parseFloat(event.target.elements.discount.value);
+    const updatedUserLevel = { ...selectedUserLevel, name, minPoint, discount };
+    dispatch(updateUserLevel(updatedUserLevel));
+    setShowEditModal(false);
+  };
 
-    const handleAddSubmit = (event) => {
-        event.preventDefault();
-        const id = products.length + 1;
-        const name = event.target.elements.name.value;
-        const price = parseInt(event.target.elements.price.value);
-        const newProduct = { id, name, price };
-        setProducts([...products, newProduct]);
-        setShowAddModal(false);
-    };
+  const handleDeleteClick = (userLevelId) => {
+    const userLevel = userLevels.find((userLevel) => userLevel.id === userLevelId);
+    setSelectedUserLevel(userLevel);
+    setShowDeleteModal(true);
+  };
 
-    const handleEditClick = (productId) => {
-        const product = products.find((product) => product.id === productId);
-        setSelectedProduct(product);
-        setShowEditModal(true);
-    };
+  const handleDeleteClose = () => {
+    setShowDeleteModal(false);
+  };
 
-    const handleEditClose = () => {
-        setShowEditModal(false);
-    };
+  const handleDeleteSubmit = (event) => {
+    event.preventDefault();
+    dispatch(deleteUserLevel(selectedUserLevel.id));
+    setShowDeleteModal(false);
+  };
 
-    const handleEditSubmit = (event) => {
-        event.preventDefault();
-        const name = event.target.elements.name.value;
-        const price = parseInt(event.target.elements.price.value);
-        const updatedProduct = { ...selectedProduct, name, price };
-        const updatedProducts = products.map((product) =>
-            product.id === selectedProduct.id ? updatedProduct : product
-        );
-        setProducts(updatedProducts);
-        setShowEditModal(false);
-    };
-
-    const handleDeleteClick = (productId) => {
-        const product = products.find((product) => product.id === productId);
-        setSelectedProduct(product);
-        setShowDeleteModal(true);
-    };
-
-    const handleDeleteClose = () => {
-        setShowDeleteModal(false);
-    };
-
-    const handleDeleteSubmit = (event) => {
-        event.preventDefault();
-        const updatedProducts = products.filter(
-            (product) => product.id !== selectedProduct.id
-        );
-        setProducts(updatedProducts);
-        setShowDeleteModal(false);
-    };
-
-    return (
-        <div className="content-wrapper">
-            <Breadcrumb>
-                <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
-                <Breadcrumb.Item active>UserLevels</Breadcrumb.Item>
-            </Breadcrumb>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="search-box">
-                    <i className="fas fa-search"></i>
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchText}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-                <button className="btn btn-primary" onClick={handleAddClick}>
-                    Add Product
-                </button>
-            </div>
-            <table {...getTableProps()} className="table table-bordered table-striped">
-                <thead>
-                    {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map((column) => (
-                                <th
-                                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                                    className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${column.id === 'action' ? 'action-column' : ''}`}
-                                >
-                                    {column.render('Header')}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {page.map((row) => {
-                        prepareRow(row);
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map((cell) => {
-                                    return (
-                                        <td {...cell.getCellProps()} className={cell.column.id === 'action' ? 'action-column' : ''}>{cell.render('Cell')}</td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <div className="pagination-wrapper">
-                <ReactPaginate
-                    containerClassName="pagination"
-                    pageCount={pageOptions.length}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={({ selected }) => state.gotoPage(selected)}
-                    activeClassName="active"
-                    previousClassName="page-item"
-                    nextClassName="page-item"
-                    pageClassName="page-item"
-                    breakClassName="page-item"
-                    pageLinkClassName="page-link"
-                    previousLinkClassName="page-link"
-                    nextLinkClassName="page-link"
-                    breakLinkClassName="page-link"
-                    disableInitialCallback={true}
-                />
-            </div>
-            <Modal show={showAddModal} onHide={handleAddClose} centered>
-                <Form onSubmit={handleAddSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group controlId="name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter name" />
-                        </Form.Group>
-                        <Form.Group controlId="price">
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" placeholder="Enter price" />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleAddClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Add
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-            <Modal show={showEditModal} onHide={handleEditClose} centered>
-                <Form onSubmit={handleEditSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Edit Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group controlId="name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" defaultValue={selectedProduct?.name} />
-                        </Form.Group>
-                        <Form.Group controlId="price">
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" defaultValue={selectedProduct?.price} />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleEditClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-            <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-                <Form onSubmit={handleDeleteSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Delete Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        Are you sure you want to delete the product?
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleDeleteClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="danger" type="submit">
-                            Delete
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-        </div >
-    );
+  return (
+    <div className="content-wrapper">
+      <Breadcrumb>
+        <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
+        <Breadcrumb.Item active>UserLevels</Breadcrumb.Item>
+      </Breadcrumb>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <div className="search-box">
+          <i className="fas fa-search"></i>
+          <input
+            type="text"
+            placeholder="Search userLevels..."
+            value={searchText}
+            onChange={handleSearchChange}
+          />
+        </div>
+        <button className="btn btn-primary" onClick={handleAddClick}>
+          Add User Level
+        </button>
+      </div>
+      <table {...getTableProps()} className="table table-bordered table-striped">
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th
+                  {...column.getHeaderProps(column.getSortByToggleProps())}
+                  className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${
+                    column.id === 'action' ? 'action-column' : ''
+                  }`}
+                >
+                  {column.render('Header')}
+                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => {
+                  return (
+                    <td
+                      {...cell.getCellProps()}
+                      className={cell.column.id === 'action' ? 'action-column' : ''}
+                    >
+                      {cell.render('Cell')}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+      <div className="pagination-wrapper">
+        <ReactPaginate
+          containerClassName="pagination"
+          pageCount={Math.ceil(userLevels.pagination.total / size)}
+          marginPagesDisplayed={2}
+          pageRangeDisplayed={5}
+          onPageChange={({ selected }) => setCurrentPage(selected)}
+          activeClassName="active"
+          previousClassName="page-item"
+          nextClassName="page-item"
+          pageClassName="page-item"
+          breakClassName="page-item"
+          pageLinkClassName="page-link"
+          previousLinkClassName="page-link"
+          nextLinkClassName="page-link"
+          breakLinkClassName="page-link"
+          disableInitialCallback={true}
+        />
+      </div>
+      <Modal show={showAddModal} onHide={handleAddClose} centered>
+        <Form onSubmit={handleAddSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add User Level</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" placeholder="Enter name" />
+            </Form.Group>
+            <Form.Group controlId="minPoint">
+              <Form.Label>minPoint</Form.Label>
+              <Form.Control type="number" min="0" placeholder="Enter min point" />
+            </Form.Group>
+            <Form.Group controlId="discount">
+              <Form.Label>discount</Form.Label>
+              <Form.Control type="number" placeholder="Enter discount" min="0" max="1" step="0.01" />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleAddClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Add
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      <Modal show={showEditModal} onHide={handleEditClose} centered>
+        <Form onSubmit={handleEditSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Edit User Level</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group controlId="name">
+              <Form.Label>Name</Form.Label>
+              <Form.Control type="text" defaultValue={selectedUserLevel?.name} />
+            </Form.Group>
+            <Form.Group controlId="discount">
+              <Form.Label>Discount</Form.Label>
+              <Form.Control
+                type="number"
+                defaultValue={selectedUserLevel?.discount}
+                min="0"
+                max="1"
+                step="0.01"
+              />
+            </Form.Group>
+            <Form.Group controlId="minPoint">
+              <Form.Label>Min Point</Form.Label>
+              <Form.Control type="number" defaultValue={selectedUserLevel?.minPoint} min="0" />
+            </Form.Group>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleEditClose}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit">
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
+        <Form onSubmit={handleDeleteSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete User level</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete the user level?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleDeleteClose}>
+              Cancel
+            </Button>
+            <Button variant="danger" type="submit">
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    </div>
+  );
 }
 
 export default UserLevels;

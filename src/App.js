@@ -1,8 +1,6 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy } from 'react';
 import ScrollToTop from './helpers/scroll-top';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { setCurrency } from './store/slices/currency-slice';
+import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
 
 //admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
@@ -183,7 +181,6 @@ const App = () => {
               path={process.env.PUBLIC_URL + '/product-fixed-image/:id'}
               element={<ProductFixedImage />}
             />
-
             {/* Blog pages */}
             <Route path={process.env.PUBLIC_URL + '/blog-standard'} element={<BlogStandard />} />
             <Route path={process.env.PUBLIC_URL + '/blog-no-sidebar'} element={<BlogNoSidebar />} />
@@ -192,7 +189,6 @@ const App = () => {
               path={process.env.PUBLIC_URL + '/blog-details-standard'}
               element={<BlogDetailsStandard />}
             />
-
             {/* Other pages */}
             <Route path={process.env.PUBLIC_URL + '/about'} element={<About />} />
             <Route path={process.env.PUBLIC_URL + '/contact'} element={<Contact />} />
