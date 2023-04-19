@@ -1,15 +1,15 @@
-import axios from "axios";
-import queryString from "query-string";
+import axios from 'axios';
+import queryString from 'query-string';
 // Set up default config for http requests here
-  
+
 const axiosClient = axios.create({
-  baseURL: "http://ec-api.herokuapp.com/api/v1",
+  baseURL: 'http://localhost:8080/api/v1',
   headers: {
-    "content-type": "application/json",
+    'Content-Type': 'application/json',
   },
   paramsSerializer: {
-    serialize: queryString.stringify // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
-  }
+    serialize: queryString.stringify, // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
+  },
 });
 axiosClient.interceptors.request.use(async (config) => {
   // Handle token here ...
