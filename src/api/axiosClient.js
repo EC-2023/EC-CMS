@@ -13,9 +13,16 @@ const axiosClient = axios.create({
   }
 });
 axiosClient.interceptors.request.use(async (config) => {
-  // Handle token here ...
+  const accessToken = localStorage.getItem('accessToken');
+
+  // If access token exists, add it to the headers of the request
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
   return config;
 });
+
 axiosClient.interceptors.response.use(
   (response) => {
     if (response && response.data) {
@@ -23,8 +30,34 @@ axiosClient.interceptors.response.use(
     }
     return response;
   },
-  (error) => {
-    // Handle errors
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (
+      error.response.status === 401 &&
+      originalRequest &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
+
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        const response = await axiosClient.post('/auth/refresh-token', {
+          refreshToken: refreshToken,
+        });
+
+        if (response.accessToken) {
+          localStorage.setItem('accessToken', response.accessToken);
+          axios.defaults.headers.common['Authorization'] =
+            'Bearer ' + response.data.accessToken;
+          return axiosClient(originalRequest);
+        }
+      } catch (error) {
+        // Handle errors
+        throw error;
+      }
+    }
+
     throw error;
   }
 );

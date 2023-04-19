@@ -53,25 +53,25 @@ const LoginRegister = () => {
     e.preventDefault();
     try {
       const params = {username : formValues.username,password : formValues.password};
-      // const result = await toast.promise(
-      //   UserAPI.login(params),
-      //   {
-      //     pending: "Logging in...",
-      //     success: "Logged in successfully!",
-      //     error: "Login failed. Please try again.",
-      //     position: "top-right",
-      //     autoClose: 2000,
-      //     hideProgressBar: false,
-      //     closeOnClick: true,
-      //     pauseOnHover: true,
-      //     draggable: true,
-      //     progress: undefined,
-      //     theme: "light",
-      //   }
-      // );
-      const response = await UserAPI.login(params);
-      console.log(response); // Kết quả trả về từ AuthService.login()
-      setTimeout(() => {
+      const response = await toast.promise(
+        UserAPI.login(params),
+        {
+          pending: "Logging in...",
+          success: "Logged in successfully!",
+          error: "Login failed. Please try again.",
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      localStorage.setItem('accessToken', response.accessToken);
+      localStorage.setItem('refreshToken', response.refreshToken);
+            setTimeout(() => {
         navigate("/my-account");
       }, 2000);
     } catch (error) {

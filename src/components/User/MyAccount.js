@@ -5,12 +5,25 @@ import SEO from "../seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import FormOverlay from "../other/form_overlay";
-import userAddress from "../../data/User/userAdress.json";
 import "./MyAccount.scss";
 import UploadImage from "./UploadImage";
+import UserAddress from "../../api/UserAddressAPI";
 
 const MyAccount = () => {
   let { pathname } = useLocation();
+
+  useEffect(() => {
+    const getUserAddressList = async () => {
+      try {
+        const response = await UserAddress.getUserAddressList();
+        setAddressUser(response)
+      } catch (error) {
+        console.log("faild", error);
+      }
+    }
+
+    getUserAddressList();
+  },[])
 
   const [isEditing, setIsEditing] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -21,7 +34,7 @@ const MyAccount = () => {
     mName: "",
     phoneNumber: "",
   });
-  const [addressUser, setAddressUser] = useState(userAddress);
+  const [addressUser, setAddressUser] = useState([]);
   const [editingAddressIndex, setEditingAddressIndex] = useState(null);
   const [newAddress, setNewAddress] = useState({
     city: "",
