@@ -1,22 +1,21 @@
-import axios from "axios";
-import queryString from "query-string";
+import axios from 'axios';
+import queryString from 'query-string';
 // Set up default config for http requests here
-  
+
 const axiosClient = axios.create({
-  baseURL: "https://ec-api.herokuapp.com/api/v1",
+  baseURL: 'http://ec-api.herokuapp.com/api/v1',
   headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
+    'content-type': 'application/json',
   },
-  // paramsSerializer: {
-  //   serialize: queryString.stringify // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
-  // }
+  paramsSerializer: {
+    serialize: queryString.stringify, // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
+  },
 });
 axiosClient.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
-      return {...config, headers : {...config.headers,Authorization : 'Bearer ' + accessToken}}
+      return { ...config, headers: { ...config.headers, Authorization: 'Bearer ' + accessToken } };
       // config.headers['Authorization'] = 'Bearer ' + accessToken;
     }
     return config;
@@ -25,7 +24,6 @@ axiosClient.interceptors.request.use(
     Promise.reject(error);
   }
 );
-
 
 // axiosClient.interceptors.response.use(
 //   (response) => {
@@ -86,14 +84,13 @@ axiosClient.interceptors.response.use(
         const response = await axiosClient.post('/auth/refresh-token', {
           refreshToken: refreshToken,
         });
-        
+
         if (response.data.accessToken) {
           localStorage.setItem('accessToken', response.data.accessToken);
           axiosClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
           originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
           return axiosClient(originalRequest);
-        }
-        else{
+        } else {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
         }
@@ -101,12 +98,12 @@ axiosClient.interceptors.response.use(
         // Xử lý lỗi
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
-        console.log("Gửi lại request" + error);
+        console.log('Gửi lại request' + error);
 
         // Chuyển hướng đến trang đăng nhập
         window.location.href = '/login-register';
-        localStorage.setItem('message', "Vui lòng đăng nhập lại");
-      }      
+        localStorage.setItem('message', 'Vui lòng đăng nhập lại');
+      }
     }
     return Promise.reject(error);
   }
