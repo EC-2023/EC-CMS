@@ -47,12 +47,13 @@ export const deleteCategory = createAsyncThunk('categories/deleteCategory', asyn
 });
 
 export const updateCategory = createAsyncThunk('categories/updateCategory', async (category) => {
+  console.log(category);
   const payloadCate = {
     name: category.name,
   };
   if (category.parentCategoryId) payloadCate.parentCategoryId = category.parentCategoryId;
   payloadCate.isDeleted = category.isDeleted ? true : false;
-  if (category.image !== null) {
+  if (category.image) {
     const formData = new FormData();
     formData.append('file', category.image, { contentType: 'image/jpeg' });
     const response = await axiosClient.post('/files/cloud/upload', formData, {
