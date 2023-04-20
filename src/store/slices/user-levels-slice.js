@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axiosClient';
 export const fetchUserLevels = createAsyncThunk(
   'userlevels/fetchUserLevels',
-  async ({ currentPage, pageSize, searchText }) => {
+  async ({ currentPage, pageSize, searchText, orderBy }) => {
     const response = await axiosClient.get(
       `/userlevels/pagination?skip=${
         currentPage * pageSize
-      }&limit=${pageSize}&orderBy=-updateAt&name%7B%7Bsearch%7D%7D=${searchText}`
+      }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
     return response;
   }
