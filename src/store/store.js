@@ -18,6 +18,8 @@ import wishlistReducer from './slices/wishlist-slice';
 import userLevelsReducer from './slices/user-levels-slice';
 import storeLevelsReducer from './slices/store-levels-slice';
 import deliveriesReducer from './slices/deliveries-slice';
+import commissionsReducer from './slices/commissions-slice';
+import categoriesReducer from './slices/categories-slice';
 const persistConfig = {
   key: 'flone',
   version: 1.1,
@@ -33,6 +35,8 @@ export const rootReducer = combineReducers({
   userLevels: userLevelsReducer,
   storeLevels: storeLevelsReducer,
   deliveries: deliveriesReducer,
+  commissions: commissionsReducer,
+  categories: categoriesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

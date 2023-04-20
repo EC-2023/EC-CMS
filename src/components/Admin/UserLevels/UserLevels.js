@@ -25,6 +25,7 @@ function UserLevels() {
   const [selectedUserLevel, setSelectedUserLevel] = React.useState(null);
   const [searchText, setSearchText] = React.useState('');
   const [currentPage, setCurrentPage] = React.useState(0);
+  const [orderBy, setOrderBy] = React.useState('-updateAt');
   const [size] = React.useState(5);
   const columns = React.useMemo(
     () => [
@@ -107,17 +108,18 @@ function UserLevels() {
       initialState: { pageIndex: 0 },
       manualPagination: true,
       pageCount: Math.ceil(userLevels.pagination.total / size),
+      manualSortBy: true,
     },
     useSortBy,
     usePagination
   );
 
   useEffect(() => {
-    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText }));
-  }, [currentPage]);
+    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText, orderBy }));
+  }, [currentPage, orderBy]);
 
   const debouncedFetchUserLevels = debounce((searchText) => {
-    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText }));
+    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText, orderBy }));
     console.log(userLevels.pagination);
   }, 500);
 
@@ -288,6 +290,20 @@ function UserLevels() {
               {headerGroup.headers.map((column) => (
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
+                  onClick={(e) => {
+                    column.getSortByToggleProps().onClick(e);
+                    setTimeout(() => {
+                      if (column.isSorted === true) {
+                        if (column.id !== 'id' && column.id !== 'status')
+                          setOrderBy(column.isSortedDesc ? `-${column.id}` : column.id);
+                        else if (column.id === 'status')
+                          setOrderBy(column.isSortedDesc ? '-isDeleted' : 'isDeleted');
+                        else setOrderBy(column.isSortedDesc ? '-updateAt' : 'updateAt');
+                      } else {
+                        setOrderBy('-updateAt');
+                      }
+                    });
+                  }}
                   className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${
                     column.id === 'action' ? 'action-column' : ''
                   }`}
