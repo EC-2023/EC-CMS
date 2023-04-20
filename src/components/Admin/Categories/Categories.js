@@ -165,7 +165,6 @@ function Categories() {
   };
 
   const handleAddClick = () => {
-    console.log(categories.data);
     setShowAddModal(true);
   };
 
@@ -240,7 +239,7 @@ function Categories() {
   const handleEditSubmit = (event) => {
     event.preventDefault();
     const name = event.target.elements.name.value;
-    const image = event.target.elements.formImage.files[0];
+    const image = imagePreviewUrl ? event.target.elements.formImage.files[0] : null;
     const parentCategoryId = parentCategory?.value || null;
     const updatedCategory = { ...selectedCategory, name, image, parentCategoryId };
     cogoToast
