@@ -7,7 +7,8 @@ import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import FormOverlay from "../other/form_overlay";
 import "./MyAccount.scss";
 import UploadImage from "./UploadImage";
-import UserAddress from "../../api/UserAddressAPI";
+import UserAddressAPI from "../../api/UserAddressAPI";
+import UserAPI from "../../api/UserAPI";
 
 const MyAccount = () => {
   let { pathname } = useLocation();
@@ -15,13 +16,30 @@ const MyAccount = () => {
   useEffect(() => {
     const getUserAddressList = async () => {
       try {
-        const response = await UserAddress.getUserAddressList();
-        setAddressUser(response)
+        const response = await UserAddressAPI.getUserAddressList();
+        console.log(response.firstName);
+        setAddressUser(response);
       } catch (error) {
         console.log("faild", error);
       }
     }
 
+    const getUserInfor = async () => {
+      try {
+        const response = await UserAPI.getUserInfor();
+        setUserInfor({
+          email: response.email,
+          firstName: response.firstName,
+          lastName: response.lastName,
+          middleName: response.middleName,
+          phoneNumber: response.phoneNumber
+        });
+      } catch (error) {
+        console.log("faild", error);
+      }
+    }
+
+    getUserInfor();
     getUserAddressList();
   },[])
 
@@ -29,9 +47,9 @@ const MyAccount = () => {
   const [isNew, setIsNew] = useState(false);
   const [userInfor, setUserInfor] = useState({
     email: "",
-    fName: "",
-    lName: "",
-    mName: "",
+    firstName: "",
+    lastName: "",
+    middleName: "",
     phoneNumber: "",
   });
   const [addressUser, setAddressUser] = useState([]);
@@ -55,13 +73,27 @@ const MyAccount = () => {
     setEditingAddressIndex(index);
   };
 
-  const handleDeleteClick = (index) => {
-    setAddressUser((prevState) =>
-      prevState.filter((address, i) => i !== index)
-    );
+  const handleDeleteClick = async (index) => {
+    try{
+      const response = await UserAddressAPI.deleteUserAddress(addressUser[index].Id);
+      console.log(response);
+    }
+    catch(error){
+      console.log(error)
+    }
+    // setAddressUser((prevState) =>
+    //   prevState.filter((address, i) => i !== index)
+    // );
   };
 
-  const handleAddressChange = (addressIndex, updatedAddress) => {
+  const handleAddressChange = async (addressIndex, updatedAddress) => {
+    try{
+      const response = await UserAddressAPI.createUserAddress(updatedAddress);
+      console.log(response);
+    }
+    catch(error){
+      console.log(error)
+    }
     setAddressUser((prevState) =>
       addressIndex === null
         ? [...prevState, updatedAddress]
@@ -69,6 +101,7 @@ const MyAccount = () => {
             index === addressIndex ? updatedAddress : address
           )
     );
+
   };
 
   const handleUserInforChange = (event) => {
@@ -79,9 +112,8 @@ const MyAccount = () => {
   };
 
   const getAddress = (address) => {
-    const { isDeleted, createdAt, updatedAt, Id, userId, ...newaddress } =
-      address;
-    return newaddress;
+    const { isDeleted, createAt, updateAt, Id, userId, ...gAddress } = address;
+    return gAddress;
   };
 
   const closeEdit = () => {
@@ -129,7 +161,7 @@ const MyAccount = () => {
                                 <label>First Name</label>
                                 <input
                                   type="text"
-                                  value={userInfor.fName}
+                                  value={userInfor.firstName}
                                   onChange={handleUserInforChange}
                                 />
                               </div>
@@ -139,7 +171,7 @@ const MyAccount = () => {
                                 <label>Middle Name</label>
                                 <input
                                   type="text"
-                                  value={userInfor.mName}
+                                  value={userInfor.middleName}
                                   onChange={handleUserInforChange}
                                 />
                               </div>
@@ -149,7 +181,7 @@ const MyAccount = () => {
                                 <label>Last Name</label>
                                 <input
                                   type="text"
-                                  value={userInfor.lName}
+                                  value={userInfor.lastName}
                                   onChange={handleUserInforChange}
                                 />
                               </div>

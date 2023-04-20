@@ -34,7 +34,7 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (
-      error.response.status === 401 &&
+      (error.response.status === 401 || error.response.status === 500) &&
       originalRequest &&
       !originalRequest._retry
     ) {
@@ -48,13 +48,12 @@ axiosClient.interceptors.response.use(
 
         if (response.accessToken) {
           localStorage.setItem('accessToken', response.accessToken);
-          axios.defaults.headers.common['Authorization'] =
-            'Bearer ' + response.data.accessToken;
+          axiosClient.defaults.headers.common.Authorization = `Bearer ${response.accessToken}`;
           return axiosClient(originalRequest);
         }
       } catch (error) {
         // Handle errors
-        throw error;
+        console.log(error);
       }
     }
 

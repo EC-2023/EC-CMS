@@ -2,9 +2,9 @@ import axiosClient from './axiosClient';
 
 
 const UserAPI = {
-  getAll : (params) => {
-    const url = 'products';
-    return axiosClient.get(url, {params});
+  getUserInfor : (params) => {
+    const url = '/users/my-profile';
+    return axiosClient.get(url);
   },
 
   login : (params) =>{
