@@ -33,7 +33,6 @@ export const updateUserLevel = createAsyncThunk('userlevels/updateUserLevel', as
       'Content-Type': 'application/json',
     },
   });
-
   return response;
 });
 

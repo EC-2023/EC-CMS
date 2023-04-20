@@ -7,6 +7,7 @@ const axiosClient = axios.create({
   headers: {
     'content-type': 'application/json',
   },
+  timeout: 30000,
   paramsSerializer: {
     serialize: queryString.stringify, // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
   },

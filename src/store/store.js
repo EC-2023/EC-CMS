@@ -16,7 +16,8 @@ import cartReducer from './slices/cart-slice';
 import compareReducer from './slices/compare-slice';
 import wishlistReducer from './slices/wishlist-slice';
 import userLevelsReducer from './slices/user-levels-slice';
-
+import storeLevelsReducer from './slices/store-levels-slice';
+import deliveriesReducer from './slices/deliveries-slice';
 const persistConfig = {
   key: 'flone',
   version: 1.1,
@@ -30,6 +31,8 @@ export const rootReducer = combineReducers({
   compare: compareReducer,
   wishlist: wishlistReducer,
   userLevels: userLevelsReducer,
+  storeLevels: storeLevelsReducer,
+  deliveries: deliveriesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
