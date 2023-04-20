@@ -8,14 +8,12 @@ import { Breadcrumb } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { debounce } from 'lodash';
 import {
-  deleteUserLevel,
   fetchUserLevels,
   updateUserLevel,
   selectUserLevels,
   addUserLevel,
-  selectUserLevelById,
 } from '../../../store/slices/user-levels-slice';
-import { useCallback } from 'react';
+import cogoToast from 'cogo-toast';
 
 function UserLevels() {
   const dispatch = useDispatch();
@@ -27,7 +25,7 @@ function UserLevels() {
   const [selectedUserLevel, setSelectedUserLevel] = React.useState(null);
   const [searchText, setSearchText] = React.useState('');
   const [currentPage, setCurrentPage] = React.useState(0);
-  const [size, setSize] = React.useState(5);
+  const [size] = React.useState(5);
   const columns = React.useMemo(
     () => [
       {
@@ -79,11 +77,17 @@ function UserLevels() {
                 Edit
               </Dropdown.Item>
               {isActive ? (
-                <Dropdown.Item style={{ color: 'red' }} onClick={() => handleDeleteClick(row.original.Id)}>
+                <Dropdown.Item
+                  style={{ color: 'red' }}
+                  onClick={() => handleUpdateStatus(false, row.original.Id)}
+                >
                   Disable
                 </Dropdown.Item>
               ) : (
-                <Dropdown.Item style={{ color: 'green' }} onClick={() => handleDeleteClick(row.original.Id)}>
+                <Dropdown.Item
+                  style={{ color: 'green' }}
+                  onClick={() => handleUpdateStatus(true, row.original.Id)}
+                >
                   Enable
                 </Dropdown.Item>
               )}
@@ -93,12 +97,10 @@ function UserLevels() {
         id: 'action',
       },
     ],
-    [handleEditClick, userLevels]
+    [userLevels]
   );
-  // useEffect(() => {
-  //   dispatch(fetchUserLevels({ currentPage, pageSize: size }));
-  // }, [currentPage, dispatch, size]);
-  const { getTableProps, getTableBodyProps, headerGroups, page, pageOptions, state, prepareRow } = useTable(
+
+  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
       data: userLevels.data,
@@ -112,10 +114,11 @@ function UserLevels() {
 
   useEffect(() => {
     dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText }));
-  }, [currentPage, dispatch, searchText, size]);
+  }, [currentPage]);
 
   const debouncedFetchUserLevels = debounce((searchText) => {
-    dispatch(fetchUserLevels(page, size, searchText));
+    dispatch(fetchUserLevels({ currentPage, pageSize: size, searchText }));
+    console.log(userLevels.pagination);
   }, 500);
 
   const handleSearchChange = (event) => {
@@ -138,7 +141,25 @@ function UserLevels() {
     const minPoint = parseInt(event.target.elements.minPoint.value);
     const discount = parseFloat(event.target.elements.discount.value);
     const newUserLevel = { name, minPoint, discount };
-    dispatch(addUserLevel(newUserLevel));
+    cogoToast
+      .loading('Adding new user level...', {
+        position: 'bottom-right',
+      })
+      .then(() => dispatch(addUserLevel(newUserLevel)))
+      .then((res) => {
+        if (!res.error)
+          cogoToast.success('Successfully add new user level', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
     setShowAddModal(false);
   };
   const handleEditClick = React.useCallback(
@@ -160,23 +181,83 @@ function UserLevels() {
     const minPoint = parseInt(event.target.elements.minPoint.value);
     const discount = parseFloat(event.target.elements.discount.value);
     const updatedUserLevel = { ...selectedUserLevel, name, minPoint, discount };
-    dispatch(updateUserLevel(updatedUserLevel));
+    cogoToast
+      .loading('Updating user level...', {
+        position: 'bottom-right',
+      })
+      .then(() => {
+        return dispatch(updateUserLevel(updatedUserLevel));
+      })
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully edit user level', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
     setShowEditModal(false);
   };
 
-  const handleDeleteClick = (userLevelId) => {
-    const userLevel = userLevels.find((userLevel) => userLevel.id === userLevelId);
+  const handleUpdateStatus = (stauts, userLevelId) => {
+    const userLevel = userLevels.data.find((userLevel) => userLevel.Id === userLevelId);
     setSelectedUserLevel(userLevel);
-    setShowDeleteModal(true);
+    if (stauts === true) {
+      cogoToast
+        .loading('Enabling user level...', {
+          position: 'bottom-right',
+        })
+        .then(() => dispatch(updateUserLevel({ Id: selectedUserLevel.Id, isDeleted: false })))
+        .then((res) => {
+          if (!res.error)
+            cogoToast.info('Successfully edit user level', {
+              position: 'bottom-right',
+              hideAfter: 3,
+              onClick: () => console.log('Clicked'),
+            });
+          else
+            cogoToast.error(res.error.message, {
+              position: 'bottom-right',
+              hideAfter: 3,
+              onClick: () => console.log('Clicked'),
+            });
+        });
+    } else {
+      setShowDeleteModal(true);
+    }
   };
 
-  const handleDeleteClose = () => {
+  const handleUpdateStatusSubmit = (event) => {
+    event.preventDefault();
+    cogoToast
+      .loading('Disabling user level...', {
+        position: 'bottom-right',
+      })
+      .then(() => dispatch(updateUserLevel({ Id: selectedUserLevel.Id, isDeleted: true })))
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully disable user level', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
     setShowDeleteModal(false);
   };
 
-  const handleDeleteSubmit = (event) => {
-    event.preventDefault();
-    dispatch(deleteUserLevel(selectedUserLevel.id));
+  const handleDeleteClose = () => {
     setShowDeleteModal(false);
   };
 
@@ -322,17 +403,17 @@ function UserLevels() {
         </Form>
       </Modal>
       <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-        <Form onSubmit={handleDeleteSubmit}>
+        <Form onSubmit={handleUpdateStatusSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Delete User level</Modal.Title>
+            <Modal.Title>Disable User level</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Are you sure you want to delete the user level?</Modal.Body>
+          <Modal.Body>Are you sure you want to disable the user level?</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleDeleteClose}>
               Cancel
             </Button>
             <Button variant="danger" type="submit">
-              Delete
+              Disable
             </Button>
           </Modal.Footer>
         </Form>
@@ -341,4 +422,4 @@ function UserLevels() {
   );
 }
 
-export default UserLevels;
+export default React.memo(UserLevels);
