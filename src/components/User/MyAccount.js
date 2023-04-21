@@ -17,8 +17,8 @@ const MyAccount = () => {
     const getUserAddressList = async () => {
       try {
         const response = await UserAddressAPI.getUserAddressList();
-        console.log(response.firstName);
-        setAddressUser(response);
+        console.log(response.data);
+        setAddressUser(response.data);
       } catch (error) {
         console.log("faild", error);
       }
@@ -39,7 +39,7 @@ const MyAccount = () => {
       }
     }
 
-    getUserInfor();
+    // getUserInfor();
     getUserAddressList();
   },[])
 
