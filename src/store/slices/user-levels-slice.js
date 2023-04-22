@@ -67,7 +67,6 @@ export const userLevelsSlice = createSlice({
       .addCase(updateUserLevel.fulfilled, (state, action) => {
         const index = state.data.findIndex((userLevel) => userLevel.Id === action.payload.Id);
         state.data[index] = action.payload;
-        console.log(state.data[index]);
       });
   },
 });

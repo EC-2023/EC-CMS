@@ -16,48 +16,43 @@ const ProductGrid = ({
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
   const { wishlistItems } = useSelector((state) => state.wishlist);
+  const { compareItems } = useSelector((state) => state.compare);
+  const prods = getProducts(products, category, type, limit)  
   useEffect(() => {
     const fetchProductList = async () => {
       try {
         const params = {size : 8, page : 0, orderBy : '-createAt'};
         const response = await productAPI.getNewProduct(params);
-        console.log(response.data.data);
-        dispatch(setProducts(response.data.data));
-        setIsLoading(false);
+        console.log(response);
+        dispatch(setProducts(response.data));
       } catch (error) {
         console.log("faild", error);
       }
     }
 
-    fetchProductList();
-  }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flone-preloader-wrapper">
-        <div className="flone-preloader">
-          <span></span>
-          <span></span>
-        </div>
-      </div>
-    );
-  }
+  //   fetchProductList();
+  // }, []);
 
   return (
     <Fragment>
-      { products && products.length > 0 && products?.map(product => {
+      {prods?.map(product => {
         return (
-          <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.Id}>
+          <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.id}>
             <ProductGridSingle
               spaceBottomClass={spaceBottomClass}
               product={product}
               currency={currency}
               cartItem={
-                cartItems.find((cartItem) => cartItem.Id === product.Id)
+                cartItems.find((cartItem) => cartItem.id === product.id)
               }
               wishlistItem={
                 wishlistItems.find(
-                  (wishlistItem) => wishlistItem.Id === product.Id
+                  (wishlistItem) => wishlistItem.id === product.id
+                )
+              }
+              compareItem={
+                compareItems.find(
+                  (compareItem) => compareItem.id === product.id
                 )
               }
             />
@@ -72,9 +67,7 @@ ProductGrid.propTypes = {
   spaceBottomClass: PropTypes.string,
   category: PropTypes.string,
   type: PropTypes.string,
-  limit: PropTypes.number
+  limit: PropTypes.number,
 };
-
-
 
 export default ProductGrid;

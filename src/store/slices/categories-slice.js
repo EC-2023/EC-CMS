@@ -106,7 +106,6 @@ export const categoriesSlice = createSlice({
       .addCase(updateCategory.fulfilled, (state, action) => {
         const index = state.data.findIndex((category) => category.Id === action.payload.Id);
         state.data[index] = action.payload;
-        console.log(state.data[index]);
       })
       .addCase(fetchAllCategories.fulfilled, (state, action) => {
         state.list = action.payload;

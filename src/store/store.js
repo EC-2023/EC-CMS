@@ -20,6 +20,9 @@ import storeLevelsReducer from './slices/store-levels-slice';
 import deliveriesReducer from './slices/deliveries-slice';
 import commissionsReducer from './slices/commissions-slice';
 import categoriesReducer from './slices/categories-slice';
+import usersReducer from './slices/users-slice';
+import storesReducer from './slices/stores-slice';
+import statisticReducer from './slices/statistics-slice';
 const persistConfig = {
   key: 'flone',
   version: 1.1,
@@ -37,6 +40,9 @@ export const rootReducer = combineReducers({
   deliveries: deliveriesReducer,
   commissions: commissionsReducer,
   categories: categoriesReducer,
+  users: usersReducer,
+  stores: storesReducer,
+  statistics: statisticReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

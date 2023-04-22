@@ -1,285 +1,113 @@
 import React from 'react';
-import { useTable, useSortBy, usePagination } from 'react-table';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ReactPaginate from 'react-paginate';
-import { Button, Modal, Form } from 'react-bootstrap';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
-import { Breadcrumb } from 'react-bootstrap';
+import { Breadcrumb, Dropdown, Tooltip } from 'react-bootstrap';
+import './Home.css';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import DatePicker from 'react-datepicker';
+import { fetchRevenue, fetchTotal, selectStatistics } from '../../../store/slices/statistics-slice';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useDispatch, useSelector } from 'react-redux';
 function Home() {
-    const [products, setProducts] = React.useState([
-        {
-            id: 1,
-            name: 'Product 1',
-            price: 10,
-        },
-        {
-            id: 2,
-            name: 'Product 2',
-            price: 20,
-        },
-        // Add more rows as needed
-    ]);
+  const dispatch = useDispatch();
+  const statistics = useSelector(selectStatistics);
+  const [chartData, setChartData] = useState({});
+  const sampleData = [
+    { time: '2023-01', revenue: 4500 },
+    { time: '2023-02', revenue: 6000 },
+    { time: '2023-03', revenue: 5000 },
+    { time: '2023-04', revenue: 7000 },
+    { time: '2023-05', revenue: 8000 },
+    { time: '2023-06', revenue: 6500 },
+    { time: '2023-07', revenue: 9000 },
+    { time: '2023-08', revenue: 7500 },
+    { time: '2023-09', revenue: 8500 },
+    { time: '2023-10', revenue: 9500 },
+    { time: '2023-11', revenue: 10000 },
+    { time: '2023-12', revenue: 11000 },
+  ];
 
-    const [showAddModal, setShowAddModal] = React.useState(false);
-    const [showEditModal, setShowEditModal] = React.useState(false);
-    const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-    const [selectedProduct, setSelectedProduct] = React.useState(null);
-    const [searchText, setSearchText] = React.useState('');
+  const [timeRange, setTimeRange] = useState(1);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-    const columns = React.useMemo(
-        () => [
-            {
-                Header: 'ID',
-                accessor: 'id',
-            },
-            {
-                Header: 'Name',
-                accessor: 'name',
-            },
-            {
-                Header: 'Price',
-                accessor: 'price',
-                sortType: 'basic',
-            },
-            {
-                Header: 'Action',
-                Cell: ({ row }) => (
-                    <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>} >
-                        <Dropdown.Item onClick={() => handleEditClick(row.original.id)}>Edit</Dropdown.Item>
-                        <Dropdown.Item onClick={() => handleDeleteClick(row.original.id)}>Delete</Dropdown.Item>
-                    </DropdownButton>
-                ),
-                id: 'action',
-            },
-        ],
-        []
-    );
+  useEffect(() => {
+    dispatch(fetchTotal());
+    dispatch(fetchRevenue({ dateStr: selectedDate.getTime(), option: timeRange }));
+  }, []);
 
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        nextPage,
-        previousPage,
-        canPreviousPage,
-        pageOptions,
-        state,
-        prepareRow,
-    } = useTable(
-        { columns, data: products },
-        useSortBy,
-        usePagination
-    );
+  const handleTimeRangeChange = (event) => {
+    console.log(event);
 
-    const handleSearchChange = (event) => {
-        setSearchText(event.target.value);
-    };
+    setTimeRange(event);
+  };
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+  const timeRanges = [
+    { key: 0, value: 'week' },
+    { key: 1, value: 'month' },
+    { key: 2, value: 'year' },
+  ];
 
-    const filteredProducts = React.useMemo(() => {
-        return products.filter((product) =>
-            product.name.toLowerCase().includes(searchText.toLowerCase())
-        );
-    }, [products, searchText]);
+  return (
+    <div className="content-wrapper">
+      <h1 className="title main-title">Home</h1>
+      <div className="total-count-container">
+        <div className="total-count-card total-users">
+          <h3>Total Users</h3>
+          <p>{statistics.total?.totalUser}</p>
+        </div>
+        <div className="total-count-card total-stores">
+          <h3>Total Stores</h3>
+          <p>{statistics.total?.totalStore}</p>
+        </div>
+        <div className="total-count-card total-products">
+          <h3>Total Products</h3>
+          <p>{statistics.total?.totalProduct}</p>
+        </div>
+      </div>
 
-    const handleAddClick = () => {
-        setShowAddModal(true);
-    };
-
-    const handleAddClose = () => {
-        setShowAddModal(false);
-    };
-
-    const handleAddSubmit = (event) => {
-        event.preventDefault();
-        const id = products.length + 1;
-        const name = event.target.elements.name.value;
-        const price = parseInt(event.target.elements.price.value);
-        const newProduct = { id, name, price };
-        setProducts([...products, newProduct]);
-        setShowAddModal(false);
-    };
-
-    const handleEditClick = (productId) => {
-        const product = products.find((product) => product.id === productId);
-        setSelectedProduct(product);
-        setShowEditModal(true);
-    };
-
-    const handleEditClose = () => {
-        setShowEditModal(false);
-    };
-
-    const handleEditSubmit = (event) => {
-        event.preventDefault();
-        const name = event.target.elements.name.value;
-        const price = parseInt(event.target.elements.price.value);
-        const updatedProduct = { ...selectedProduct, name, price };
-        const updatedProducts = products.map((product) =>
-            product.id === selectedProduct.id ? updatedProduct : product
-        );
-        setProducts(updatedProducts);
-        setShowEditModal(false);
-    };
-
-    const handleDeleteClick = (productId) => {
-        const product = products.find((product) => product.id === productId);
-        setSelectedProduct(product);
-        setShowDeleteModal(true);
-    };
-
-    const handleDeleteClose = () => {
-        setShowDeleteModal(false);
-    };
-
-    const handleDeleteSubmit = (event) => {
-        event.preventDefault();
-        const updatedProducts = products.filter(
-            (product) => product.id !== selectedProduct.id
-        );
-        setProducts(updatedProducts);
-        setShowDeleteModal(false);
-    };
-
-    return (
-        <div className="content-wrapper">
-            <Breadcrumb>
-                <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
-                <Breadcrumb.Item active>Products</Breadcrumb.Item>
-            </Breadcrumb>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="search-box">
-                    <i className="fas fa-search"></i>
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={searchText}
-                        onChange={handleSearchChange}
-                    />
-                </div>
-                <button className="btn btn-primary" onClick={handleAddClick}>
-                    Add Product
-                </button>
+      <div className="revenue-chart-container">
+        <div>
+          <h2 className="title">Doanh thu</h2>
+          <div className="revenue-dropdown">
+            <Dropdown onSelect={handleTimeRangeChange}>
+              <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
+                {timeRange}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {timeRanges.map((range, index) => (
+                  <Dropdown.Item key={index} eventKey={range.key}>
+                    {range.value}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+            <div className="date-picker-container">
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="dd/MM/yyyy"
+                className="form-control"
+              />
             </div>
-            <table {...getTableProps()} className="table table-bordered table-striped">
-                <thead>
-                    {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map((column) => (
-                                <th
-                                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                                    className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${column.id === 'action' ? 'action-column' : ''}`}
-                                >
-                                    {column.render('Header')}
-                                </th>
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {page.map((row) => {
-                        prepareRow(row);
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map((cell) => {
-                                    return (
-                                        <td {...cell.getCellProps()} className={cell.column.id === 'action' ? 'action-column' : ''}>{cell.render('Cell')}</td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <div className="pagination-wrapper">
-                <ReactPaginate
-                    containerClassName="pagination"
-                    pageCount={pageOptions.length}
-                    marginPagesDisplayed={2}
-                    pageRangeDisplayed={5}
-                    onPageChange={({ selected }) => state.gotoPage(selected)}
-                    activeClassName="active"
-                    previousClassName="page-item"
-                    nextClassName="page-item"
-                    pageClassName="page-item"
-                    breakClassName="page-item"
-                    pageLinkClassName="page-link"
-                    previousLinkClassName="page-link"
-                    nextLinkClassName="page-link"
-                    breakLinkClassName="page-link"
-                    disableInitialCallback={true}
-                />
-            </div>
-            <Modal show={showAddModal} onHide={handleAddClose} centered>
-                <Form onSubmit={handleAddSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group controlId="name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" placeholder="Enter name" />
-                        </Form.Group>
-                        <Form.Group controlId="price">
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" placeholder="Enter price" />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleAddClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Add
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-            <Modal show={showEditModal} onHide={handleEditClose} centered>
-                <Form onSubmit={handleEditSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Edit Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <Form.Group controlId="name">
-                            <Form.Label>Name</Form.Label>
-                            <Form.Control type="text" defaultValue={selectedProduct?.name} />
-                        </Form.Group>
-                        <Form.Group controlId="price">
-                            <Form.Label>Price</Form.Label>
-                            <Form.Control type="number" defaultValue={selectedProduct?.price} />
-                        </Form.Group>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleEditClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="primary" type="submit">
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-            <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-                <Form onSubmit={handleDeleteSubmit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Delete Product</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        Are you sure you want to delete the product?
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleDeleteClose}>
-                            Cancel
-                        </Button>
-                        <Button variant="danger" type="submit">
-                            Delete
-                        </Button>
-                    </Modal.Footer>
-                </Form>
-            </Modal>
-        </div >
-    );
+          </div>
+
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={sampleData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="time" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Home;

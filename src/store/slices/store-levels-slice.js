@@ -67,7 +67,6 @@ export const storeLevelsSlice = createSlice({
       .addCase(updateStoreLevel.fulfilled, (state, action) => {
         const index = state.data.findIndex((storeLevel) => storeLevel.Id === action.payload.Id);
         state.data[index] = action.payload;
-        console.log(state.data[index]);
       });
   },
 });
