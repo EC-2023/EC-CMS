@@ -1,75 +1,41 @@
-import { Fragment,useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { useDispatch,useSelector } from "react-redux";
-import { getProducts } from "../../helpers/product";
-import ProductGridSingle from "../../components/product/ProductGridSingle";
-import productAPI from "../../api/ProductAPI"
-import {setProducts} from "../../store/slices/product-slice"
-const ProductGrid = ({
-  spaceBottomClass,
-  category,
-  type,
-  limit
-}) => {
+import { Fragment, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getProducts } from '../../helpers/product';
+import ProductGridSingle from '../../components/product/ProductGridSingle';
+import productAPI from '../../api/ProductAPI';
+// import {setProducts} from "../../store/slices/product-slice"
+const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.product);
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
   const { wishlistItems } = useSelector((state) => state.wishlist);
   const { compareItems } = useSelector((state) => state.compare);
-  const prods = getProducts(products, category, type, limit)  
-  useEffect(() => {
-    const fetchProductList = async () => {
-      try {
-        const params = {size : 8, page : 0, orderBy : '-createAt'};
-        const response = await productAPI.getNewProduct(params);
-        console.log(response);
-        dispatch(setProducts(response.data));
-      } catch (error) {
-        console.log("faild", error);
-      }
-    }
+  const prods = getProducts(products, category, type, limit);
+  // useEffect(() => {
+  //   const fetchProductList = async () => {
+  //     try {
+  //       const params = {size : 8, page : 0, orderBy : '-createAt'};
+  //       const response = await productAPI.getNewProduct(params);
+  //       console.log(response);
+  //       dispatch(setProducts(response.data));
+  //     } catch (error) {
+  //       console.log("faild", error);
+  //     }
+  //   }
 
-    fetchProductList();
-  }, []);
+  //   fetchProductList();
+  // }, []);
 
-  return (
-    <Fragment>
-      {prods?.map(product => {
-        return (
-          <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.id}>
-            <ProductGridSingle
-              spaceBottomClass={spaceBottomClass}
-              product={product}
-              currency={currency}
-              cartItem={
-                cartItems.find((cartItem) => cartItem.id === product.id)
-              }
-              wishlistItem={
-                wishlistItems.find(
-                  (wishlistItem) => wishlistItem.id === product.id
-                )
-              }
-              compareItem={
-                compareItems.find(
-                  (compareItem) => compareItem.id === product.id
-                )
-              }
-            />
-          </div>
-        );
-      })}
-    </Fragment>
-  );
+  return <Fragment></Fragment>;
 };
 
 ProductGrid.propTypes = {
   spaceBottomClass: PropTypes.string,
   category: PropTypes.string,
   type: PropTypes.string,
-  limit: PropTypes.number
+  limit: PropTypes.number,
 };
-
-
 
 export default ProductGrid;

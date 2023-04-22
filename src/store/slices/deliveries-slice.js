@@ -67,7 +67,6 @@ export const deliveriesSlice = createSlice({
       .addCase(updateDelivery.fulfilled, (state, action) => {
         const index = state.data.findIndex((delivery) => delivery.Id === action.payload.Id);
         state.data[index] = action.payload;
-        console.log(state.data[index]);
       });
   },
 });

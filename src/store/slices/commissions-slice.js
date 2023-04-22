@@ -67,7 +67,6 @@ export const commissionsSlice = createSlice({
       .addCase(updateCommission.fulfilled, (state, action) => {
         const index = state.data.findIndex((commission) => commission.Id === action.payload.Id);
         state.data[index] = action.payload;
-        console.log(state.data[index]);
       });
   },
 });

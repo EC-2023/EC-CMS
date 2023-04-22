@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom
 //admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
 const UserLevels = lazy(() => import('./components/Admin/UserLevels/UserLevels'));
+const VendorLayout = lazy(() => import('./components/Vendor/VendorLayout'));
 // home pages
 const HomeFashion = lazy(() => import('./pages/home/HomeFashion'));
 const HomeFashionTwo = lazy(() => import('./pages/home/HomeFashionTwo'));
@@ -194,6 +195,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
             <Route path={process.env.PUBLIC_URL + '/admin/userlevels'} element={<UserLevels />} />
+            <Route path={process.env.PUBLIC_URL + '/vendor/home'} element={<VendorLayout />} />
 
             <Route path="*" element={<NotFound />} />
           </Routes>
