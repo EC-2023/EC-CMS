@@ -2,16 +2,16 @@ import axiosClient from './axiosClient';
 
 
 const UserAddress = {
-  getUserAddressList : () =>{
-    const url = '/useraddresss/my-address';
+  getMyUserAddressList : () =>{
+    const url = '/user-addresses/my-address';
     return axiosClient.get(url);
   },
-  createUserAddress : (params) =>{
-    const url = '/useraddresss/my-address/create';
+  createMyUserAddress : (params) =>{
+    const url = '/user-addresses/my-address/create';
     return axiosClient.post(url,{...params})
   },
-  deleteUserAddress : (params) =>{
-    const url = '/useraddresss/';
+  deleteMyUserAddress : (params) =>{
+    const url = '/user-addresses/my-address/';
     return axiosClient.delete(url + params)
   }
 }

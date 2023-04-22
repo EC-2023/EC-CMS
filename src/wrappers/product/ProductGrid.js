@@ -1,7 +1,6 @@
 import { Fragment,useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { useDispatch,useSelector } from "react-redux";
-import { getProducts } from "../../helpers/product";
 import ProductGridSingle from "../../components/product/ProductGridSingle";
 import productAPI from "../../api/ProductAPI"
 import {setProducts} from "../../store/slices/product-slice"
@@ -19,10 +18,10 @@ const ProductGrid = ({
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const params = {size : 7, page : 0, orderBy : '-createAt'};
+        const params = {size : 8, page : 0, orderBy : '-createAt'};
         const response = await productAPI.getNewProduct(params);
         console.log(response);
-        dispatch(setProducts(response.data));
+        dispatch(setProducts(response.data.data));
       } catch (error) {
         console.log("faild", error);
       }

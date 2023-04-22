@@ -69,8 +69,8 @@ const LoginRegister = () => {
           theme: "light",
         }
       );
-      localStorage.setItem('accessToken', response.accessToken);
-      localStorage.setItem('refreshToken', response.refreshToken);
+      localStorage.setItem('accessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
             setTimeout(() => {
         navigate("/my-account");
       }, 2000);

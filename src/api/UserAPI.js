@@ -2,9 +2,14 @@ import axiosClient from './axiosClient';
 
 
 const UserAPI = {
-  getUserInfor : (params) => {
+  getMyUserInfor : (params) => {
     const url = '/users/my-profile';
     return axiosClient.get(url);
+  },
+
+  updateMyUserInfor : (params) => {
+    const url = '/users/my-profile';
+    return axiosClient.patch(url, {params});
   },
 
   login : (params) =>{
