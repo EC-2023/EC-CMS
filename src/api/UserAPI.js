@@ -9,7 +9,14 @@ const UserAPI = {
 
   updateMyUserInfor : (params) => {
     const url = '/users/my-profile';
-    return axiosClient.patch(url, {params});
+    return axiosClient.patch(url, 
+    {firstName : params.firstName,
+    lastName: params.lastName,
+    middleName: params.middleName,
+    phoneNumber: params.phoneNumber,
+    avatar: "",
+    idCard: "",
+    email: params.email});
   },
 
   login : (params) =>{

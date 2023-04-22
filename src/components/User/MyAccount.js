@@ -81,6 +81,7 @@ const MyAccount = () => {
   const handleDeleteClick = async (index) => {
     try{
       const response = await UserAddressAPI.deleteMyUserAddress(addressUser[index].Id);
+      setAddressUser((prevState) => prevState.filter((address, i) => i !== index));
       console.log(response);
     }
     catch(error){
