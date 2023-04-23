@@ -23,6 +23,14 @@ function FormOverlay(props) {
     props.closeEdit()
   };
 
+  const handleSaveEditClick = () => {
+    // TODO: handle saving the form data
+    console.log("update user");
+    props.handleAddressChange(props.index,childState);
+    props.closeEdit()
+    props.handleUpdateMyUserAddress();
+  };
+
   const renderInputs = () => {
     return Object.keys(childState).map((key) => (
       <label key={key}>
@@ -43,7 +51,7 @@ function FormOverlay(props) {
         <form className="form-overlay">
           {renderInputs()}
           <br/>
-          <button type="button" className="save" onClick={handleSaveClick}>
+          <button type="button" className="save" onClick={  props.isEditing ? handleSaveEditClick : handleSaveClick}>
             Save
           </button>
           <button type="button" onClick={handleCancelClick}>

@@ -4,7 +4,7 @@ import Accordion from "react-bootstrap/Accordion";
 import SEO from "../seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import FormOverlay from "../other/form_overlay";
+import EditAdressOverlay from "../other/editAdress_overlay";
 import "./MyAccount.scss";
 import UploadImage from "./UploadImage";
 import UserAddressAPI from "../../api/UserAddressAPI";
@@ -25,7 +25,7 @@ const MyAccount = () => {
         console.log("faild", error);
         setIsLoading(false);
       }
-    }
+    };
 
     const getUserInfor = async () => {
       try {
@@ -36,17 +36,16 @@ const MyAccount = () => {
           firstName: response.data.firstName,
           lastName: response.data.lastName,
           middleName: response.data.middleName,
-          phoneNumber: response.data.phoneNumber
+          phoneNumber: response.data.phoneNumber,
         });
       } catch (error) {
         console.log("faild", error);
       }
-    }
+    };
 
     getUserInfor();
     getUserAddressList();
-    
-  },[])
+  }, []);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isNew, setIsNew] = useState(false);
@@ -79,35 +78,43 @@ const MyAccount = () => {
   };
 
   const handleDeleteClick = async (index) => {
-    try{
-      const response = await UserAddressAPI.deleteMyUserAddress(addressUser[index].Id);
-      setAddressUser((prevState) => prevState.filter((address, i) => i !== index));
+    try {
+      const response = await UserAddressAPI.deleteMyUserAddress(
+        addressUser[index].Id
+      );
+      setAddressUser((prevState) =>
+        prevState.filter((address, i) => i !== index)
+      );
       console.log(response);
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-      console.log(error)
-    }
-    // setAddressUser((prevState) =>
-    //   prevState.filter((address, i) => i !== index)
-    // );
   };
 
-  const handleUpdateAdress = async()=>{
-    try{
+  const handleUpdateMyUserAddress = async (index) => {
+    try {
+      const response = await UserAddressAPI.updateMyUserAddress(
+        addressUser[index].Id
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateMyProfile = async () => {
+    try {
       const response = await UserAPI.updateMyUserInfor(userInfor);
       console.log(response.data);
+    } catch (error) {
+      console.log(error);
     }
-    catch(error){
-      console.log(error)
-    }
-  }
+  };
   const handleAddressChange = async (addressIndex, updatedAddress) => {
-    try{
+    try {
       const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
       console.log(response);
-    }
-    catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
     setAddressUser((prevState) =>
       addressIndex === null
@@ -116,7 +123,6 @@ const MyAccount = () => {
             index === addressIndex ? updatedAddress : address
           )
     );
-
   };
 
   const handleUserInforChange = (event) => {
@@ -187,7 +193,7 @@ const MyAccount = () => {
                               <div className="billing-info">
                                 <label>First Name</label>
                                 <input
-                                name="firstName"
+                                  name="firstName"
                                   type="text"
                                   value={userInfor.firstName}
                                   onChange={handleUserInforChange}
@@ -198,7 +204,7 @@ const MyAccount = () => {
                               <div className="billing-info">
                                 <label>Middle Name</label>
                                 <input
-                                name="middleName"
+                                  name="middleName"
                                   type="text"
                                   value={userInfor.middleName}
                                   onChange={handleUserInforChange}
@@ -209,7 +215,7 @@ const MyAccount = () => {
                               <div className="billing-info">
                                 <label>Last Name</label>
                                 <input
-                                name="lastName"
+                                  name="lastName"
                                   type="text"
                                   value={userInfor.lastName}
                                   onChange={handleUserInforChange}
@@ -220,7 +226,7 @@ const MyAccount = () => {
                               <div className="billing-info">
                                 <label>Email Address</label>
                                 <input
-                                name="email"
+                                  name="email"
                                   type="email"
                                   value={userInfor.email}
                                   onChange={handleUserInforChange}
@@ -231,7 +237,7 @@ const MyAccount = () => {
                               <div className="billing-info">
                                 <label>Telephone</label>
                                 <input
-                                name="phoneNumber"
+                                  name="phoneNumber"
                                   type="text"
                                   value={userInfor.phoneNumber}
                                   onChange={handleUserInforChange}
@@ -241,7 +247,12 @@ const MyAccount = () => {
                           </div>
                           <div className="billing-back-btn">
                             <div className="billing-btn">
-                              <button type="submit" onClick={handleUpdateAdress}>Lưu</button>
+                              <button
+                                type="submit"
+                                onClick={handleUpdateMyProfile}
+                              >
+                                Lưu
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -302,14 +313,14 @@ const MyAccount = () => {
                                 <div className="row" key={index}>
                                   <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
                                     <div className="entries-info text-center">
-                                      <p>City: {address.city}</p>
-                                      <p>Country: {address.country}</p>
-                                      <p>District: {address.district}</p>
                                       <p>
                                         Name recipient: {address.nameRecipient}
                                       </p>
                                       <p>Number phone: {address.numberPhone}</p>
+                                      <p>District: {address.district}</p>
                                       <p>Ward: {address.ward}</p>
+                                      <p>City: {address.city}</p>
+                                      <p>Country: {address.country}</p>
                                       <p>Zipcode: {address.zipcode}</p>
                                     </div>
                                   </div>
@@ -324,12 +335,16 @@ const MyAccount = () => {
                                         </button>
                                         {isEditing &&
                                           editingAddressIndex === index && (
-                                            <FormOverlay
+                                            <editAdd
                                               index={index}
+                                              isEditing={isEditing}
                                               closeEdit={closeEdit}
                                               childState={getAddress(address)}
                                               handleAddressChange={
                                                 handleAddressChange
+                                              }
+                                              handleUpdateMyUserAddress={
+                                                handleUpdateMyUserAddress
                                               }
                                             />
                                           )}
@@ -358,7 +373,7 @@ const MyAccount = () => {
                                 add
                               </button>
                               {isNew && (
-                                <FormOverlay
+                                <EditAdressOverlay
                                   index={null}
                                   closeEdit={closeEdit}
                                   childState={getAddress(newAddress)}

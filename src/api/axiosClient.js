@@ -79,7 +79,7 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if ((error.response.status === 401 || error.response.status === 500) && !originalRequest._retry) {
+    if ((error.response.status === 401) && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem('refreshToken');
@@ -93,8 +93,14 @@ axiosClient.interceptors.response.use(
           originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
           return axiosClient(originalRequest);
         }
+        else{
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+        }
       } catch (error) {
         // Xử lý lỗi
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         console.log("Gửi lại request" + error);
       }      
     }
