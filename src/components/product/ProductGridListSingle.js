@@ -28,7 +28,8 @@ const ProductGridListSingle = ({
 
   return (
     <Fragment>
-        <div className={clsx("product-wrap", spaceBottomClass)}>
+        {product && product.images[0] && (<>
+          <div className={clsx("product-wrap", spaceBottomClass)}>
           <div className="product-img">
             <Link to={process.env.PUBLIC_URL + "/product/" + product.Id}>
               <img
@@ -293,6 +294,7 @@ const ProductGridListSingle = ({
         wishlistItem={wishlistItem}
         compareItem={compareItem}
       />
+        </>)}
     </Fragment>
   );
 };

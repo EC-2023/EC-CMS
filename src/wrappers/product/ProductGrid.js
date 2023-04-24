@@ -10,6 +10,7 @@ const ProductGrid = ({
   type,
   limit
 }) => {
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.product);
   const currency = useSelector((state) => state.currency);
@@ -20,8 +21,9 @@ const ProductGrid = ({
       try {
         const params = {size : 8, page : 0, orderBy : '-createAt'};
         const response = await productAPI.getNewProduct(params);
-        console.log(response);
+        console.log(response.data.data);
         dispatch(setProducts(response.data.data));
+        setIsLoading(false);
       } catch (error) {
         console.log("faild", error);
       }
@@ -30,9 +32,20 @@ const ProductGrid = ({
     fetchProductList();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <Fragment>
-      {products?.map(product => {
+      { products && products.length > 0 && products?.map(product => {
         return (
           <div className="col-xl-3 col-md-6 col-lg-4 col-sm-6" key={product.Id}>
             <ProductGridSingle

@@ -133,7 +133,7 @@ function FormOverlay(props) {
         </label> */}
         <label>
         Tỉnh:
-        <select value={selectedProvince} onChange={handleProvinceChange}>
+        <select value={selectedProvince} onChange={handleProvinceChange} name="">
           <option value="">Select a province</option>
           {provinces.map((province) => (
             <option key={province.id} value={province.code}>
@@ -144,7 +144,7 @@ function FormOverlay(props) {
       </label>
       <label>
         District:
-        <select value={selectedDistrict} onChange={handleDistrictChange}>
+        <select value={selectedDistrict} onChange={handleDistrictChange} name="district">
           <option value="">Select a district</option>
           {districts.map((district) => (
             <option key={district.id} value={district.code}>

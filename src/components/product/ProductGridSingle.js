@@ -7,6 +7,7 @@ import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
 import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
+import { propTypes } from "react-hooks-paginator";
 
 const ProductGridSingle = ({
   product,
@@ -17,11 +18,6 @@ const ProductGridSingle = ({
 }) => {
   const [modalShow, setModalShow] = useState(false);
   const dispatch = useDispatch();
-
-  useEffect(()=>{
-    console.log(product);
-  },[])
-
   // return (
   //   <Fragment>
   //     <div className={clsx("product-wrap", spaceBottomClass)}>
@@ -147,7 +143,8 @@ const ProductGridSingle = ({
 
   return (
     <Fragment>
-      <div className={clsx("product-wrap", spaceBottomClass)}>
+      {product && product.images[0] && (<>
+        <div className={clsx("product-wrap", spaceBottomClass)}>
         <div className="product-img">
           <Link to={process.env.PUBLIC_URL + "/product/" + product.Id}>
             <img
@@ -257,14 +254,16 @@ const ProductGridSingle = ({
           </div>
         </div>
       </div>
+      
       {/* product modal */}
       <ProductModal
         show={modalShow}
         onHide={() => setModalShow(false)}
         product={product}
         currency={currency}
-        wishlistItem={wishlistItem}
-      />
+        wishlistItem={wishlistItem}/>
+      </>)}
+
     </Fragment>
   );
 };
