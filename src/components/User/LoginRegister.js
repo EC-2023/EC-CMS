@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UserAPI from "../../api/UserAPI";
 
+
 const LoginRegister = () => {
   const { pathname } = useLocation();
 
@@ -56,9 +57,9 @@ const LoginRegister = () => {
       const response = await toast.promise(
         UserAPI.login(params),
         {
-          pending: "Logging in...",
-          success: "Logged in successfully!",
-          error: "Login failed. Please try again.",
+          pending: "Đang đăng nhập...",
+          success: "Đăng nhập thành công!",
+          error: "Đăng nhập thất bại.",
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,
@@ -85,7 +86,8 @@ const LoginRegister = () => {
 
   return (
     <Fragment>
-      <ToastContainer />
+          <ToastContainer />
+
       <SEO
         titleTemplate="Login"
         description="Login page of flone react minimalist eCommerce template."

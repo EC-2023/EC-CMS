@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Accordion from "react-bootstrap/Accordion";
 import SEO from "../seo";
@@ -9,6 +9,9 @@ import "./MyAccount.scss";
 import UploadImage from "./UploadImage";
 import UserAddressAPI from "../../api/UserAddressAPI";
 import UserAPI from "../../api/UserAPI";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const MyAccount = () => {
   let { pathname } = useLocation();
@@ -93,9 +96,23 @@ const MyAccount = () => {
 
   const handleUpdateMyUserAddress = async (index) => {
     try {
-      const response = await UserAddressAPI.updateMyUserAddress(
-        addressUser[index].Id
+      const response = await toast.promise(
+        UserAddressAPI.updateMyUserAddress(addressUser[index].Id),
+        {
+          pending: "Đang Lưu...",
+          success: "Lưu thành công!",
+          error: "Lưu thất bại!",
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
       );
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -103,7 +120,22 @@ const MyAccount = () => {
 
   const handleUpdateMyProfile = async () => {
     try {
-      const response = await UserAPI.updateMyUserInfor(userInfor);
+      const response = await toast.promise(
+        UserAPI.updateMyUserInfor(userInfor),
+        {
+          pending: "Đang Lưu...",
+          success: "Lưu thành công!",
+          error: "Lưu thất bại!",
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
       console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -156,6 +188,7 @@ const MyAccount = () => {
 
   return (
     <Fragment>
+      <ToastContainer/>
       <SEO
         titleTemplate="My Account"
         description="My Account page of flone react minimalist eCommerce template."
@@ -168,7 +201,6 @@ const MyAccount = () => {
             { label: "My Account", path: process.env.PUBLIC_URL + pathname },
           ]}
         />
-
         <div className="myaccount-area pb-80 pt-100">
           <div className="container">
             <div className="row">

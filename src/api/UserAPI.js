@@ -12,12 +12,10 @@ const UserAPI = {
     console.log("fName", params.firstName);
     return axiosClient.patch(url, 
     {firstName : params.firstName,
-    // lastName: params.lastName,
-    // middleName: params.middleName,
-    // phoneNumber: params.phoneNumber,
-    // avatar: "",
-    // idCard: "",
-    // email: params.email
+    lastName: params.lastName,
+    middleName: params.middleName,
+    phoneNumber: params.phoneNumber,
+    email: params.email
   });
   },
 
