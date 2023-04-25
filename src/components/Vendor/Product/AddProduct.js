@@ -1,8 +1,14 @@
-import React, { useState } from 'react';
-import './Home.css';
+import React, { useEffect, useState } from 'react';
+import './AddProduct.css';
 import { MdAdd, MdRemove, MdClose, MdAddCircle } from 'react-icons/md';
-
-function Vendor() {
+import { addProduct } from '../../../store/slices/product-vendor-slice';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllCategories, selectCategories } from '../../../store/slices/categories-slice';
+import Select from 'react-select';
+function AddProduct() {
+  const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -13,21 +19,27 @@ function Vendor() {
   const [attributes, setAttributes] = useState([]);
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
+  const [category, setCategory] = React.useState(null);
+  const categories = useSelector(selectCategories);
+  useEffect(() => {
+    dispatch(fetchAllCategories());
+  }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Replace this with an API call to create a new product
-    console.log({
-      name,
-      description,
-      price,
-      promotionalPrice,
-      dateValidPromote,
-      quantity,
-      video,
-      attributes,
-      images,
-    });
+    dispatch(
+      addProduct({
+        name,
+        description,
+        price,
+        promotionalPrice,
+        dateValidPromote,
+        quantity,
+        video,
+        attributes,
+        images,
+        category,
+      })
+    );
   };
 
   const handleImageUpload = (e, index) => {
@@ -94,6 +106,13 @@ function Vendor() {
     newPreviewImages.splice(index, 1);
     setPreviewImages(newPreviewImages);
   };
+  const categoryOptions = categories.list.map((category) => ({
+    value: category.Id,
+    label: category.name,
+  }));
+  const handleCategoryChange = (selectedOption) => {
+    setCategory(selectedOption);
+  };
   return (
     <div className="product-form">
       <h1>Add Product</h1>
@@ -104,40 +123,17 @@ function Vendor() {
               Name:
               <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
             </label>
+
             <label>
-              Description:
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
-            </label>
-            <label>
-              Price:
-              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
-            </label>
-            <label>
-              Promotional Price:
-              <input
-                type="number"
-                value={promotionalPrice}
-                onChange={(e) => setPromotionalPrice(e.target.value)}
+              Category:
+              <Select
+                options={categoryOptions}
+                onChange={handleCategoryChange}
+                value={category}
+                isSearchable
               />
             </label>
-            <label>
-              Date Valid Promote:
-              <input
-                type="date"
-                value={dateValidPromote}
-                onChange={(e) => setDateValidPromote(e.target.value)}
-              />
-            </label>
-            <label>
-              Quantity:
-              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
-            </label>
-            <label>
-              Video:
-              <input type="text" value={video} onChange={(e) => setVideo(e.target.value)} />
-            </label>
-          </div>
-          <div className="column">
+
             <label>Attributes</label>
             {attributes.map((attribute, index) => (
               <div key={index} className="attribute-container ">
@@ -159,7 +155,6 @@ function Vendor() {
                     <MdClose />
                   </button>
                 </div>
-
                 {attribute.values.map((value, valueIndex) => (
                   <div key={valueIndex} className="attribute-value">
                     <label style={{ marginRight: '20px' }}>Value:</label>
@@ -190,6 +185,46 @@ function Vendor() {
             <button type="button" onClick={addAttribute} className="add-attribute-button">
               <MdAdd /> Add Attribute
             </button>
+            <label>
+              Description:
+              <textarea
+                style={{ height: '200px' }}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                required
+              />
+            </label>
+          </div>
+          <div className="column">
+            <label>
+              Price:
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
+            </label>
+            <label>
+              Promotional Price:
+              <input
+                type="number"
+                value={promotionalPrice}
+                onChange={(e) => setPromotionalPrice(e.target.value)}
+              />
+            </label>
+            <label>
+              Date Valid Promote:
+              <input
+                type="date"
+                value={dateValidPromote}
+                onChange={(e) => setDateValidPromote(e.target.value)}
+              />
+            </label>
+            <label>
+              Quantity:
+              <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
+            </label>
+            <label>
+              Video:
+              <input type="text" value={video} onChange={(e) => setVideo(e.target.value)} />
+            </label>
+
             <label>Images</label>
             {previewImages.map((previewImage, index) => (
               <div key={index} className="image-preview">
@@ -219,4 +254,4 @@ function Vendor() {
   );
 }
 
-export default Vendor;
+export default AddProduct;

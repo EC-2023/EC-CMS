@@ -8,7 +8,6 @@ export const fetchStores = createAsyncThunk(
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
     return response;
   }
 );
@@ -16,6 +15,11 @@ export const fetchStores = createAsyncThunk(
 export const deleteStore = createAsyncThunk('stores/deleteStore', async (id) => {
   await axiosClient.delete(`/stores/${id}`);
   return id;
+});
+
+export const getTotalStatisticStore = createAsyncThunk('stores/getTotalStatisticStore', async (id) => {
+  const response = await axiosClient.get(`/statistics/get-total-statistic-store`);
+  return response;
 });
 
 export const getMyProductStore = createAsyncThunk('stores/getTotalProductInStore', async () => {
@@ -27,6 +31,18 @@ export const getOrderByStore = createAsyncThunk('stores/getOrderByStore', async 
   const response = await axiosClient.get(`/stores/getOrderByStore`);
   return response;
 });
+
+export const getOrdersByMyStore = createAsyncThunk(
+  'stores/getOrdersByMyStore',
+  async ({ currentPage, pageSize, searchText, orderBy, otherCondition }) => {
+    const response = await axiosClient.get(
+      `/stores/getOrdersByMyStore?skip=${currentPage * pageSize}&limit=${pageSize}&orderBy=${orderBy}${
+        otherCondition ? otherCondition : ''
+      }&code%7B%7Bsearch%7D%7D=${searchText}`
+    );
+    return response;
+  }
+);
 
 export const updateStore = createAsyncThunk('stores/updateStore', async (store) => {
   const response = await axiosClient.patch(`/stores/${store.Id}`, store, {
@@ -41,6 +57,7 @@ export const updateStore = createAsyncThunk('stores/updateStore', async (store) 
 export const storesSlice = createSlice({
   name: 'stores',
   initialState: {
+    total: {},
     totalProduct: 0,
     data: [],
     pagination: 0,
@@ -49,27 +66,35 @@ export const storesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchStores.pending, (state) => {
-        state.loading = true;
+      .addCase(getOrdersByMyStore.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
+      })
+      .addCase(fetchStores.pending, (state, action) => {
+        state.total = action.payload.data;
+      })
+      .addCase(getTotalStatisticStore.fulfilled, (state, action) => {
+        state.total = action.payload.data;
       })
       .addCase(fetchStores.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchStores.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(deleteStore.fulfilled, (state, action) => {
-        state.data = state.data.filter((store) => store.Id !== action.payload);
+        state.data = state.data.filter((store) => store.Id !== action.payload.data);
       })
       .addCase(updateStore.fulfilled, (state, action) => {
-        const index = state.data.findIndex((store) => store.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       })
       .addCase(getMyProductStore.fulfilled, (state, action) => {
-        state.totalProduct = action.payload;
+        state.totalProduct = action.payload.data;
       });
   },
 });

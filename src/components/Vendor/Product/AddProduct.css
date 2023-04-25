@@ -8,6 +8,7 @@
 
 .product-form label {
   display: block;
+  font-weight: 500;
   margin-bottom: 0.5rem;
 }
 

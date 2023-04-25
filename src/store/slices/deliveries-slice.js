@@ -51,22 +51,22 @@ export const deliveriesSlice = createSlice({
       })
       .addCase(fetchDeliveries.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchDeliveries.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addDelivery.fulfilled, (state, action) => {
-        state.data.push(action.payload);
+        state.data.push(action.payload.data);
       })
       .addCase(deleteDelivery.fulfilled, (state, action) => {
-        state.data = state.data.filter((delivery) => delivery.Id !== action.payload);
+        state.data = state.data.filter((delivery) => delivery.Id !== action.payload.data);
       })
       .addCase(updateDelivery.fulfilled, (state, action) => {
-        const index = state.data.findIndex((delivery) => delivery.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((delivery) => delivery.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       });
   },
 });

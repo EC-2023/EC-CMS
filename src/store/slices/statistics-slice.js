@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axiosClient';
+import { axiosHeadersToObject } from '../../utils/axiosHeadersToObject';
 
 export const fetchTotal = createAsyncThunk('statistics/fetchTotal', async () => {
   const response = await axiosClient.get(`/statistics/get-total`);
@@ -7,6 +8,8 @@ export const fetchTotal = createAsyncThunk('statistics/fetchTotal', async () => 
 });
 export const fetchStatisticStore = createAsyncThunk('statistics/get-statistics-store', async () => {
   const response = await axiosClient.get(`/statistics/get-statistics-store`);
+  console.log(response);
+
   return response;
 });
 export const fetchRevenueStore = createAsyncThunk(
@@ -36,16 +39,18 @@ export const statisticsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchTotal.fulfilled, (state, action) => {
-        state.total = action.payload;
+        const headersObject = axiosHeadersToObject(action.payload.headers); // Convert the headers
+        state.headers = headersObject['content-type'];
+        state.total = action.payload.data;
       })
       .addCase(fetchRevenue.fulfilled, (state, action) => {
-        state.revenue = action.payload;
+        state.revenue = action.payload.data;
       })
       .addCase(fetchRevenueStore.fulfilled, (state, action) => {
-        state.revenue = action.payload;
+        state.revenue = action.payload.data;
       })
       .addCase(fetchStatisticStore.fulfilled, (state, action) => {
-        state.total = action.payload;
+        state.total = action.payload.data;
       });
   },
 });

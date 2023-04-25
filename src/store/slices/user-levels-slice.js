@@ -51,22 +51,22 @@ export const userLevelsSlice = createSlice({
       })
       .addCase(fetchUserLevels.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchUserLevels.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addUserLevel.fulfilled, (state, action) => {
-        state.data.push(action.payload);
+        state.data.push(action.payload.data);
       })
       .addCase(deleteUserLevel.fulfilled, (state, action) => {
-        state.data = state.data.filter((userLevel) => userLevel.Id !== action.payload);
+        state.data = state.data.filter((userLevel) => userLevel.Id !== action.payload.data);
       })
       .addCase(updateUserLevel.fulfilled, (state, action) => {
-        const index = state.data.findIndex((userLevel) => userLevel.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((userLevel) => userLevel.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       });
   },
 });

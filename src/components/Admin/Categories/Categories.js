@@ -117,9 +117,15 @@ function Categories() {
     ],
     [categories]
   );
+
   useEffect(() => {
     dispatch(fetchAllCategories());
+    dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
   }, []);
+  useEffect(() => {
+    dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
+    console.log(categories.data);
+  }, [currentPage, orderBy]);
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
@@ -133,10 +139,6 @@ function Categories() {
     usePagination
   );
 
-  useEffect(() => {
-    dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
-    console.log(categories.data);
-  }, [currentPage, orderBy]);
   useEffect(() => {
     if (selectedCategory?.parentCategory) {
       setParentCategory({

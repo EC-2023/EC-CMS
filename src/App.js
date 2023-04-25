@@ -2,10 +2,14 @@ import { Suspense, lazy } from 'react';
 import ScrollToTop from './helpers/scroll-top';
 import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
 
-//admin
+// Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
 const UserLevels = lazy(() => import('./components/Admin/UserLevels/UserLevels'));
+
+// Vendor
 const VendorLayout = lazy(() => import('./components/Vendor/VendorLayout'));
+const AddProduct = lazy(() => import('./components/Vendor/Product/AddProduct'));
+const EditPdoduct = lazy(() => import('./components/Vendor/Product/EditProduct'));
 // home pages
 const HomeFashion = lazy(() => import('./pages/home/HomeFashion'));
 const HomeFashionTwo = lazy(() => import('./pages/home/HomeFashionTwo'));
@@ -196,7 +200,11 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
             <Route path={process.env.PUBLIC_URL + '/admin/userlevels'} element={<UserLevels />} />
             <Route path={process.env.PUBLIC_URL + '/vendor/home'} element={<VendorLayout />} />
-
+            <Route path={process.env.PUBLIC_URL + '/vendor/addProduct'} element={<AddProduct />} />\
+            <Route
+              path={process.env.PUBLIC_URL + '/vendor/editProduct/:productId'}
+              element={<EditPdoduct />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
