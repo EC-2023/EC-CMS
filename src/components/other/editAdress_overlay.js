@@ -24,7 +24,6 @@ function FormOverlay(props) {
         console.log("lấy distric")
       // Fetch districts based on the selected province
       // Replace with your actual API call
-      console.log(selectedProvince);
       fetchDistricts(selectedProvince).then((data) => {setDistricts(data); console.log(data);});
     }
   }, [selectedProvince]);
@@ -41,15 +40,18 @@ function FormOverlay(props) {
     setSelectedProvince(e.target.value);
     setSelectedDistrict("");
     setSelectedWard("");
+    setChildState({ ...childState, city: e.target.selectedOptions[0].innerText });
   };
 
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
     setSelectedWard("");
+    setChildState({ ...childState, district: e.target.selectedOptions[0].innerText });
   };
 
   const handleWardChange = (e) => {
     setSelectedWard(e.target.value);
+    setChildState({ ...childState, ward: e.target.selectedOptions[0].innerText });
   };
 
   const handleCancelClick = () => {
@@ -95,6 +97,16 @@ function FormOverlay(props) {
             onChange={(e) => handleChangeState("numberPhone", e.target.value)}
           />
         </label>
+        <label>
+          Địa chỉ:
+          <input
+            type="text"
+            name="detailAddress"
+            value={childState.detailAddress}
+            onChange={(e) => handleChangeState("detailAddress", e.target.value)}
+          />
+        </label>
+        <br/>
         {/* <label>
           District:
           <input
@@ -143,20 +155,20 @@ function FormOverlay(props) {
         </select>
       </label>
       <label>
-        District:
+        Huyện:
         <select value={selectedDistrict} onChange={handleDistrictChange} name="district">
           <option value="">Chọn Huyện</option>
           {districts.map((district) => (
-            <option key={district.id} value={district.code}>
+            <option key={district.id} value={district.code} name = {district.name}>
               {district.name}
             </option>
           ))}
         </select>
       </label>
       <label>
-        Ward:
+        Phường:
         <select value={selectedWard} onChange={handleWardChange}>
-          <option value="">Chọn xã</option>
+          <option value="">Chọn phường</option>
           {wards.map((ward) => (
             <option key={ward.id} value={ward.code}>
               {ward.name}

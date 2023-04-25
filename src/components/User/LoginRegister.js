@@ -109,7 +109,6 @@ const LoginRegister = () => {
       hashedPassword: formValues.password,
       avatar: ""
       };
-      console.log("pr"+params.hashedPassword)
       const response = await toast.promise(
         UserAPI.register(params),
         {

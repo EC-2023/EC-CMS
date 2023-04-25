@@ -66,6 +66,7 @@ const MyAccount = () => {
     country: "",
     district: "",
     nameRecipient: "",
+    detailAddress: "",
     numberPhone: "",
     ward: "",
     zipcode: "",
@@ -346,13 +347,13 @@ const MyAccount = () => {
                                   <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
                                     <div className="entries-info text-center">
                                       <p>
-                                        Name recipient: {address.nameRecipient}
+                                        Tên người nhận: {address.nameRecipient}
                                       </p>
-                                      <p>Number phone: {address.numberPhone}</p>
+                                      <p>SĐT: {address.numberPhone}</p>
+                                      <p>Địa chi: {address.detailAddress}</p>
                                       <p>District: {address.district}</p>
                                       <p>Ward: {address.ward}</p>
                                       <p>City: {address.city}</p>
-                                      <p>Country: {address.country}</p>
                                       <p>Zipcode: {address.zipcode}</p>
                                     </div>
                                   </div>
