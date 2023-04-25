@@ -2,9 +2,14 @@ import { Suspense, lazy } from 'react';
 import ScrollToTop from './helpers/scroll-top';
 import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
 
-//admin
+// Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
+const UserLevels = lazy(() => import('./components/Admin/UserLevels/UserLevels'));
+
+// Vendor
 const VendorLayout = lazy(() => import('./components/Vendor/VendorLayout'));
+const AddProduct = lazy(() => import('./components/Vendor/Product/AddProduct'));
+const EditPdoduct = lazy(() => import('./components/Vendor/Product/EditProduct'));
 // home pages
 const HomeFashion = lazy(() => import('./pages/home/HomeFashion'));
 const HomeFashionTwo = lazy(() => import('./pages/home/HomeFashionTwo'));
@@ -105,7 +110,6 @@ const App = () => {
         >
           <Routes>
             <Route path={process.env.PUBLIC_URL + '/'} element={<HomeFashion />} />
-
             {/* Homepages */}
             <Route path={process.env.PUBLIC_URL + '/home-fashion'} element={<HomeFashion />} />
             <Route path={process.env.PUBLIC_URL + '/home-fashion-two'} element={<HomeFashionTwo />} />
@@ -157,7 +161,6 @@ const App = () => {
               element={<HomeBlackFridayTwo />}
             />
             <Route path={process.env.PUBLIC_URL + '/home-valentines-day'} element={<HomeValentinesDay />} />
-
             {/* Shop pages */}
             <Route path={process.env.PUBLIC_URL + '/shop-grid-standard'} element={<ShopGridStandard />} />
             <Route path={process.env.PUBLIC_URL + '/shop-grid-filter'} element={<ShopGridFilter />} />
@@ -171,7 +174,6 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/shop-list-standard'} element={<ShopListStandard />} />
             <Route path={process.env.PUBLIC_URL + '/shop-list-full-width'} element={<ShopListFullWidth />} />
             <Route path={process.env.PUBLIC_URL + '/shop-list-two-column'} element={<ShopListTwoColumn />} />
-
             {/* Shop product pages */}
             <Route path={process.env.PUBLIC_URL + '/product/:id'} element={<Product />} />
             <Route path={process.env.PUBLIC_URL + '/product-tab-left/:id'} element={<ProductTabLeft />} />
@@ -195,7 +197,6 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/contact'} element={<Contact />} />
             <Route path={process.env.PUBLIC_URL + '/my-account'} element={<MyAccount />} />
             <Route path={process.env.PUBLIC_URL + '/login-register'} element={<LoginRegister />} />
-
             <Route path={process.env.PUBLIC_URL + '/cart'} element={<Cart />} />
             <Route path={process.env.PUBLIC_URL + '/wishlist'} element={<Wishlist />} />
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
@@ -203,7 +204,11 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
             <Route path={process.env.PUBLIC_URL + '/vendor/home'} element={<VendorLayout />} />
-
+            <Route path={process.env.PUBLIC_URL + '/vendor/addProduct'} element={<AddProduct />} />\
+            <Route
+              path={process.env.PUBLIC_URL + '/vendor/editProduct/:productId'}
+              element={<EditPdoduct />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

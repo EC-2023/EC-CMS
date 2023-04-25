@@ -18,7 +18,6 @@ import cogoToast from 'cogo-toast';
 function Commissions() {
   const dispatch = useDispatch();
   const commissions = useSelector(selectCommissions);
-
   const [showAddModal, setShowAddModal] = React.useState(false);
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [showDeleteModal, setShowDeleteModal] = React.useState(false);
@@ -120,7 +119,6 @@ function Commissions() {
 
   const debouncedFetchCommissions = debounce((searchText) => {
     dispatch(fetchCommissions({ currentPage, pageSize: size, searchText, orderBy }));
-    console.log(commissions.pagination);
   }, 500);
 
   const handleSearchChange = (event) => {

@@ -21,8 +21,10 @@ import deliveriesReducer from './slices/deliveries-slice';
 import commissionsReducer from './slices/commissions-slice';
 import categoriesReducer from './slices/categories-slice';
 import usersReducer from './slices/users-slice';
+import ordersReducer from './slices/orders-slice';
 import storesReducer from './slices/stores-slice';
 import statisticReducer from './slices/statistics-slice';
+import productVendorReducer from './slices/product-vendor-slice';
 const persistConfig = {
   key: 'flone',
   version: 1.1,
@@ -43,6 +45,8 @@ export const rootReducer = combineReducers({
   users: usersReducer,
   stores: storesReducer,
   statistics: statisticReducer,
+  productVendor: productVendorReducer,
+  orders: ordersReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -52,6 +56,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
+        ignoredActionPaths: ['payload.headers'],
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),

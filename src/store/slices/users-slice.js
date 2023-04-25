@@ -44,19 +44,19 @@ export const usersSlice = createSlice({
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
-        state.data = state.data.filter((user) => user.Id !== action.payload);
+        state.data = state.data.filter((user) => user.Id !== action.payload.data);
       })
       .addCase(updateUser.fulfilled, (state, action) => {
-        const index = state.data.findIndex((user) => user.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((user) => user.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       });
   },
 });

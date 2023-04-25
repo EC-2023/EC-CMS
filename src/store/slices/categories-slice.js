@@ -8,6 +8,7 @@ export const fetchCategories = createAsyncThunk(
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
+    console.log(response);
     return response;
   }
 );
@@ -79,36 +80,38 @@ export const categoriesSlice = createSlice({
   initialState: {
     data: [],
     list: [],
-    pagination: 0,
+    pagination: {
+      total: 0,
+    },
     loading: false,
     error: null,
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCategories.pending, (state) => {
+      .addCase(fetchCategories.pending, (state, action) => {
         state.loading = true;
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addCategory.fulfilled, (state, action) => {
-        state.data.push(action.payload);
+        state.data.push(action.payload.data);
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
-        state.data = state.data.filter((category) => category.Id !== action.payload);
+        state.data = state.data.filter((category) => category.Id !== action.payload.data);
       })
       .addCase(updateCategory.fulfilled, (state, action) => {
-        const index = state.data.findIndex((category) => category.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((category) => category.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       })
       .addCase(fetchAllCategories.fulfilled, (state, action) => {
-        state.list = action.payload;
+        state.list = action.payload.data;
         state.list.push({ Id: -1, Name: 'null' });
       });
   },

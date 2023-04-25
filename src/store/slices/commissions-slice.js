@@ -51,22 +51,22 @@ export const commissionsSlice = createSlice({
       })
       .addCase(fetchCommissions.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data;
-        state.pagination = action.payload.pagination;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
       })
       .addCase(fetchCommissions.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
       .addCase(addCommission.fulfilled, (state, action) => {
-        state.data.push(action.payload);
+        state.data.push(action.payload.data);
       })
       .addCase(deleteCommission.fulfilled, (state, action) => {
-        state.data = state.data.filter((commission) => commission.Id !== action.payload);
+        state.data = state.data.filter((commission) => commission.Id !== action.payload.data);
       })
       .addCase(updateCommission.fulfilled, (state, action) => {
-        const index = state.data.findIndex((commission) => commission.Id === action.payload.Id);
-        state.data[index] = action.payload;
+        const index = state.data.findIndex((commission) => commission.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       });
   },
 });
