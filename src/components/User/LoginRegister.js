@@ -28,6 +28,21 @@ const LoginRegister = () => {
     phoneNumber: "",
   });
 
+  useEffect(()=>{
+    const message = localStorage.getItem('message')
+    if(message)
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+      });
+      localStorage.removeItem('message')
+  },[])
   useEffect(() => {
     checkPassword();
   }, [formValues]);

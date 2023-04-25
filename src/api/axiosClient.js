@@ -102,6 +102,10 @@ axiosClient.interceptors.response.use(
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         console.log("Gửi lại request" + error);
+
+        // Chuyển hướng đến trang đăng nhập
+        window.location.href = '/login-register';
+        localStorage.setItem('message', "Vui lòng đăng nhập lại");
       }      
     }
     return Promise.reject(error);
