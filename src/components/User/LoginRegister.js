@@ -11,6 +11,7 @@ import UserAPI from "../../api/UserAPI";
 
 
 const LoginRegister = () => {
+  const [activeKey, setActiveKey] = useState("login");
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
@@ -53,6 +54,7 @@ const LoginRegister = () => {
       [event.target.name]: event.target.value,
     });
     checkPassword();
+    console.log(formValues.password);
   };
 
   const checkPassword = () => {
@@ -68,7 +70,7 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const params = {username : formValues.username,password : formValues.password};
+      const params = {username : formValues.email,password : formValues.password};
       const response = await toast.promise(
         UserAPI.login(params),
         {
@@ -97,6 +99,41 @@ const LoginRegister = () => {
 
   const handleRegister = async (event) => {
     event.preventDefault();
+    try {
+      const params = {
+      firstName : formValues.fName,
+      lastName: formValues.lName,
+      middleName: formValues.mName,
+      phoneNumber: formValues.phoneNumber,
+      email: formValues.email,
+      hashedPassword: formValues.password,
+      avatar: ""
+      };
+      console.log("pr"+params.hashedPassword)
+      const response = await toast.promise(
+        UserAPI.register(params),
+        {
+          pending: "Đang đăng ký...",
+          success: "Đăng ký thành công!",
+          error: "Đăng ký thất bại.",
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      setActiveKey("login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSelect = (key) => {
+    setActiveKey(key);
   };
 
   return (
@@ -123,7 +160,7 @@ const LoginRegister = () => {
             <div className="row">
               <div className="col-lg-7 col-md-12 ms-auto me-auto">
                 <div className="login-register-wrapper">
-                  <Tab.Container defaultActiveKey="login">
+                  <Tab.Container defaultActiveKey={activeKey} onSelect={handleSelect}>
                     <Nav variant="pills" className="login-register-tab-list">
                       <Nav.Item>
                         <Nav.Link eventKey="login">
@@ -143,9 +180,9 @@ const LoginRegister = () => {
                             <form onSubmit={handleLogin}>
                               <input
                                 type="text"
-                                name="username"
-                                placeholder="Username"
-                                value={formValues.username}
+                                name="email"
+                                placeholder="Email"
+                                value={formValues.email}
                                 onChange={handleChange}
                               />
                               <input
@@ -232,7 +269,7 @@ const LoginRegister = () => {
                                 onChange={handleChange}
                               />
                               <div className="button-box">
-                                <button onClick={() => alert()} type="submit" disabled={!error.rePasswordWrong && !error.passowordWeak}>
+                                <button type="submit" disabled={error.rePasswordWrong && error.passowordWeak}>
                                 <span className={`${(error.rePasswordWrong || error.passowordWeak) && 'text-decoration-line-through'}`} >Register</span>
                                 </button>
                               </div>

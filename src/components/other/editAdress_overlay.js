@@ -78,7 +78,7 @@ function FormOverlay(props) {
       <div className="overlay show" onClick={handleCancelClick}></div>
       <form className="form-overlay">
         <label>
-          Name Recipient:
+          Tên người nhận:
           <input
             type="text"
             name="nameRecipient"
@@ -87,7 +87,7 @@ function FormOverlay(props) {
           />
         </label>
         <label>
-          Number Phone:
+          Số điện thoại:
           <input
             type="text"
             name="numberPhone"
@@ -134,7 +134,7 @@ function FormOverlay(props) {
         <label>
         Tỉnh:
         <select value={selectedProvince} onChange={handleProvinceChange} name="">
-          <option value="">Select a province</option>
+          <option value="">Chọn Tỉnh</option>
           {provinces.map((province) => (
             <option key={province.id} value={province.code}>
               {province.name}
@@ -145,7 +145,7 @@ function FormOverlay(props) {
       <label>
         District:
         <select value={selectedDistrict} onChange={handleDistrictChange} name="district">
-          <option value="">Select a district</option>
+          <option value="">Chọn Huyện</option>
           {districts.map((district) => (
             <option key={district.id} value={district.code}>
               {district.name}
@@ -156,7 +156,7 @@ function FormOverlay(props) {
       <label>
         Ward:
         <select value={selectedWard} onChange={handleWardChange}>
-          <option value="">Select a ward</option>
+          <option value="">Chọn xã</option>
           {wards.map((ward) => (
             <option key={ward.id} value={ward.code}>
               {ward.name}

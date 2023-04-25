@@ -19,6 +19,11 @@ const UserAPI = {
   });
   },
 
+  register : (params) => {
+    const url = '/users';
+    return axiosClient.post(url, params);
+  },
+
   login : (params) =>{
     const url = '/auth/login';
     return axiosClient.post(url, { username: params.username, password: params.password });
