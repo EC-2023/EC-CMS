@@ -5,27 +5,54 @@ import queryString from 'query-string';
 const axiosClient = axios.create({
   baseURL: 'http://localhost:8080/api/v1',
   headers: {
+    'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  timeout: 30000,
   paramsSerializer: {
     serialize: queryString.stringify, // or (params) => Qs.stringify(params, {arrayFormat: 'brackets'})
   },
 });
-axiosClient.interceptors.request.use(async (config) => {
-  // Handle token here ...
-  return config;
-});
-axiosClient.interceptors.response.use(
-  (response) => {
-    if (response && response.data) {
-      return response.data;
+axiosClient.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (accessToken) {
+      console.log(config.headers);
+      return { ...config, headers: { ...config.headers, Authorization: 'Bearer ' + accessToken } };
+      // config.headers['Authorization'] = 'Bearer ' + accessToken;
     }
-    return response;
+    return config;
   },
   (error) => {
-    // Handle errors
-    throw error;
+    Promise.reject(error);
+  }
+);
+
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    if ((error.response.status === 401 || error.response.status === 500) && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        const response = await axiosClient.post('/auth/refresh-token', {
+          refreshToken: refreshToken,
+        });
+
+        if (response.data.accessToken) {
+          localStorage.setItem('accessToken', response.data.accessToken);
+          axiosClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
+          originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+          return axiosClient(originalRequest);
+        }
+      } catch (error) {
+        // Xử lý lỗi
+        console.log('Gửi lại request' + error);
+      }
+    }
+    return Promise.reject(error);
   }
 );
 export default axiosClient;
