@@ -66,6 +66,7 @@ function FormOverlay(props) {
     // TODO: handle saving the form data
     props.handleAddressChange(props.index, childState);
     props.closeEdit();
+    console.log("add user");
   };
 
   const handleSaveEditClick = () => {
@@ -73,7 +74,7 @@ function FormOverlay(props) {
     console.log("update user");
     props.handleAddressChange(props.index, childState);
     props.closeEdit();
-    props.handleUpdateMyUserAddress();
+    props.handleUpdateMyUserAddress(props.index);
   };
   return (
     <>

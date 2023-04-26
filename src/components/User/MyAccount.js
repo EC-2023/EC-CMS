@@ -83,13 +83,12 @@ const MyAccount = () => {
 
   const handleDeleteClick = async (index) => {
     try {
+      setAddressUser((prevState) =>
+      prevState.filter((address, i) => i !== index)
+    );
       const response = await UserAddressAPI.deleteMyUserAddress(
         addressUser[index].Id
       );
-      setAddressUser((prevState) =>
-        prevState.filter((address, i) => i !== index)
-      );
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -113,7 +112,6 @@ const MyAccount = () => {
           theme: "light",
         }
       );
-      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -143,12 +141,6 @@ const MyAccount = () => {
     }
   };
   const handleAddressChange = async (addressIndex, updatedAddress) => {
-    try {
-      const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
     setAddressUser((prevState) =>
       addressIndex === null
         ? [...prevState, updatedAddress]
@@ -156,6 +148,13 @@ const MyAccount = () => {
             index === addressIndex ? updatedAddress : address
           )
     );
+    try {
+      const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    
   };
 
   const handleUserInforChange = (event) => {
@@ -366,9 +365,8 @@ const MyAccount = () => {
                                         >
                                           Edit
                                         </button>
-                                        {isEditing &&
-                                          editingAddressIndex === index && (
-                                            <editAdd
+                                        {isEditing && editingAddressIndex === index && (
+                                            <EditAdressOverlay
                                               index={index}
                                               isEditing={isEditing}
                                               closeEdit={closeEdit}
