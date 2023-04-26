@@ -1,4 +1,4 @@
-import React, { Fragment } from "react"; 
+import React, { Fragment, useEffect, useState } from "react"; 
 import { useSelector } from "react-redux";
 import { useParams, useLocation } from "react-router-dom";
 import SEO from "../../components/seo";
@@ -7,12 +7,40 @@ import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import RelatedProductSlider from "../../wrappers/product/RelatedProductSlider";
 import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab";
 import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
+import ProductAPI from "../../api/ProductAPI";
 
 const Product = () => {
   let { pathname } = useLocation();
-  let { id } = useParams();
-  const { products } = useSelector((state) => state.product);
-  const product = products.find(product => product.Id === id);
+  let { Id } = useParams();
+  // const { products } = useSelector((state) => state.product);
+  // const product = products.find(product => product.Id === Id);
+  const [isLoading, setIsLoading] = useState(true);
+  const [product, setProduct] = useState({});
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const response = await ProductAPI.getProduct(Id);
+        console.log(response.data);
+        setProduct(response.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.log("faild to fetch product: ", error);
+      }
+    }
+    getProduct();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    );
+  }
   
 
   return (

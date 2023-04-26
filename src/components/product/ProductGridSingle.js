@@ -225,7 +225,7 @@ const ProductGridSingle = ({
                 </button>
               ) : (
                 <button disabled className="active">
-                  Out of Stock
+                  Hết Hàng
                 </button>
               )}
             </div>

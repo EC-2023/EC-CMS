@@ -101,7 +101,7 @@ const ProductGridListSingle = ({
                   </button>
                 ) : (
                   <button disabled className="active">
-                    Out of Stock
+                  Hết Hàng
                   </button>
                 )}
               </div>
@@ -219,7 +219,7 @@ const ProductGridListSingle = ({
                       >
                         Select Option
                       </Link>
-                    ) : product.stock && product.stock > 0 ? (
+                    ) : product.quantity && product.quantity > 0 ? (
                       <button
                         onClick={() => dispatch(addToCart(product))}
                         className={
@@ -244,7 +244,7 @@ const ProductGridListSingle = ({
                       </button>
                     ) : (
                       <button disabled className="active">
-                        Out of Stock
+                        Hết Hàng
                       </button>
                     )}
                   </div>

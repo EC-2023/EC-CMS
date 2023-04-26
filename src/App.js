@@ -332,7 +332,7 @@ const App = () => {
 
               {/* Shop product pages */}
               <Route
-                path={process.env.PUBLIC_URL + "/product/:id"}
+                path={process.env.PUBLIC_URL + "/product/:Id"}
                 element={<Product />}
               />
               <Route

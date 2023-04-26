@@ -149,13 +149,36 @@ const MyAccount = () => {
           )
     );
     try {
-      const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
-      console.log(response);
+      // const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
     } catch (error) {
       console.log(error);
     }
     
   };
+
+  const handleAddUserAddress = async (updatedAddress) => {
+    try {
+      const response = await toast.promise(
+        UserAddressAPI.createMyUserAddress(updatedAddress),
+        {
+          pending: "Đang Lưu...",
+          success: "Lưu thành công!",
+          error: "Lưu thất bại!",
+          position: "top-right",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   const handleUserInforChange = (event) => {
     console.log(event.target.name);
@@ -377,6 +400,7 @@ const MyAccount = () => {
                                               handleUpdateMyUserAddress={
                                                 handleUpdateMyUserAddress
                                               }
+                                              handleAddUserAddress={handleAddUserAddress}
                                             />
                                           )}
                                       </div>
@@ -409,6 +433,7 @@ const MyAccount = () => {
                                   closeEdit={closeEdit}
                                   childState={getAddress(newAddress)}
                                   handleAddressChange={handleAddressChange}
+                                  handleAddUserAddress={handleAddUserAddress}
                                 />
                               )}
                             </div>

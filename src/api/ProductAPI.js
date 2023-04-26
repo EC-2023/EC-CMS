@@ -10,6 +10,11 @@ const productAPI = {
   getAll : () =>{
     const url = '/products';
     return axiosClient.get(url);
+  },
+
+  getProduct: (id) => {
+    const url = `/products/${id}`;
+    return axiosClient.get(url);
   }
 }
 

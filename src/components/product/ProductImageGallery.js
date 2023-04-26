@@ -10,10 +10,13 @@ import Swiper, { SwiperSlide } from "../../components/swiper";
 const ProductImageGallery = ({ product }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [index, setIndex] = useState(-1);
-  const slides = product?.image.map((img, i) => ({
-      src: process.env.PUBLIC_URL + img,
+  const slides = product?.images.map((img, i) => ({
+      src: process.env.PUBLIC_URL + img.location,
       key: i,
   }));
+  console.log("img:", product);
+  console.log("img:", product.images[0].fileName);
+
 
   // swiper slider settings
   const gallerySwiperParams = {
@@ -53,16 +56,16 @@ const ProductImageGallery = ({ product }) => {
         ) : (
           ""
         )}
-        {product?.image?.length ? (
+        {product?.images?.length ? (
           <Swiper options={gallerySwiperParams}>
-            {product.image.map((single, key) => (
+            {product.images.map((single, key) => (
               <SwiperSlide key={key}>
                 <button className="lightgallery-button" onClick={() => setIndex(key)}>
                   <i className="pe-7s-expand1"></i>
                 </button>
                 <div className="single-image">
                   <img
-                    src={process.env.PUBLIC_URL + single}
+                    src={process.env.PUBLIC_URL + single.fileName}
                     className="img-fluid"
                     alt=""
                   />
@@ -81,13 +84,13 @@ const ProductImageGallery = ({ product }) => {
 
       </div>
       <div className="product-small-image-wrapper mt-15">
-        {product?.image?.length ? (
+        {product?.images?.length ? (
           <Swiper options={thumbnailSwiperParams}>
-            {product.image.map((single, key) => (
+            {product.images.map((single, key) => (
               <SwiperSlide key={key}>
                 <div className="single-image">
                   <img
-                    src={process.env.PUBLIC_URL + single}
+                    src={process.env.PUBLIC_URL + single.fileName}
                     className="img-fluid"
                     alt=""
                   />
