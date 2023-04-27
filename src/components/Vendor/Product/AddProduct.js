@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import './AddProduct.css';
 import { MdAdd, MdRemove, MdClose, MdAddCircle } from 'react-icons/md';
 import { addProduct } from '../../../store/slices/product-vendor-slice';
-import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCategories, selectCategories } from '../../../store/slices/categories-slice';
 import Select from 'react-select';
+import cogoToast from 'cogo-toast';
+import { useNavigate } from 'react-router-dom';
 function AddProduct() {
   const dispatch = useDispatch();
   const [name, setName] = useState('');
@@ -21,6 +22,7 @@ function AddProduct() {
   const [previewImages, setPreviewImages] = useState([]);
   const [category, setCategory] = React.useState(null);
   const categories = useSelector(selectCategories);
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchAllCategories());
   }, []);
@@ -38,6 +40,17 @@ function AddProduct() {
         attributes,
         images,
         category,
+      }).then((res) => {
+        if (res.payload.status === 200) {
+          setTimeout(() => {
+            navigate('/vendor/products');
+          }, 3000);
+          cogoToast.success('Successfully add new category, retun list after 3 sec', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        }
       })
     );
   };

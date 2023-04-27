@@ -7,7 +7,13 @@ import { DropdownButton, Dropdown } from 'react-bootstrap';
 import { Breadcrumb } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { debounce } from 'lodash';
-import { fetchStores, updateStore, selectStores } from '../../../store/slices/stores-slice';
+import {
+  fetchStores,
+  updateStore,
+  selectStores,
+  updateActiveStore,
+  updateDeleteStore,
+} from '../../../store/slices/stores-slice';
 import cogoToast from 'cogo-toast';
 import { convertTimeStamp } from '../../../utils/convertDate';
 
@@ -44,15 +50,6 @@ function Stores() {
         sortType: 'basic',
       },
       {
-        Header: 'Name Owner',
-        accessor: 'userByOwnId',
-        sortType: 'basic',
-        Cell: ({ value }) => {
-          // nhớ thêm đường link khi nhấn vào tên sẻ nhảy đến store đó
-          return <div> {value.displayName}</div>;
-        },
-      },
-      {
         Header: 'Rating',
         accessor: 'rating',
         sortType: 'basic',
@@ -68,18 +65,20 @@ function Stores() {
         sortType: 'basic',
       },
       {
-        Header: 'isActive',
-        accessor: 'Active',
+        Header: 'Active',
+        accessor: 'isActive',
         sortType: 'basic',
         Cell: ({ value }) => {
+          console.log(value);
+
           return (
             <div
               style={{
-                color: !value ? 'green' : 'red',
+                color: value ? 'green' : 'red',
                 fontWeight: 'bold',
               }}
             >
-              {!value ? 'ACTIVE' : 'INACTIVE'}
+              {value ? 'ACTIVE' : 'INACTIVE'}
             </div>
           );
         },
@@ -143,17 +142,17 @@ function Stores() {
               )}
               {isActive ? (
                 <Dropdown.Item
-                  style={{ color: 'red' }}
-                  onClick={() => handleActiveInActive(false, row.original.Id)}
-                >
-                  INACTIVE
-                </Dropdown.Item>
-              ) : (
-                <Dropdown.Item
                   style={{ color: 'green' }}
                   onClick={() => handleActiveInActive(true, row.original.Id)}
                 >
                   ACTIVE
+                </Dropdown.Item>
+              ) : (
+                <Dropdown.Item
+                  style={{ color: 'red' }}
+                  onClick={() => handleActiveInActive(false, row.original.Id)}
+                >
+                  INACTIVE
                 </Dropdown.Item>
               )}
             </DropdownButton>
@@ -186,7 +185,27 @@ function Stores() {
   const handleUpdateStatus = (stauts, storeId) => {
     const store = stores.data.find((store) => store.Id === storeId);
     setSelectedStore(store);
+    console.log({ Id: store.Id, isDeleted: !store.isDeleted });
     if (stauts === true) {
+      cogoToast
+        .loading('Enabling store...', {
+          position: 'bottom-right',
+        })
+        .then(() => dispatch(updateDeleteStore({ Id: store.Id, isDeleted: !store.isDeleted })))
+        .then((res) => {
+          if (!res.error)
+            cogoToast.info('Successfully edit store', {
+              position: 'bottom-right',
+              hideAfter: 3,
+              onClick: () => console.log('Clicked'),
+            });
+          else
+            cogoToast.error(res.error.message, {
+              position: 'bottom-right',
+              hideAfter: 3,
+              onClick: () => console.log('Clicked'),
+            });
+        });
     } else {
       setShowDeleteModal(true);
     }
@@ -199,7 +218,7 @@ function Stores() {
       .loading('Enabling store...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(updateStore({ Id: selectedStore.Id, isDeleted: stauts })))
+      .then(() => dispatch(updateActiveStore({ Id: storeId, isActive: stauts })))
       .then((res) => {
         if (!res.error)
           cogoToast.info('Successfully edit store', {
@@ -218,11 +237,12 @@ function Stores() {
 
   const handleUpdateStatusSubmit = (event) => {
     event.preventDefault();
+    console.log({ Id: selectedStore.Id, isDeleted: !selectedStore.isDeleted });
     cogoToast
       .loading('Disabling store...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(updateStore({ Id: selectedStore.Id, isDeleted: true })))
+      .then(() => dispatch(updateDeleteStore({ Id: selectedStore.Id, isDeleted: !selectedStore.isDeleted })))
       .then((res) => {
         if (!res.error)
           cogoToast.info('Successfully disable store', {
@@ -352,4 +372,4 @@ function Stores() {
   );
 }
 
-export default React.memo(Stores);
+export default Stores;

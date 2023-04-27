@@ -101,6 +101,7 @@ export const categoriesSlice = createSlice({
       })
       .addCase(addCategory.fulfilled, (state, action) => {
         state.data.push(action.payload.data);
+        state.list.push(action.payload.data);
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.data = state.data.filter((category) => category.Id !== action.payload.data);

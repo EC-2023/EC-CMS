@@ -22,6 +22,7 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
     video: product.video,
     categoryId: product.category.value,
   };
+
   if (product.promotionalPrice) {
     payloadProduct.promotionalPrice = product.promotionalPrice;
     payloadProduct.dateValidPromote = product.dateValidPromote;
@@ -42,7 +43,6 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
   if (listImage.length > 0) payloadProduct.images = listImage;
 
   if (product.attributes.length > 0) payloadProduct.attributes = product.attributes;
-  console.log(payloadProduct);
 
   const response = await axiosClient.post('/products', payloadProduct, {
     headers: {

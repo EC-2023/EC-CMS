@@ -24,7 +24,6 @@ export const fetchRevenue = createAsyncThunk('statistics/getStaticRevenue', asyn
   const response = await axiosClient.get(
     `/statistics/get-static-revenue?option=${option}&date=${dateStr.getTime()}`
   );
-  console.log(response);
 
   return response;
 });
