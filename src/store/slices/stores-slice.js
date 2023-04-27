@@ -32,6 +32,20 @@ export const getOrderByStore = createAsyncThunk('stores/getOrderByStore', async 
   return response;
 });
 
+export const getProductsByStore = createAsyncThunk(
+  'stores/getProductsByStore',
+  async ({ currentPage, pageSize, searchText, orderBy, otherCondition }) => {
+    const response = await axiosClient.get(
+      `/stores/getProductsByMyStore?skip=${currentPage * pageSize}&limit=${pageSize}&orderBy=${orderBy}${
+        otherCondition ? otherCondition : ''
+      }&name%7B%7Bsearch%7D%7D=${searchText}`
+    );
+    console.log(currentPage * pageSize);
+
+    return response;
+  }
+);
+
 export const getOrdersByMyStore = createAsyncThunk(
   'stores/getOrdersByMyStore',
   async ({ currentPage, pageSize, searchText, orderBy, otherCondition }) => {
@@ -66,6 +80,11 @@ export const storesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getProductsByStore.fulfilled, (state, action) => {
+        state.loading = false;
+        state.data = action.payload.data.data;
+        state.pagination = action.payload.data.pagination;
+      })
       .addCase(getOrdersByMyStore.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.data.data;

@@ -4,7 +4,10 @@ import { HouseDoor, GraphUp, BoxArrowInRight, Person, List } from 'react-bootstr
 import './VendorLayout.css';
 import { Nav } from 'react-bootstrap';
 import HomeVendor from './Home/HomeVendor';
-const VendorLayout = () => {
+import Product from './Product/Product';
+import Order from './Order/Order';
+import OrderDetail from './Order/OrderDetail';
+const VendorLayout = ({ children }) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const handleToggleSidebar = () => {
     setSidebarExpanded(!sidebarExpanded);
@@ -13,26 +16,12 @@ const VendorLayout = () => {
   const navItems = [
     { id: 1, name: 'Home', iconClass: 'fa fa-home' },
     { id: 2, name: 'Products', iconClass: 'fa fa-users' },
-    { id: 3, name: 'Statistics', iconClass: 'fa fa-user-shield' },
-    { id: 4, name: 'My Profile', iconClass: 'fa fa-store' },
+    { id: 3, name: 'Orders', iconClass: 'fa fa-sharp fa-solid fa-cart-plus' },
+    { id: 4, name: 'Statistics', iconClass: 'fa fa-regular fa-database' },
+    { id: 5, name: 'My Profile', iconClass: 'fa fa-user' },
   ];
   // eslint-disable-next-line default-case
-  let content = null;
-  switch (selectedNavItem) {
-    case 1: {
-      content = <HomeVendor />;
-      break;
-    }
-    // case 2:
-    //   content = <Users />;
-    //   break;
-    // case 3:
-    //   content = <UserLevels />;
-    //   break;
-    // case 4:
-    //   content = <Stores />;
-    //   break;
-  }
+
   return (
     <div className="vendor-layout">
       <header className="topbar">
@@ -53,8 +42,9 @@ const VendorLayout = () => {
           <div className="nav-items-container">
             {navItems.map((item) => (
               <Nav.Link
+                as={Link}
                 key={item.id}
-                href={`#${item.name}`}
+                to={`/vendor/${item.name}`}
                 className={`nav-item d-flex align-items-center justify-content-center${
                   selectedNavItem === item.id ? ' selected' : ''
                 }`}
@@ -73,7 +63,7 @@ const VendorLayout = () => {
             </button>
           </div>
         </aside>
-        <main className="main-content">{content}</main>
+        <main className="main-content">{children}</main>
       </div>
       <footer className="footer">Footer</footer>
     </div>

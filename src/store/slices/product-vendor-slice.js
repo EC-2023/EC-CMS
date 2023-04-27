@@ -7,10 +7,8 @@ export const fetchProducts = createAsyncThunk(
     const response = await axiosClient.get(
       `/products/pagination?skip=${
         currentPage * pageSize
-      }&limit=${pageSize}&orderBy=${orderBy}&displayName%7B%7Bsearch%7D%7D=${searchText}`
+      }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
-
     return response;
   }
 );
@@ -86,7 +84,6 @@ export const deleteProduct = createAsyncThunk('products/deleteProduct', async (i
   await axiosClient.delete(`/products/${id}`);
   return id;
 });
-
 export const updateProduct = createAsyncThunk('products/updateProduct', async (product) => {
   const response = await axiosClient.patch(`/products/${product.Id}`, product, {
     headers: {
@@ -96,7 +93,10 @@ export const updateProduct = createAsyncThunk('products/updateProduct', async (p
   });
   return response;
 });
-
+export const activeProduct = createAsyncThunk('products/activeProduct', async ({ id, status }) => {
+  const response = await axiosClient.patch(`/products/${id}/update-active?status=${status}`);
+  return response;
+});
 export const updateQuantity = createAsyncThunk('products/update-quantity', async ({ id, quantity }) => {
   const response = await axiosClient.patch(
     `/products/${id}/update-quantity`,
@@ -111,7 +111,7 @@ export const updateQuantity = createAsyncThunk('products/update-quantity', async
   return response;
 });
 
-export const updateStatus = createAsyncThunk('products/update-quantity', async ({ id, status }) => {
+export const updateStatus = createAsyncThunk('products/update-status', async ({ id, status }) => {
   const response = await axiosClient.patch(`/products/${id}/update-status?$status=${status}`, {
     headers: {
       accept: 'application/json',
@@ -133,6 +133,9 @@ export const productsSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
+      .addCase(activeProduct.fulfilled, (state, action) => {
+        state.product = action.payload.data;
+      })
       .addCase(editProduct.fulfilled, (state, action) => {
         state.product = action.payload.data;
       })

@@ -89,6 +89,9 @@
   margin-bottom: 50px;
 }
 .action-column {
-  width: 1%;
+  width: 15%;
   white-space: nowrap;
+}
+td {
+  vertical-align: middle;
 }

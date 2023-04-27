@@ -39,6 +39,13 @@ export const cancelOrder = createAsyncThunk('orders/cancelOrder', async (id) => 
   return response;
 });
 
+export const getOrder = createAsyncThunk('orders/getOrder', async (id) => {
+  const response = await axiosClient.get(`/orders/${id}`);
+  console.log(response);
+
+  return response;
+});
+
 export const doneOrder = createAsyncThunk('orders/doneOrder', async (id) => {
   const response = await axiosClient.patch(`/orders/${id}/update-success`, {
     headers: {
@@ -62,6 +69,7 @@ export const updateOrder = createAsyncThunk('orders/updateOrder', async (order) 
 export const ordersSlice = createSlice({
   name: 'orders',
   initialState: {
+    order: null,
     data: [],
     pagination: 0,
     loading: false,
@@ -69,6 +77,9 @@ export const ordersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getOrder.fulfilled, (state, action) => {
+        state.order = action.payload.data;
+      })
       .addCase(acceptOrder.fulfilled, (state) => {})
       .addCase(cancelOrder.fulfilled, (state) => {})
       .addCase(doneOrder.fulfilled, (state) => {})
