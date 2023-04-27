@@ -69,8 +69,6 @@ function Stores() {
         accessor: 'isActive',
         sortType: 'basic',
         Cell: ({ value }) => {
-          console.log(value);
-
           return (
             <div
               style={{
@@ -185,7 +183,7 @@ function Stores() {
   const handleUpdateStatus = (stauts, storeId) => {
     const store = stores.data.find((store) => store.Id === storeId);
     setSelectedStore(store);
-    console.log({ Id: store.Id, isDeleted: !store.isDeleted });
+
     if (stauts === true) {
       cogoToast
         .loading('Enabling store...', {
@@ -237,7 +235,7 @@ function Stores() {
 
   const handleUpdateStatusSubmit = (event) => {
     event.preventDefault();
-    console.log({ Id: selectedStore.Id, isDeleted: !selectedStore.isDeleted });
+
     cogoToast
       .loading('Disabling store...', {
         position: 'bottom-right',

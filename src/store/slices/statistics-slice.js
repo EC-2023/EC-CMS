@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosClient from '../../api/axiosClient';
-import { axiosHeadersToObject } from '../../utils/axiosHeadersToObject';
 
 export const fetchTotal = createAsyncThunk('statistics/fetchTotal', async () => {
   const response = await axiosClient.get(`/statistics/get-total`);
@@ -11,11 +10,21 @@ export const fetchStatisticStore = createAsyncThunk('statistics/get-statistics-s
   return response;
 });
 
-export const fetchRevenueStore = createAsyncThunk(
-  'statistics/get-revenue-statistics-store',
+export const getStaticRevenue = createAsyncThunk(
+  'statistics/get-revenue-statistics',
   async ({ option, dateStr }) => {
     const response = await axiosClient.get(
-      `/statistics/get-revenue-statistics-store?option=${option}&date=${dateStr.getTime()}`
+      `/statistics/get-static-revenue?option=${option}&date=${dateStr.getTime()}`
+    );
+    return response;
+  }
+);
+
+export const getStaticOrder = createAsyncThunk(
+  'statistics/get-order-statistics',
+  async ({ option, dateStr }) => {
+    const response = await axiosClient.get(
+      `/statistics/get-static-order?option=${option}&date=${dateStr.getTime()}`
     );
     return response;
   }
@@ -79,6 +88,9 @@ export const statisticsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(getStaticOrder.fulfilled, (state, action) => {
+        state.data = action.payload.data;
+      })
       .addCase(getStaticOrderStore.fulfilled, (state, action) => {
         state.data = action.payload.data;
       })
@@ -97,7 +109,7 @@ export const statisticsSlice = createSlice({
       .addCase(fetchRevenue.fulfilled, (state, action) => {
         state.revenue = action.payload.data;
       })
-      .addCase(fetchRevenueStore.fulfilled, (state, action) => {
+      .addCase(getStaticRevenue.fulfilled, (state, action) => {
         state.revenue = action.payload.data;
       })
       .addCase(fetchStatisticStore.fulfilled, (state, action) => {

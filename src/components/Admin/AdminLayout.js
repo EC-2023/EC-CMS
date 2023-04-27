@@ -49,6 +49,9 @@ const AdminLayout = () => {
       content = <Products />;
       break;
     case 10:
+      content = <Products />;
+      break;
+    case 11:
       content = <Statistics />;
       break;
     // Add more cases as needed

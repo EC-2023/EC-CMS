@@ -1,282 +1,243 @@
-import React from 'react';
-import { useTable, useSortBy, usePagination } from 'react-table';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ReactPaginate from 'react-paginate';
-import { Button, Modal, Form } from 'react-bootstrap';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
-import { Breadcrumb } from 'react-bootstrap';
-function Statistics() {
-  const [products, setProducts] = React.useState([
-    {
-      id: 1,
-      name: 'Product 1',
-      price: 10,
-    },
-    {
-      id: 2,
-      name: 'Product 2',
-      price: 20,
-    },
-    // Add more rows as needed
-  ]);
+import React, { useState } from 'react';
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
+import {
+  getStaticOrder,
+  getStaticOrderStore,
+  getStaticProduct,
+  getStaticProductStore,
+  getStaticRevenue,
+  getStaticRevenueStore,
+} from '../../../store/slices/statistics-slice';
+import { useDispatch } from 'react-redux';
+import { Dropdown } from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import { useEffect } from 'react';
+import { convertDate } from '../../../utils/convertDate';
 
-  const [showAddModal, setShowAddModal] = React.useState(false);
-  const [showEditModal, setShowEditModal] = React.useState(false);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
-  const [searchText, setSearchText] = React.useState('');
+const timeRanges = [
+  { key: 0, value: 'Week' },
+  { key: 1, value: 'Month' },
+  { key: 2, value: 'Year' },
+];
+const StatsPage = () => {
+  const dispatch = useDispatch();
+  const [dataKeyOrder, setDataKeyOrder] = useState('label');
+  const [dataKeyProduct, setDataKeyProduct] = useState('label');
+  const [dataKeyRevenue, setDataKeyRevenue] = useState('label');
+  const [statisticProduct, setStatisticProduct] = React.useState([]);
+  const [statisticOrder, setStatisticOrder] = React.useState([]);
+  const [statisticRevenue, setStatisticRevenue] = React.useState([]);
 
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'ID',
-        accessor: 'id',
-      },
-      {
-        Header: 'Name',
-        accessor: 'name',
-      },
-      {
-        Header: 'Price',
-        accessor: 'price',
-        sortType: 'basic',
-      },
-      {
-        Header: 'Action',
-        Cell: ({ row }) => (
-          <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
-            <Dropdown.Item onClick={() => handleEditClick(row.original.id)}>Edit</Dropdown.Item>
-            <Dropdown.Item onClick={() => handleDeleteClick(row.original.id)}>Delete</Dropdown.Item>
-          </DropdownButton>
-        ),
-        id: 'action',
-      },
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    nextPage,
-    previousPage,
-    canPreviousPage,
-    pageOptions,
-    state,
-    prepareRow,
-  } = useTable({ columns, data: products }, useSortBy, usePagination);
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
+  // Revenue
+  const [timeRangeRevenue, setTimeRangeRevenue] = useState('Year');
+  const [selectedDateRevenue, setSelectedDateRevenue] = useState(new Date());
+  const handleTimeRangeRevenueChange = (event) => {
+    if (event !== 'Year') setDataKeyRevenue('date');
+    else setDataKeyRevenue('label');
+    setTimeRangeRevenue(event);
   };
-
-  const filteredProducts = React.useMemo(() => {
-    return products.filter((product) => product.name.toLowerCase().includes(searchText.toLowerCase()));
-  }, [products, searchText]);
-
-  const handleAddClick = () => {
-    setShowAddModal(true);
+  const handleDateRevenueChange = (date) => {
+    setSelectedDateRevenue(date);
   };
-
-  const handleAddClose = () => {
-    setShowAddModal(false);
+  // Product
+  const [timeRangeProduct, setTimeRangeProduct] = useState('Year');
+  const [selectedDateProduct, setSelectedDateProduct] = useState(new Date());
+  const handleTimeRangeProductChange = (event) => {
+    if (event !== 'Year') setDataKeyProduct('date');
+    else setDataKeyProduct('label');
+    setTimeRangeProduct(event);
   };
-
-  const handleAddSubmit = (event) => {
-    event.preventDefault();
-    const id = products.length + 1;
-    const name = event.target.elements.name.value;
-    const price = parseInt(event.target.elements.price.value);
-    const newProduct = { id, name, price };
-    setProducts([...products, newProduct]);
-    setShowAddModal(false);
+  const handleDateProductChange = (date) => {
+    setSelectedDateProduct(date);
   };
-
-  const handleEditClick = (productId) => {
-    const product = products.find((product) => product.id === productId);
-    setSelectedProduct(product);
-    setShowEditModal(true);
+  // Order
+  const [timeRangeOrder, setTimeRangeOrder] = useState('Year');
+  const [selectedDateOrder, setSelectedDateOrder] = useState(new Date());
+  const handleTimeRangeOrderChange = (event) => {
+    if (event !== 'Year') setDataKeyOrder('date');
+    else setDataKeyOrder('label');
+    setTimeRangeOrder(event);
   };
-
-  const handleEditClose = () => {
-    setShowEditModal(false);
+  const handleDateOrderChange = (date) => {
+    setSelectedDateOrder(date);
   };
-
-  const handleEditSubmit = (event) => {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    const price = parseInt(event.target.elements.price.value);
-    const updatedProduct = { ...selectedProduct, name, price };
-    const updatedProducts = products.map((product) =>
-      product.id === selectedProduct.id ? updatedProduct : product
-    );
-    setProducts(updatedProducts);
-    setShowEditModal(false);
+  const getValueRange = (data) => {
+    switch (data) {
+      case 'Year':
+        return 2;
+      case 'Month':
+        return 1;
+      case 'Week':
+        return 0;
+    }
   };
-
-  const handleDeleteClick = (productId) => {
-    const product = products.find((product) => product.id === productId);
-    setSelectedProduct(product);
-    setShowDeleteModal(true);
-  };
-
-  const handleDeleteClose = () => {
-    setShowDeleteModal(false);
-  };
-
-  const handleDeleteSubmit = (event) => {
-    event.preventDefault();
-    const updatedProducts = products.filter((product) => product.id !== selectedProduct.id);
-    setProducts(updatedProducts);
-    setShowDeleteModal(false);
-  };
-
+  useEffect(() => {
+    dispatch(
+      getStaticProduct({
+        dateStr: selectedDateProduct,
+        option: getValueRange(timeRangeProduct),
+      })
+    ).then((res) => {
+      setStatisticProduct(res.payload.data);
+    });
+  }, [selectedDateProduct, timeRangeProduct]);
+  useEffect(() => {
+    dispatch(
+      getStaticRevenue({
+        dateStr: selectedDateProduct,
+        option: getValueRange(timeRangeRevenue),
+      })
+    ).then((res) => {
+      setStatisticRevenue(res.payload.data);
+    });
+  }, [selectedDateRevenue, timeRangeRevenue]);
+  useEffect(() => {
+    dispatch(
+      getStaticOrder({
+        dateStr: selectedDateProduct,
+        option: getValueRange(timeRangeOrder),
+      })
+    ).then((res) => {
+      setStatisticOrder(res.payload.data);
+    });
+  }, [selectedDateOrder, timeRangeOrder]);
   return (
-    <div className="content-wrapper">
-      <Breadcrumb>
-        <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Statistics</Breadcrumb.Item>
-      </Breadcrumb>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div className="search-box">
-          <i className="fa fa-search"></i>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchText}
-            onChange={handleSearchChange}
+    <div className="content">
+      <h2 className="title">Thống kê sản phẩm</h2>
+      <div className="revenue-dropdown">
+        <Dropdown onSelect={handleTimeRangeProductChange}>
+          <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
+            {timeRangeProduct}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {timeRanges.map((range, index) => (
+              <Dropdown.Item key={index} eventKey={range.value}>
+                {range.value}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <div className="date-picker-container">
+          <DatePicker
+            selected={selectedDateProduct}
+            onChange={handleDateProductChange}
+            dateFormat="dd/MM/yyyy"
+            className="form-control"
           />
         </div>
-        <button className="btn btn-primary" onClick={handleAddClick}>
-          Add Product
-        </button>
       </div>
-      <table {...getTableProps()} className="table table-bordered table-striped">
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${
-                    column.id === 'action' ? 'action-column' : ''
-                  }`}
-                >
-                  {column.render('Header')}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      className={cell.column.id === 'action' ? 'action-column' : ''}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <div className="pagination-wrapper">
-        <ReactPaginate
-          containerClassName="pagination"
-          pageCount={pageOptions.length}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={({ selected }) => state.gotoPage(selected)}
-          activeClassName="active"
-          previousClassName="page-item"
-          nextClassName="page-item"
-          pageClassName="page-item"
-          breakClassName="page-item"
-          pageLinkClassName="page-link"
-          previousLinkClassName="page-link"
-          nextLinkClassName="page-link"
-          breakLinkClassName="page-link"
-          disableInitialCallback={true}
-        />
+
+      <ResponsiveContainer width="100%" height={300}>
+        <BarChart data={statisticProduct}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey={dataKeyProduct}
+            tickFormatter={(value) => {
+              if (timeRangeProduct !== 'Year') return convertDate(value);
+              return value;
+            }}
+          />
+
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="value" fill="#8884d8" />
+        </BarChart>
+      </ResponsiveContainer>
+
+      <h2 className="title">Thống kê doanh thu</h2>
+      <div className="revenue-dropdown">
+        <Dropdown onSelect={handleTimeRangeRevenueChange}>
+          <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
+            {timeRangeRevenue}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {timeRanges.map((range, index) => (
+              <Dropdown.Item key={index} eventKey={range.value}>
+                {range.value}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <div className="date-picker-container">
+          <DatePicker
+            selected={selectedDateRevenue}
+            onChange={handleDateRevenueChange}
+            dateFormat="dd/MM/yyyy"
+            className="form-control"
+          />
+        </div>
       </div>
-      <Modal show={showAddModal} onHide={handleAddClose} centered>
-        <Form onSubmit={handleAddSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add Product</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter name" />
-            </Form.Group>
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control type="number" placeholder="Enter price" />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleAddClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Add
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-      <Modal show={showEditModal} onHide={handleEditClose} centered>
-        <Form onSubmit={handleEditSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Edit Product</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" defaultValue={selectedProduct?.name} />
-            </Form.Group>
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control type="number" defaultValue={selectedProduct?.price} />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleEditClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-      <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-        <Form onSubmit={handleDeleteSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Delete Product</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to delete the product?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleDeleteClose}>
-              Cancel
-            </Button>
-            <Button variant="danger" type="submit">
-              Delete
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={statisticRevenue}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey={dataKeyRevenue}
+            tickFormatter={(value) => {
+              if (timeRangeRevenue !== 'Year') return convertDate(value);
+              return value;
+            }}
+          />{' '}
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="value" stroke="#8884d8" />
+        </LineChart>
+      </ResponsiveContainer>
+
+      <h2 className="title">Thống kê đơn hàng</h2>
+      <div className="revenue-dropdown">
+        <Dropdown onSelect={handleTimeRangeOrderChange}>
+          <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
+            {timeRangeOrder}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {timeRanges.map((range, index) => (
+              <Dropdown.Item key={index} eventKey={range.value}>
+                {range.value}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <div className="date-picker-container">
+          <DatePicker
+            selected={selectedDateOrder}
+            onChange={handleDateOrderChange}
+            dateFormat="dd/MM/yyyy"
+            className="form-control"
+          />
+        </div>
+      </div>
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={statisticOrder}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey={dataKeyOrder}
+            tickFormatter={(value) => {
+              if (timeRangeOrder !== 'Year') return convertDate(value);
+              return value;
+            }}
+          />{' '}
+          <YAxis />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="value" stroke="#82ca9d" />
+        </LineChart>
+      </ResponsiveContainer>
     </div>
   );
-}
+};
 
-export default Statistics;
+export default StatsPage;
