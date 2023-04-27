@@ -201,9 +201,9 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/wishlist'} element={<Wishlist />} />
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
             <Route path={process.env.PUBLIC_URL + '/checkout'} element={<Checkout />} />
-            <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
-            <Route path={process.env.PUBLIC_URL + '/admin/userlevels'} element={<UserLevels />} />
+            <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
+
             <Route
               path={process.env.PUBLIC_URL + '/vendor/home'}
               element={

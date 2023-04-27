@@ -16,7 +16,6 @@ axiosClient.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
-      console.log(config.headers);
       return { ...config, headers: { ...config.headers, Authorization: 'Bearer ' + accessToken } };
       // config.headers['Authorization'] = 'Bearer ' + accessToken;
     }
@@ -49,7 +48,6 @@ axiosClient.interceptors.response.use(
         }
       } catch (error) {
         // Xử lý lỗi
-        console.log('Gửi lại request' + error);
       }
     }
     return Promise.reject(error);

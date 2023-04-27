@@ -1,29 +1,29 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import Tab from "react-bootstrap/Tab";
-import Nav from "react-bootstrap/Nav";
-import SEO from "../seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Tab from 'react-bootstrap/Tab';
+import Nav from 'react-bootstrap/Nav';
+import SEO from '../seo';
+import LayoutOne from '../../layouts/LayoutOne';
+import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginRegister = () => {
   const { pathname } = useLocation();
 
   const navigate = useNavigate();
 
-  const [error, setError] = useState({passowordWeak : true, rePasswordWrong : true})
+  const [error, setError] = useState({ passowordWeak: true, rePasswordWrong: true });
 
   const [formValues, setFormValues] = useState({
-    username: "",
-    password: "",
-    rePassword :"",
-    email: "",
-    fName: "",
-    lName: "",
-    mName: "",
-    phoneNumber: "",
+    username: '',
+    password: '',
+    rePassword: '',
+    email: '',
+    fName: '',
+    lName: '',
+    mName: '',
+    phoneNumber: '',
   });
 
   useEffect(() => {
@@ -39,19 +39,19 @@ const LoginRegister = () => {
   };
 
   const checkPassword = () => {
-    if(formValues.password.length <= 5) setError(prevState => ({...prevState, passowordWeak: true}));
-    else setError(prevState => ({...prevState, passowordWeak: false}));
-  
-    if(formValues.rePassword !== formValues.password) setError(prevState => ({...prevState, rePasswordWrong: true}));
-    else setError(prevState => ({...prevState, rePasswordWrong: false}));
-    
+    if (formValues.password.length <= 5) setError((prevState) => ({ ...prevState, passowordWeak: true }));
+    else setError((prevState) => ({ ...prevState, passowordWeak: false }));
+
+    if (formValues.rePassword !== formValues.password)
+      setError((prevState) => ({ ...prevState, rePasswordWrong: true }));
+    else setError((prevState) => ({ ...prevState, rePasswordWrong: false }));
   };
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const result = await toast.promise(
+      const result = await toast
+        .promise
         // AuthService.login(formValues.username, formValues.password),
         // {
         //   pending: "Logging in...",
@@ -66,10 +66,10 @@ const LoginRegister = () => {
         //   progress: undefined,
         //   theme: "light",
         // }
-      );
-      console.log(result); // Kết quả trả về từ AuthService.login()
+        ();
+
       setTimeout(() => {
-        navigate("/my-account");
+        navigate('/my-account');
       }, 2000);
     } catch (error) {
       console.error(error);
@@ -83,17 +83,14 @@ const LoginRegister = () => {
   return (
     <Fragment>
       <ToastContainer />
-      <SEO
-        titleTemplate="Login"
-        description="Login page of flone react minimalist eCommerce template."
-      />
+      <SEO titleTemplate="Login" description="Login page of flone react minimalist eCommerce template." />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
         <Breadcrumb
           pages={[
-            { label: "Home", path: process.env.PUBLIC_URL + "/" },
+            { label: 'Home', path: process.env.PUBLIC_URL + '/' },
             {
-              label: "Login Register",
+              label: 'Login Register',
               path: process.env.PUBLIC_URL + pathname,
             },
           ]}
@@ -137,9 +134,7 @@ const LoginRegister = () => {
                               />
                               <div className="button-box">
                                 <div className="login-toggle-btn">
-                                  <Link to={process.env.PUBLIC_URL + "/"}>
-                                    Forgot Password?
-                                  </Link>
+                                  <Link to={process.env.PUBLIC_URL + '/'}>Forgot Password?</Link>
                                 </div>
                                 <button type="submit">
                                   <span>Login</span>
@@ -160,7 +155,9 @@ const LoginRegister = () => {
                                 value={formValues.username}
                                 onChange={handleChange}
                               />
-                              {(error.passowordWeak && formValues.password.length >0) && (<span style={{backgroundColor: "yellow"}}> Mật khẩu ít nhất 6 kí tự</span>)}
+                              {error.passowordWeak && formValues.password.length > 0 && (
+                                <span style={{ backgroundColor: 'yellow' }}> Mật khẩu ít nhất 6 kí tự</span>
+                              )}
                               <input
                                 type="password"
                                 name="password"
@@ -168,7 +165,12 @@ const LoginRegister = () => {
                                 value={formValues.password}
                                 onChange={handleChange}
                               />
-                              {error.rePasswordWrong && formValues.rePassword.length >0 && (<span style={{backgroundColor: "orange"}}> Mật khẩu nhập lại không trùng khớp</span>)}
+                              {error.rePasswordWrong && formValues.rePassword.length > 0 && (
+                                <span style={{ backgroundColor: 'orange' }}>
+                                  {' '}
+                                  Mật khẩu nhập lại không trùng khớp
+                                </span>
+                              )}
                               <input
                                 type="password"
                                 name="rePassword"
@@ -212,8 +214,19 @@ const LoginRegister = () => {
                                 onChange={handleChange}
                               />
                               <div className="button-box">
-                                <button onClick={() => alert()} type="submit" disabled={!error.rePasswordWrong && !error.passowordWeak}>
-                                <span className={`${(error.rePasswordWrong || error.passowordWeak) && 'text-decoration-line-through'}`} >Register</span>
+                                <button
+                                  onClick={() => alert()}
+                                  type="submit"
+                                  disabled={!error.rePasswordWrong && !error.passowordWeak}
+                                >
+                                  <span
+                                    className={`${
+                                      (error.rePasswordWrong || error.passowordWeak) &&
+                                      'text-decoration-line-through'
+                                    }`}
+                                  >
+                                    Register
+                                  </span>
                                 </button>
                               </div>
                             </form>

@@ -73,7 +73,7 @@ function Deliveries() {
         Cell: ({ row }) => {
           const isActive = !row.original.isDeleted;
           return (
-            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>}>
+            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
               <Dropdown.Item style={{ color: 'blue' }} onClick={() => handleEditClick(row.original.Id)}>
                 Edit
               </Dropdown.Item>
@@ -276,7 +276,7 @@ function Deliveries() {
       </Breadcrumb>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
-          <i className="fas fa-search"></i>
+          <i className="fa fa-search"></i>
           <input
             type="text"
             placeholder="Search deliveries..."

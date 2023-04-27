@@ -8,7 +8,6 @@ export const fetchOrders = createAsyncThunk(
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&displayName%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
 
     return response;
   }
@@ -41,7 +40,6 @@ export const cancelOrder = createAsyncThunk('orders/cancelOrder', async (id) => 
 
 export const getOrder = createAsyncThunk('orders/getOrder', async (id) => {
   const response = await axiosClient.get(`/orders/${id}`);
-  console.log(response);
 
   return response;
 });

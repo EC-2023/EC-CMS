@@ -8,7 +8,6 @@ export const fetchUsers = createAsyncThunk(
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&displayName%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
 
     return response;
   }

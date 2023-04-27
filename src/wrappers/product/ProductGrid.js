@@ -18,10 +18,10 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
   //     try {
   //       const params = {size : 8, page : 0, orderBy : '-createAt'};
   //       const response = await productAPI.getNewProduct(params);
-  //       console.log(response);
+
   //       dispatch(setProducts(response.data));
   //     } catch (error) {
-  //       console.log("faild", error);
+
   //     }
   //   }
 

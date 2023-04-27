@@ -8,7 +8,7 @@ export const fetchCategories = createAsyncThunk(
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
+
     return response;
   }
 );
@@ -32,7 +32,7 @@ export const addCategory = createAsyncThunk('categories/addCategory', async (cat
         'Accept': '*/*',
       },
     });
-    payloadCate.image = response.data;
+    payloadCate.image = response.data.data;
   }
   const response = await axiosClient.post('/categories', payloadCate, {
     headers: {
@@ -48,7 +48,6 @@ export const deleteCategory = createAsyncThunk('categories/deleteCategory', asyn
 });
 
 export const updateCategory = createAsyncThunk('categories/updateCategory', async (category) => {
-  console.log(category);
   const payloadCate = {
     name: category.name,
   };

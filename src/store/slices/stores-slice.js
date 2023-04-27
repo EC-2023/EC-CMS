@@ -3,11 +3,20 @@ import axiosClient from '../../api/axiosClient';
 export const fetchStores = createAsyncThunk(
   'stores/fetchStores',
   async ({ currentPage, pageSize, searchText, orderBy }) => {
+    console.log({ currentPage, pageSize, searchText, orderBy });
+
+    console.log(
+      `/stores/pagination?skip=${
+        currentPage * pageSize
+      }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
+    );
+
     const response = await axiosClient.get(
       `/stores/pagination?skip=${
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
+    console.log(response);
     return response;
   }
 );
@@ -40,7 +49,6 @@ export const getProductsByStore = createAsyncThunk(
         otherCondition ? otherCondition : ''
       }&name%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(currentPage * pageSize);
 
     return response;
   }

@@ -13,25 +13,14 @@ import {
 } from 'recharts';
 import {
   getStaticOrderStore,
-  getStaticProduct,
   getStaticProductStore,
   getStaticRevenueStore,
-  selectStatistics,
 } from '../../../store/slices/statistics-slice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import { useEffect } from 'react';
 import { convertDate } from '../../../utils/convertDate';
-const data = [
-  { name: 'Ngày 1', doanhThu: 4000, donHang: 2400, sanPham: 2400, ttdt: 2400 },
-  { name: 'Ngày 2', doanhThu: 3000, donHang: 1398, sanPham: 2210, ttdt: 2210 },
-  { name: 'Ngày 3', doanhThu: 2000, donHang: 9800, sanPham: 2290, ttdt: 2290 },
-  { name: 'Ngày 4', doanhThu: 2780, donHang: 3908, sanPham: 2000, ttdt: 2000 },
-  { name: 'Ngày 5', doanhThu: 1890, donHang: 4800, sanPham: 2181, ttdt: 2181 },
-  { name: 'Ngày 6', doanhThu: 2390, donHang: 3800, sanPham: 2500, ttdt: 2500 },
-  { name: 'Ngày 7', doanhThu: 3490, donHang: 4300, sanPham: 2100, ttdt: 2100 },
-];
 
 const timeRanges = [
   { key: 0, value: 'Week' },
@@ -117,8 +106,6 @@ const StatsPage = () => {
         option: getValueRange(timeRangeOrder),
       })
     ).then((res) => {
-      console.log(res.payload.data);
-
       setStatisticOrder(res.payload.data);
     });
   }, [selectedDateOrder, timeRangeOrder]);
@@ -154,7 +141,6 @@ const StatsPage = () => {
           <XAxis
             dataKey={dataKeyProduct}
             tickFormatter={(value) => {
-              console.log(value);
               if (timeRangeProduct !== 'Year') return convertDate(value);
               return value;
             }}

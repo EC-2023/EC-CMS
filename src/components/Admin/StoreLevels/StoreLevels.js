@@ -73,7 +73,7 @@ function StoreLevels() {
         Cell: ({ row }) => {
           const isActive = !row.original.isDeleted;
           return (
-            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>}>
+            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
               <Dropdown.Item style={{ color: 'blue' }} onClick={() => handleEditClick(row.original.Id)}>
                 Edit
               </Dropdown.Item>
@@ -120,7 +120,6 @@ function StoreLevels() {
 
   const debouncedFetchStoreLevels = debounce((searchText) => {
     dispatch(fetchStoreLevels({ currentPage, pageSize: size, searchText, orderBy }));
-    console.log(storeLevels.pagination);
   }, 500);
 
   const handleSearchChange = (event) => {
@@ -129,7 +128,6 @@ function StoreLevels() {
   };
 
   const handleAddClick = () => {
-    console.log(storeLevels.data);
     setShowAddModal(true);
   };
 
@@ -167,7 +165,6 @@ function StoreLevels() {
   };
   const handleEditClick = React.useCallback(
     (storeLevelId) => {
-      console.log(storeLevels);
       const storeLevel = storeLevels.data.find((storeLevel) => storeLevel.Id === storeLevelId);
       setSelectedStoreLevel(storeLevel);
       setShowEditModal(true);
@@ -272,7 +269,7 @@ function StoreLevels() {
       </Breadcrumb>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
-          <i className="fas fa-search"></i>
+          <i className="fa fa-search"></i>
           <input
             type="text"
             placeholder="Search storeLevels..."

@@ -9,45 +9,45 @@ import DatePicker from 'react-datepicker';
 import { fetchRevenue, fetchTotal, selectStatistics } from '../../../store/slices/statistics-slice';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
-function Home() {
+import { convertDate } from '../../../utils/convertDate';
+function HomeAdmin() {
+  const timeRanges = [
+    { key: 0, value: 'Week' },
+    { key: 1, value: 'Month' },
+    { key: 2, value: 'Year' },
+  ];
   const dispatch = useDispatch();
   const statistics = useSelector(selectStatistics);
-  const [chartData, setChartData] = useState({});
-  const sampleData = [
-    { time: '2023-01', revenue: 4500 },
-    { time: '2023-02', revenue: 6000 },
-    { time: '2023-03', revenue: 5000 },
-    { time: '2023-04', revenue: 7000 },
-    { time: '2023-05', revenue: 8000 },
-    { time: '2023-06', revenue: 6500 },
-    { time: '2023-07', revenue: 9000 },
-    { time: '2023-08', revenue: 7500 },
-    { time: '2023-09', revenue: 8500 },
-    { time: '2023-10', revenue: 9500 },
-    { time: '2023-11', revenue: 10000 },
-    { time: '2023-12', revenue: 11000 },
-  ];
+  const [dataKeyProduct, setDataKeyProduct] = useState('label');
 
-  const [timeRange, setTimeRange] = useState({ key: 3, value: 'all' });
+  const [timeRange, setTimeRange] = useState('Year');
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     dispatch(fetchTotal());
-    dispatch(fetchRevenue({ dateStr: selectedDate.getTime(), option: timeRange }));
   }, []);
 
+  useEffect(() => {
+    dispatch(fetchRevenue({ dateStr: selectedDate, option: getValueRange(timeRange) }));
+  }, [selectedDate, timeRange]);
+  const getValueRange = (data) => {
+    switch (data) {
+      case 'Year':
+        return 2;
+      case 'Month':
+        return 1;
+      case 'Week':
+        return 0;
+    }
+  };
   const handleTimeRangeChange = (event) => {
+    if (event !== 'Year') setDataKeyProduct('date');
+    else setDataKeyProduct('label');
     setTimeRange(event);
   };
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
-  const timeRanges = [
-    { key: 3, value: 'all' },
-    { key: 0, value: 'week' },
-    { key: 1, value: 'month' },
-    { key: 2, value: 'year' },
-  ];
 
   return (
     <div className="content-wrapper">
@@ -66,18 +66,17 @@ function Home() {
           <p>{statistics.total?.totalProduct}</p>
         </div>
       </div>
-
       <div className="revenue-chart-container">
         <div>
           <h2 className="title">Doanh thu</h2>
           <div className="revenue-dropdown">
             <Dropdown onSelect={handleTimeRangeChange}>
-              <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" defaultValue={timeRanges[0]}>
+              <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
                 {timeRange}
               </Dropdown.Toggle>
               <Dropdown.Menu>
                 {timeRanges.map((range, index) => (
-                  <Dropdown.Item key={index} eventKey={range.key}>
+                  <Dropdown.Item key={index} eventKey={range.value}>
                     {range.value}
                   </Dropdown.Item>
                 ))}
@@ -92,21 +91,30 @@ function Home() {
               />
             </div>
           </div>
-
-          <ResponsiveContainer width="100%" height={400}>
-            <LineChart data={sampleData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="time" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="revenue" stroke="#8884d8" activeDot={{ r: 8 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          {statistics.revenue?.length > 0 ? (
+            <ResponsiveContainer width="100%" height={400}>
+              <LineChart data={statistics.revenue} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey={dataKeyProduct}
+                  tickFormatter={(value) => {
+                    if (timeRange !== 'Year') return convertDate(value);
+                    return value;
+                  }}
+                />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="centered-message">No data available</div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export default Home;
+export default HomeAdmin;

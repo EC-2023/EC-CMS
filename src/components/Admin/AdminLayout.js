@@ -14,13 +14,15 @@ import Deliveries from './Deliveries/Deliveries';
 import StoreLevels from './StoreLevels/StoreLevels';
 import Stores from './Stores/Stores';
 import Statistics from './Statistics/Statistics';
+import HomeAdmin from './Home/Home';
 
-const AdminLayout = ({ children }) => {
+const AdminLayout = () => {
   const [selectedNavItem, setSelectedNavItem] = useState(1);
   let content = null;
+
   switch (selectedNavItem) {
     case 1:
-      content = <Home />;
+      content = <HomeAdmin />;
       break;
     case 2:
       content = <Users />;
@@ -51,7 +53,7 @@ const AdminLayout = ({ children }) => {
       break;
     // Add more cases as needed
     default:
-      content = <Home />;
+      content = <HomeAdmin />;
   }
   return (
     <div className="App d-flex">
