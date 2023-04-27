@@ -69,13 +69,13 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
         <div className="col-md-5 col-sm-12 col-xs-12">
           <div className="product-large-image-wrapper">
             <Swiper options={gallerySwiperParams}>
-              {product.image &&
-                product.image.map((img, i) => {
+              {product.images &&
+                product.images.map((img, i) => {
                   return (
                     <SwiperSlide key={i}>
                       <div className="single-image">
                         <img
-                          src={process.env.PUBLIC_URL + img}
+                          src={process.env.PUBLIC_URL + img.location}
                           className="img-fluid"
                           alt="Product"
                         />
@@ -87,13 +87,13 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
           </div>
           <div className="product-small-image-wrapper mt-15">
             <Swiper options={thumbnailSwiperParams}>
-              {product.image &&
-                product.image.map((img, i) => {
+              {product.images && product.images.lenght > 2 &&
+                product.images.map((img, i) => {
                   return (
                     <SwiperSlide key={i}>
                       <div className="single-image">
                         <img
-                          src={process.env.PUBLIC_URL + img}
+                          src={process.env.PUBLIC_URL + img.location}
                           className="img-fluid"
                           alt=""
                         />
@@ -108,18 +108,7 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
           <div className="product-details-content quickview-content">
             <h2>{product.name}</h2>
             <div className="product-details-price">
-              {discountedPrice !== null ? (
-                <Fragment>
-                  <span>
-                    {currency.currencySymbol + finalDiscountedPrice}
-                  </span>{" "}
-                  <span className="old">
-                    {currency.currencySymbol + finalProductPrice}
-                  </span>
-                </Fragment>
-              ) : (
-                <span>{currency.currencySymbol + finalProductPrice} </span>
-              )}
+                <span>{product.price + " VNĐ"} </span>
             </div>
             {product.rating && product.rating > 0 ? (
               <div className="pro-details-rating-wrap">
@@ -255,7 +244,7 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
                   </button>
                 </div>
                 <div className="pro-details-cart btn-hover">
-                  {productStock && productStock > 0 ? (
+                  {product.quantity && product.quantity > 0 ? (
                     <button
                       onClick={() =>
                         dispatch(addToCart({
@@ -271,7 +260,7 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
                       Add To Cart{" "}
                     </button>
                   ) : (
-                    <button disabled>Out of Stock</button>
+                    <button disabled>Hết Hàng</button>
                   )}
                 </div>
                 <div className="pro-details-wishlist">
@@ -288,7 +277,7 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
                     <i className="pe-7s-like" />
                   </button>
                 </div>
-                <div className="pro-details-compare">
+                {/* <div className="pro-details-compare">
                   <button
                     className={compareItem !== undefined ? "active" : ""}
                     disabled={compareItem !== undefined}
@@ -301,7 +290,7 @@ function ProductModal({ product, currency, discountedPrice, finalProductPrice, f
                   >
                     <i className="pe-7s-shuffle" />
                   </button>
-                </div>
+                </div> */}
               </div>
             )}
           </div>

@@ -131,7 +131,7 @@ const Cart = () => {
                                         }))
                                       }
                                       disabled={
-                                        cartItem !== undefined
+                                        cartItem === undefined
                                       }
                                     >
                                       +

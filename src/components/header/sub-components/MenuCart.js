@@ -9,6 +9,13 @@ const MenuCart = () => {
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
   let cartTotalPrice = 0;
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+    for (let item of cartItems) {
+      totalPrice += item.price * item.quantity;
+    }
+    return totalPrice;
+  }
 
   return (
     <div className="shopping-cart-content">
@@ -63,7 +70,7 @@ const MenuCart = () => {
             <h4>
               Total :{" "}
               <span className="shop-total">
-                {currency.currencySymbol + cartTotalPrice.toFixed(2)}
+                {currency.currencySymbol + calculateTotalPrice().toFixed(2)}
               </span>
             </h4>
           </div>

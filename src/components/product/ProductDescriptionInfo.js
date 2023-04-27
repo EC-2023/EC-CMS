@@ -166,7 +166,7 @@ const ProductDescriptionInfo = ({
             <button
               onClick={() =>
                 setQuantityCount(
-                  quantityCount < productStock - productCartQty
+                  quantityCount < product.quantity - productCartQty
                     ? quantityCount + 1
                     : quantityCount
                 )
@@ -177,7 +177,7 @@ const ProductDescriptionInfo = ({
             </button>
           </div>
           <div className="pro-details-cart btn-hover">
-            {productStock && productStock > 0 ? (
+            {product.quantity && product.quantity > 0 ? (
               <button
                 onClick={() =>
                   dispatch(
@@ -197,13 +197,13 @@ const ProductDescriptionInfo = ({
                     })
                   )
                 }
-                disabled={productCartQty >= productStock}
+                disabled={productCartQty >= product.quantity}
               >
                 {" "}
                 Add To Cart{" "}
               </button>
             ) : (
-              <button disabled>Out of Stock</button>
+              <button disabled>Hết Hàng</button>
             )}
           </div>
           <div className="pro-details-wishlist">
@@ -269,7 +269,7 @@ const ProductDescriptionInfo = ({
         ""
       )}
 
-      <div className="pro-details-social">
+      {/* <div className="pro-details-social">
         <ul>
           <li>
             <a href="//facebook.com">
@@ -297,7 +297,7 @@ const ProductDescriptionInfo = ({
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
     </div>
   );
 };
