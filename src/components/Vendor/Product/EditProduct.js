@@ -77,16 +77,6 @@ function EditProduct() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log(
-      listAddAttribute,
-      listAddAttributeValue,
-      listRemoveAttributeValue,
-      listRemoveAttribute,
-      listEditAttribute,
-      listEditAttributeValue,
-      listAddImage,
-      listRemoveImage
-    );
 
     dispatch(
       editProduct({
