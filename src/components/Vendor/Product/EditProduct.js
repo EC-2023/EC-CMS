@@ -67,9 +67,7 @@ function EditProduct() {
           setImages((images) => [...images, ...newImages]);
           setPreviewImages((previewImages) => [...previewImages, ...newPreviewImages]);
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch((error) => {});
       const index = categoryOptions.findIndex((x) => x.value === response.payload.data.categoryId);
       setCategory(categoryOptions[index]);
       setDateValidPromote(new Date(response.payload.data.dateValidPromote).toISOString().slice(0, 10));
@@ -147,7 +145,7 @@ function EditProduct() {
   function generateRandomId() {
     const randomNumber = Math.random();
     const idString = randomNumber.toString(36).substr(2, 9);
-    console.log('idString:', idString); // Lấy 9 ký tự đầu tiên
+
     const prefix = 'my-id-';
     return prefix + idString;
   }
@@ -200,7 +198,6 @@ function EditProduct() {
 
   const removeImage = (index) => {
     const newImages = [...images];
-    console.log(product.images);
 
     const indexList = product.images.findIndex((x) => x['location'].includes(images[index]['name']));
     setListRemoveImage([...listRemoveImage, product.images[indexList].id]);

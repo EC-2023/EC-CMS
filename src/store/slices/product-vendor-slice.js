@@ -43,6 +43,7 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
 
   if (product.attributes.length > 0) payloadProduct.attributes = product.attributes;
   console.log(payloadProduct);
+
   const response = await axiosClient.post('/products', payloadProduct, {
     headers: {
       'Content-Type': 'application/json',
@@ -52,7 +53,6 @@ export const addProduct = createAsyncThunk('products/addProduct', async (product
 });
 export const editProduct = createAsyncThunk('products/editProduct', async (product) => {
   const listImage = [];
-  console.log(product);
 
   for (let i = 0; i < product.listAddImage.length; i++) {
     const formData = new FormData();

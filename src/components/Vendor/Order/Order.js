@@ -146,7 +146,6 @@ function Order() {
   );
 
   const debouncedFetchOrders = debounce((searchText) => {
-    console.log(searchText);
     dispatch(
       getOrdersByMyStore({
         currentPage,

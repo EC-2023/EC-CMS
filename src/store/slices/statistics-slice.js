@@ -14,7 +14,9 @@ export const fetchStatisticStore = createAsyncThunk('statistics/get-statistics-s
 export const fetchRevenueStore = createAsyncThunk(
   'statistics/get-revenue-statistics-store',
   async ({ option, dateStr }) => {
-    const response = await axiosClient.get(`/statistics/get-revenue-statistics-store`);
+    const response = await axiosClient.get(
+      `/statistics/get-revenue-statistics-store?option=${option}&date=${dateStr.getTime()}`
+    );
     return response;
   }
 );
@@ -22,13 +24,14 @@ export const fetchRevenue = createAsyncThunk('statistics/getStaticRevenue', asyn
   const response = await axiosClient.get(
     `/statistics/get-static-revenue?option=${option}&date=${dateStr.getTime()}`
   );
+  console.log(response);
+
   return response;
 });
 
 export const getStaticProductStore = createAsyncThunk(
   'statistics/get-statistic-product-store',
   async ({ option, dateStr }) => {
-    console.log(dateStr.getTime());
     const response = await axiosClient.get(
       `/statistics/get-statistic-product-store?option=${option}&date=${dateStr.getTime()}`
     );
@@ -42,7 +45,7 @@ export const getStaticOrderStore = createAsyncThunk(
     const response = await axiosClient.get(
       `/statistics/get-statistic-order-store?option=${option}&date=${dateStr.getTime()}`
     );
-    console.log(response);
+
     return response;
   }
 );
@@ -90,8 +93,6 @@ export const statisticsSlice = createSlice({
         state.data = action.payload.data;
       })
       .addCase(fetchTotal.fulfilled, (state, action) => {
-        const headersObject = axiosHeadersToObject(action.payload.headers); // Convert the headers
-        state.headers = headersObject['content-type'];
         state.total = action.payload.data;
       })
       .addCase(fetchRevenue.fulfilled, (state, action) => {

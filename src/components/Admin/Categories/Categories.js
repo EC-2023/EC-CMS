@@ -90,7 +90,7 @@ function Categories() {
         Cell: ({ row }) => {
           const isActive = !row.original.isDeleted;
           return (
-            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>}>
+            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
               <Dropdown.Item style={{ color: 'blue' }} onClick={() => handleEditClick(row.original.Id)}>
                 Edit
               </Dropdown.Item>
@@ -122,9 +122,9 @@ function Categories() {
     dispatch(fetchAllCategories());
     dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
   }, []);
+
   useEffect(() => {
     dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
-    console.log(categories.data);
   }, [currentPage, orderBy]);
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
@@ -158,7 +158,6 @@ function Categories() {
   }, [showAddModal, showEditModal]);
   const debouncedFetchCategories = debounce((searchText) => {
     dispatch(fetchCategories({ currentPage, pageSize: size, searchText, orderBy }));
-    console.log(categories.pagination);
   }, 500);
 
   const handleSearchChange = (event) => {
@@ -194,7 +193,10 @@ function Categories() {
       .loading('Adding new category...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(addCategory(newCategory)))
+      .then(() => {
+        dispatch(fetchAllCategories());
+        return dispatch(addCategory(newCategory));
+      })
       .then((res) => {
         if (!res.error)
           cogoToast.success('Successfully add new category', {
@@ -332,7 +334,7 @@ function Categories() {
       </Breadcrumb>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
-          <i className="fas fa-search"></i>
+          <i className="fa fa-search"></i>
           <input
             type="text"
             placeholder="Search categories..."

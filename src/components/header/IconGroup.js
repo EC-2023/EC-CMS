@@ -1,72 +1,64 @@
-import PropTypes from "prop-types";
-import { Link,useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import clsx from "clsx";
-import MenuCart from "./sub-components/MenuCart";
-import React, { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import clsx from 'clsx';
+import MenuCart from './sub-components/MenuCart';
+import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import "react-toastify/dist/ReactToastify.css";
-import {RiBillLine} from 'react-icons/ri';
+import 'react-toastify/dist/ReactToastify.css';
+import { RiBillLine } from 'react-icons/ri';
 
 const IconGroup = ({ iconWhiteClass }) => {
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const navigate = useNavigate();
 
-  const handleLogout = () =>{
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
+  const handleLogout = () => {
+    localStorage.removeItem('user');
     toast.success('Đăng xuất thành công!', {
-      position: "top-right",
+      position: 'top-right',
       autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
-      });
+      theme: 'light',
+    });
 
     setTimeout(() => {
-      navigate("/");
+      navigate('/');
     }, 2000);
-  }
+  };
 
   useEffect(() => {
     // Kiểm tra nếu có token trong localStorage thì set isLoggedIn = true
-    const accessToken = localStorage.getItem('accessToken');
-    try{
-      if (accessToken) {  
+    const user = JSON.parse(localStorage.getItem('user'));
+    try {
+      if (user.accessToken) {
+        console.log(user.accessToken);
         setIsLoggedIn(true);
       }
-    }
-    catch{
-
-    }
-
+    } catch {}
   }, []);
 
-
-  const handleClick = e => {
-    e.currentTarget.nextSibling.classList.toggle("active");
+  const handleClick = (e) => {
+    e.currentTarget.nextSibling.classList.toggle('active');
   };
 
   const triggerMobileMenu = () => {
-    const offcanvasMobileMenu = document.querySelector(
-      "#offcanvas-mobile-menu"
-    );
-    offcanvasMobileMenu.classList.add("active");
+    const offcanvasMobileMenu = document.querySelector('#offcanvas-mobile-menu');
+    offcanvasMobileMenu.classList.add('active');
   };
   const { compareItems } = useSelector((state) => state.compare);
   const { wishlistItems } = useSelector((state) => state.wishlist);
   const { cartItems } = useSelector((state) => state.cart);
 
   return (
-    <div className={clsx("header-right-wrap", iconWhiteClass)} >
-    <ToastContainer/>
+    <div className={clsx('header-right-wrap', iconWhiteClass)}>
+      <ToastContainer />
       <div className="same-style header-search d-none d-lg-block">
-        <button className="search-active" onClick={e => handleClick(e)}>
+        <button className="search-active" onClick={(e) => handleClick(e)}>
           <i className="pe-7s-search" />
         </button>
         <div className="search-content">
@@ -79,34 +71,28 @@ const IconGroup = ({ iconWhiteClass }) => {
         </div>
       </div>
       <div className="same-style account-setting d-none d-lg-block">
-        <button
-          className="account-setting-active"
-          onClick={e => handleClick(e)}
-        >
+        <button className="account-setting-active" onClick={(e) => handleClick(e)}>
           <i className="pe-7s-user-female" />
         </button>
         <div className="account-dropdown">
           <ul>
-          {!isLoggedIn && (
+            {!isLoggedIn && (
               <>
                 <li>
-                  <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                    Login
-                  </Link>
+                  <Link to={process.env.PUBLIC_URL + '/login-register'}>Login</Link>
+                </li>
+                <li>
+                  <Link to={process.env.PUBLIC_URL + '/login-register'}>Register</Link>
                 </li>
               </>
             )}
             <li>
-              <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                my account
-              </Link>
+              <Link to={process.env.PUBLIC_URL + '/my-account'}>my account</Link>
             </li>
             {isLoggedIn && (
               <>
                 <li>
-                  <Link onClick={handleLogout}>
-                    LogOut
-                  </Link>
+                  <Link onClick={handleLogout}>LogOut</Link>
                 </li>
               </>
             )}
@@ -122,7 +108,7 @@ const IconGroup = ({ iconWhiteClass }) => {
         </Link>
       </div> */}
       <div className="same-style header-wishlist">
-        <Link to={process.env.PUBLIC_URL + "/wishlist"}>
+        <Link to={process.env.PUBLIC_URL + '/wishlist'}>
           <i className="pe-7s-like" />
           <span className="count-style">
             {wishlistItems && wishlistItems.length ? wishlistItems.length : 0}
@@ -130,33 +116,26 @@ const IconGroup = ({ iconWhiteClass }) => {
         </Link>
       </div>
       <div className="same-style cart-wrap d-none d-lg-block">
-        <button className="icon-cart" onClick={e => handleClick(e)}>
+        <button className="icon-cart" onClick={(e) => handleClick(e)}>
           <i className="pe-7s-shopbag" />
-          <span className="count-style">
-            {cartItems && cartItems.length ? cartItems.length : 0}
-          </span>
+          <span className="count-style">{cartItems && cartItems.length ? cartItems.length : 0}</span>
         </button>
         {/* menu cart */}
         <MenuCart />
       </div>
       <div className="same-style cart-wrap d-none d-lg-block">
-        <Link to={process.env.PUBLIC_URL + "/order"}>
-          <RiBillLine/>
+        <Link to={process.env.PUBLIC_URL + '/order'}>
+          <RiBillLine />
         </Link>
       </div>
       <div className="same-style cart-wrap d-block d-lg-none">
-        <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
+        <Link className="icon-cart" to={process.env.PUBLIC_URL + '/cart'}>
           <i className="pe-7s-shopbag" />
-          <span className="count-style">
-            {cartItems && cartItems.length ? cartItems.length : 0}
-          </span>
+          <span className="count-style">{cartItems && cartItems.length ? cartItems.length : 0}</span>
         </Link>
       </div>
       <div className="same-style mobile-off-canvas d-block d-lg-none">
-        <button
-          className="mobile-aside-button"
-          onClick={() => triggerMobileMenu()}
-        >
+        <button className="mobile-aside-button" onClick={() => triggerMobileMenu()}>
           <i className="pe-7s-menu" />
         </button>
       </div>
@@ -167,7 +146,5 @@ const IconGroup = ({ iconWhiteClass }) => {
 IconGroup.propTypes = {
   iconWhiteClass: PropTypes.string,
 };
-
-
 
 export default IconGroup;

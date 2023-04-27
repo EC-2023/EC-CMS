@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import AvatarEditor from "react-avatar-editor";
-import { useDropzone } from "react-dropzone";
-import axios from "axios";
-import drag_drop from "../../assets/Images/drag_drop.jpg";
-import sha1 from "js-sha1";
+import React, { useState } from 'react';
+import AvatarEditor from 'react-avatar-editor';
+import { useDropzone } from 'react-dropzone';
+import axios from 'axios';
+import drag_drop from '../../assets/Images/drag_drop.jpg';
+import sha1 from 'js-sha1';
 
 function MyEditor() {
   const [image, setImage] = useState(drag_drop);
@@ -21,23 +21,21 @@ function MyEditor() {
     if (editor) {
       const canvas = editor.getImageScaledToCanvas();
       canvas.toBlob((blob) => {
-        const timestamp = Math.round((new Date).getTime()/1000)
-        const apiKey = "181975331748428";
-        const apiSecret = "2R3O056NMmxBXUMwL2apc6CH6aQ";
-        const cloudName = "dommm7bzh";
+        const timestamp = Math.round(new Date().getTime() / 1000);
+        const apiKey = '181975331748428';
+        const apiSecret = '2R3O056NMmxBXUMwL2apc6CH6aQ';
+        const cloudName = 'dommm7bzh';
         const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
         const formData = new FormData();
-        formData.append("file", blob, "avatar.jpg");
-        formData.append("timestamp", timestamp);
-        formData.append("api_key", apiKey);
+        formData.append('file', blob, 'avatar.jpg');
+        formData.append('timestamp', timestamp);
+        formData.append('api_key', apiKey);
 
         const signature = sha1(`timestamp=${timestamp}&${apiSecret}`);
-        formData.append("signature", signature);
+        formData.append('signature', signature);
 
-        axios.post(url, formData).then((response) => {
-          console.log(response);
-        });
+        axios.post(url, formData).then((response) => {});
       });
     }
   };
@@ -48,12 +46,12 @@ function MyEditor() {
 
   return (
     <>
-      <p className="d-flex justify-content-center" style={{ fontSize: "20px" }}>
+      <p className="d-flex justify-content-center" style={{ fontSize: '20px' }}>
         Kéo thả hoặc chọn ảnh
       </p>
       <div className="d-flex justify-content-center align-items-center">
         <br />
-        <div {...getRootProps()} style={{ width: "200px", height: "200px" }}>
+        <div {...getRootProps()} style={{ width: '200px', height: '200px' }}>
           <AvatarEditor ref={setEditorRef} width={150} height={150} image={image} border={10} />
           <input {...getInputProps()} />
         </div>
