@@ -7,6 +7,7 @@ import Rating from "./sub-components/ProductRating";
 import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
 import { addToCompare } from "../../store/slices/compare-slice";
+import "./ProductDescriptionInfo.scss";
 
 const ProductDescriptionInfo = ({
   product,
@@ -250,6 +251,34 @@ const ProductDescriptionInfo = ({
       ) : (
         ""
       )}
+      {/* {console.log(product.attributes[0][" attributeValues"][0])} */}
+      <div className="attribute">
+        <span>Thuộc tính:</span>
+          {product.attributes.map((attribute, index) => (
+          <>
+          {attribute[" attributeValues"].length > 1 ? (
+            <div key={index} className="attribute-group">
+            <p>{attribute.name}:</p>
+            <ul>
+              {attribute[" attributeValues"].map((value, index) => (
+                <li key={index}>
+                  <label>
+                    <input
+                      className="attribute-input"
+                      type="radio"
+                      name={attribute.name}
+                      value={value.value}
+                    />
+                    <span>{value.name}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </div>
+          ): ""}
+          </>
+        ))}
+      </div>
       {product.tag ? (
         <div className="pro-details-meta">
           <span>Tags :</span>

@@ -3,7 +3,11 @@ import clsx from "clsx";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 
-const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc }) => {
+const ProductDescriptionTab = ({
+  spaceBottomClass,
+  productFullDesc,
+  product,
+}) => {
   return (
     <div className={clsx("description-review-area", spaceBottomClass)}>
       <div className="container">
@@ -24,7 +28,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc }) => {
             </Nav>
             <Tab.Content className="description-review-bottom">
               <Tab.Pane eventKey="additionalInfo">
-                <div className="product-anotherinfo-wrapper">
+                {/* <div className="product-anotherinfo-wrapper">
                   <ul>
                     <li>
                       <span>Weight</span> 400 g
@@ -40,6 +44,28 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc }) => {
                       seitan letterpress
                     </li>
                   </ul>
+                </div> */}
+                <div className="product-anotherinfo-wrapper">
+                  {product.attributes.map((attribute, index) => (
+                    <>
+                      {attribute[" attributeValues"].length < 2 ? (
+                        <div key={index} className="attribute-group">
+                          <p>{attribute.name}:</p>
+                          <ul>
+                            {attribute[" attributeValues"].map(
+                              (value, index) => (
+                                <li key={index}>
+                                  <span>{value.name}</span>
+                                </li>
+                              )
+                            )}
+                          </ul>
+                        </div>
+                      ) : (
+                        ""
+                      )}
+                    </>
+                  ))}
                 </div>
               </Tab.Pane>
               <Tab.Pane eventKey="productDescription">
@@ -180,7 +206,8 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc }) => {
 
 ProductDescriptionTab.propTypes = {
   productFullDesc: PropTypes.string,
-  spaceBottomClass: PropTypes.string
+  spaceBottomClass: PropTypes.string,
+  product: PropTypes.shape({}),
 };
 
 export default ProductDescriptionTab;

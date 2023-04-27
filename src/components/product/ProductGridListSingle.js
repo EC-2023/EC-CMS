@@ -76,11 +76,11 @@ const ProductGridListSingle = ({
                     {" "}
                     Buy now{" "}
                   </a>
-                ) : product.variation && product.variation.length >= 1 ? (
+                ) : product.attributes && product.attributes.length >= 1 ? (
                   <Link to={`${process.env.PUBLIC_URL}/product/${product.Id}`}>
                     Select Option
                   </Link>
-                ) : product.stock && product.stock > 0 ? (
+                ) : product.quantity && product.quantity > 0 ? (
                   <button
                     onClick={() => {
                       dispatch(addToCart({product, quantity: 1}));

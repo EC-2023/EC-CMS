@@ -206,7 +206,7 @@ const ProductGridSingle = ({
                 </Link>
               ) : product.quantity && product.quantity > 0 ? (
                 <button
-                  onClick={() => dispatch(addToCart(product))}
+                  onClick={() => dispatch(addToCart({...product, quantity : 1}))}
                   className={
                     cartItem !== undefined && cartItem.quantity > 0
                       ? "active"
