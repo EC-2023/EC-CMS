@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './HomeVendor.css';
+import './Product.css';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -9,74 +9,91 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import { usePagination, useSortBy, useTable } from 'react-table';
 import { debounce } from 'lodash';
-import { getOrdersByMyStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
-import { acceptOrder, cancelOrder, selectOrders } from '../../../store/slices/orders-slice';
+import { getProductsByStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
 import cogoToast from 'cogo-toast';
-function HomeVendor() {
+import { useNavigate } from 'react-router-dom';
+import { activeProduct } from '../../../store/slices/product-vendor-slice';
+
+function Product() {
   const dispatch = useDispatch();
-  const [showCancelOrder, setShowCancelOrder] = useState(false);
-  const [showAcceptOrder, setShowAcceptOrder] = useState(false);
+  const navigate = useNavigate();
+
+  const [showDisableModel, setshowDisableModel] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
   const [orderBy, setOrderBy] = React.useState('-updateAt');
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const stores = useSelector(selectStores);
-  const orders = useSelector(selectOrders);
+
   useEffect(() => {
     dispatch(getTotalStatisticStore());
     dispatch(
-      getOrdersByMyStore({
+      getProductsByStore({
         currentPage,
         pageSize: 10,
         searchText,
         orderBy,
-        otherCondition: '&status%7B%7Beq%7D%7D=0',
       })
     );
   }, [currentPage, orderBy]);
   const columns = React.useMemo(
     () => [
       {
-        Header: 'OrderID',
-        accessor: 'code',
+        Header: 'ID',
+        accessor: 'id',
+        Cell: ({ row }) => {
+          const rowIndex = row.index + 1 + currentPage * 10;
+          return <div>{rowIndex}</div>;
+        },
+      },
+      {
+        Header: 'Name',
+        accessor: 'name',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Image',
+        accessor: 'images',
         Cell: ({ value }) => {
           return (
-            <div>
-              <a href="#">{value}</a>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <img
+                src={value?.length > 0 ? value[0]?.location : ''}
+                alt="Hình ảnh thể loại"
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
             </div>
           );
         },
       },
       {
-        Header: 'Order Item',
-        accessor: 'orderItems',
-        Cell: ({ value }) => {
-          return <div>{value?.map((x) => x.product.name).join(', ')}</div>;
-        },
+        Header: 'Price',
+        accessor: 'price',
+        sortType: 'basic',
       },
       {
-        Header: 'Money',
-        accessor: 'amountToStore',
-        Cell: ({ value }) => {
-          return <div>{(value ? value?.toString() : 0) + ' VND'}</div>;
-        },
+        Header: 'Quantity',
+        accessor: 'quantity',
+        sortType: 'basic',
       },
       {
-        Header: 'COD',
-        accessor: 'description',
+        Header: 'Sold',
+        accessor: 'sold',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Status',
+        accessor: 'isActive',
+        sortType: 'basic',
         Cell: ({ value }) => {
           return (
-            <div>
-              {
-                <div
-                  style={{
-                    color: value?.isPaidBefore ? 'green' : 'red',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {!value ? 'TRUE' : 'FALSE'}
-                </div>
-              }
+            <div
+              style={{
+                color: value ? 'green' : 'red',
+                fontWeight: 'bold',
+              }}
+            >
+              {value ? 'ACTIVE' : 'INACTIVE'}
             </div>
           );
         },
@@ -85,19 +102,30 @@ function HomeVendor() {
         Header: 'Action',
         Cell: ({ row }) => {
           return (
-            <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Button
-                style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
-                onClick={() => handleAcceptClick(row.original.Id)}
+                style={{ backgroundColor: '#4c79af', color: 'white', padding: '5px 10px' }}
+                onClick={() => {
+                  navigate(`/vendor/products/edit/${row.original.Id}`);
+                }}
               >
-                Accept
+                Edit
               </Button>
-              <Button
-                style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
-                onClick={() => handleCancelClick(row.original.Id)}
-              >
-                Cancel
-              </Button>
+              {!row.original.isActive ? (
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleActive(row.original.Id)}
+                >
+                  Active
+                </Button>
+              ) : (
+                <Button
+                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleInActive(row.original.Id)}
+                >
+                  Disable
+                </Button>
+              )}
             </div>
           );
         },
@@ -106,6 +134,7 @@ function HomeVendor() {
     ],
     []
   );
+
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
@@ -121,12 +150,11 @@ function HomeVendor() {
 
   const debouncedFetchOrders = debounce((searchText) => {
     dispatch(
-      getOrdersByMyStore({
+      getProductsByStore({
         currentPage,
         pageSize: 10,
         searchText,
         orderBy,
-        otherCondition: '&status%7B%7Beq%7D%7D=0',
       })
     );
   }, 500);
@@ -135,30 +163,17 @@ function HomeVendor() {
     setSearchText(event.target.value);
     debouncedFetchOrders(event.target.value);
   };
-  const handleAcceptClick = (id) => {
-    setSelectedId(id);
-    setShowAcceptOrder(true);
-  };
-  const handleCancelClick = (id) => {
-    setSelectedId(id);
-    setShowCancelOrder(true);
-  };
-  const handleConfirmOrderClose = (id) => {
-    setShowAcceptOrder(false);
-  };
-  const handleCancelClose = (id) => {
-    setShowCancelOrder(false);
-  };
-  const handleCancelOrder = (e) => {
-    e.preventDefault();
+  const handleDisable = () => {
     cogoToast
-      .loading('Updating...', {
+      .loading('Updating product...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(cancelOrder(selectedId)))
+      .then(() => {
+        return dispatch(activeProduct({ selectedId, status: false }));
+      })
       .then((res) => {
         if (!res.error)
-          cogoToast.success('Successfully Cancel Order', {
+          cogoToast.info('Successfully edit product', {
             position: 'bottom-right',
             hideAfter: 3,
             onClick: () => console.log('Clicked'),
@@ -170,18 +185,24 @@ function HomeVendor() {
             onClick: () => console.log('Clicked'),
           });
       });
-    setShowCancelOrder(false);
   };
-  const handleConfirmOrder = (e) => {
-    e.preventDefault();
+  const handleDisableClose = () => {
+    setshowDisableModel(false);
+  };
+  const handleAddClick = () => {
+    navigate(`/vendor/products/create`);
+  };
+  const handleActive = (id) => {
     cogoToast
-      .loading('Updating...', {
+      .loading('Updating product...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(acceptOrder(selectedId)))
+      .then(() => {
+        return dispatch(activeProduct({ id, status: true }));
+      })
       .then((res) => {
         if (!res.error)
-          cogoToast.success('Successfully Accept Order', {
+          cogoToast.info('Successfully edit product', {
             position: 'bottom-right',
             hideAfter: 3,
             onClick: () => console.log('Clicked'),
@@ -193,24 +214,15 @@ function HomeVendor() {
             onClick: () => console.log('Clicked'),
           });
       });
-    setShowAcceptOrder(false);
   };
+  const handleInActive = (id) => {
+    setSelectedId(id);
+    setshowDisableModel(true);
+  };
+
   return (
     <div className="content-wrapper">
-      <h1 className="title main-title">HomeVendor</h1>
-      <div className="total-count-container">
-        <div className="total-count-card total-users">
-          <h3>Total Products</h3>
-          <p>{stores.total?.totalProduct}</p>
-        </div>
-        <div className="total-count-card total-stores">
-          <h3>Total Revenues</h3>
-          <p>{stores.total?.totalRevenue}</p>
-        </div>
-      </div>
-      <h4 style={{ fontWeight: 'bold', textAlign: 'center', color: 'orange' }}>
-        Danh sách các order đang chờ xử lý
-      </h4>
+      <h1 className="title main-title">Product</h1>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
           <span className="search-wrapper">
@@ -223,6 +235,9 @@ function HomeVendor() {
             />
           </span>
         </div>
+        <button className="btn btn-primary" onClick={handleAddClick}>
+          Add Product
+        </button>
       </div>
       <table
         {...getTableProps()}
@@ -299,34 +314,18 @@ function HomeVendor() {
           disableInitialCallback={true}
         />
       </div>
-      <Modal show={showAcceptOrder} onHide={handleConfirmOrderClose} centered backdrop="static">
-        <Form onSubmit={handleConfirmOrder}>
+      <Modal show={showDisableModel} onHide={handleDisableClose} centered>
+        <Form onSubmit={handleDisable}>
           <Modal.Header closeButton>
-            <Modal.Title>Confirm Order</Modal.Title>
+            <Modal.Title>Disable Product</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Are you sure to confirm this order?</Modal.Body>
+          <Modal.Body>Are you sure you want to disable the product?</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleConfirmOrderClose}>
+            <Button variant="secondary" onClick={handleDisableClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="danger">
-              Confirm
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-      <Modal show={showCancelOrder} onHide={handleCancelClose} centered backdrop="static">
-        <Form onSubmit={handleCancelOrder}>
-          <Modal.Header closeButton>
-            <Modal.Title>Cancel Order</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure to cancel this Order?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCancelClose}>
-              No
-            </Button>
-            <Button type="submit" variant="danger">
-              Yes
+            <Button variant="danger" type="submit">
+              Disable
             </Button>
           </Modal.Footer>
         </Form>
@@ -335,4 +334,4 @@ function HomeVendor() {
   );
 }
 
-export default HomeVendor;
+export default Product;

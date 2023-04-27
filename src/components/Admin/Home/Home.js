@@ -28,7 +28,7 @@ function Home() {
     { time: '2023-12', revenue: 11000 },
   ];
 
-  const [timeRange, setTimeRange] = useState(1);
+  const [timeRange, setTimeRange] = useState({ key: 3, value: 'all' });
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
@@ -37,14 +37,13 @@ function Home() {
   }, []);
 
   const handleTimeRangeChange = (event) => {
-    console.log(event);
-
     setTimeRange(event);
   };
   const handleDateChange = (date) => {
     setSelectedDate(date);
   };
   const timeRanges = [
+    { key: 3, value: 'all' },
     { key: 0, value: 'week' },
     { key: 1, value: 'month' },
     { key: 2, value: 'year' },
@@ -73,7 +72,7 @@ function Home() {
           <h2 className="title">Doanh thu</h2>
           <div className="revenue-dropdown">
             <Dropdown onSelect={handleTimeRangeChange}>
-              <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
+              <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" defaultValue={timeRanges[0]}>
                 {timeRange}
               </Dropdown.Toggle>
               <Dropdown.Menu>

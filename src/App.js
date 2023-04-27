@@ -1,15 +1,21 @@
 import { Suspense, lazy } from 'react';
 import ScrollToTop from './helpers/scroll-top';
 import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
+import Home from './components/Admin/Home/Home';
+import HomeVendor from './components/Vendor/Home/HomeVendor';
+import OrderDetail from './components/Vendor/Order/OrderDetail';
+import StatsPage from './components/Vendor/Statistic/Statistic';
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
 const UserLevels = lazy(() => import('./components/Admin/UserLevels/UserLevels'));
+const Order = lazy(() => import('./components/Vendor/Order/Order'));
 
 // Vendor
 const VendorLayout = lazy(() => import('./components/Vendor/VendorLayout'));
 const AddProduct = lazy(() => import('./components/Vendor/Product/AddProduct'));
 const EditPdoduct = lazy(() => import('./components/Vendor/Product/EditProduct'));
+const ProductVendor = lazy(() => import('./components/Vendor/Product/Product'));
 // home pages
 const HomeFashion = lazy(() => import('./pages/home/HomeFashion'));
 const HomeFashionTwo = lazy(() => import('./pages/home/HomeFashionTwo'));
@@ -87,7 +93,6 @@ const Compare = lazy(() => import('./pages/other/Compare'));
 const Checkout = lazy(() => import('./pages/other/Checkout'));
 
 const NotFound = lazy(() => import('./pages/other/NotFound'));
-const Order = lazy(() => import('./components/User/Order'));
 
 const App = () => {
   return (
@@ -199,12 +204,65 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
             <Route path={process.env.PUBLIC_URL + '/admin/userlevels'} element={<UserLevels />} />
-            <Route path={process.env.PUBLIC_URL + '/vendor/home'} element={<VendorLayout />} />
-            <Route path={process.env.PUBLIC_URL + '/vendor/addProduct'} element={<AddProduct />} />\
             <Route
-              path={process.env.PUBLIC_URL + '/vendor/editProduct/:productId'}
-              element={<EditPdoduct />}
+              path={process.env.PUBLIC_URL + '/vendor/home'}
+              element={
+                <VendorLayout>
+                  <HomeVendor />
+                </VendorLayout>
+              }
             />
+            <Route
+              path={process.env.PUBLIC_URL + '/vendor/orders'}
+              element={
+                <VendorLayout>
+                  <Order />
+                </VendorLayout>
+              }
+            />
+            <Route
+              path={process.env.PUBLIC_URL + '/vendor/products'}
+              element={
+                <VendorLayout>
+                  <ProductVendor />
+                </VendorLayout>
+              }
+            />
+            <Route
+              path={process.env.PUBLIC_URL + '/vendor/statistics'}
+              element={
+                <VendorLayout>
+                  <StatsPage />
+                </VendorLayout>
+              }
+            />
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + '/vendor/orders/:orderCode'}
+              element={
+                <VendorLayout>
+                  <OrderDetail />
+                </VendorLayout>
+              }
+            ></Route>
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + '/vendor/products/create'}
+              element={
+                <VendorLayout>
+                  <AddProduct />
+                </VendorLayout>
+              }
+            ></Route>
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + '/vendor/products/edit/:productId'}
+              element={
+                <VendorLayout>
+                  <EditPdoduct />
+                </VendorLayout>
+              }
+            ></Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

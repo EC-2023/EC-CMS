@@ -146,7 +146,8 @@ function EditProduct() {
   };
   function generateRandomId() {
     const randomNumber = Math.random();
-    const idString = randomNumber.toString(36).substr(2, 9); // Lấy 9 ký tự đầu tiên
+    const idString = randomNumber.toString(36).substr(2, 9);
+    console.log('idString:', idString); // Lấy 9 ký tự đầu tiên
     const prefix = 'my-id-';
     return prefix + idString;
   }
@@ -218,7 +219,7 @@ function EditProduct() {
   };
   return (
     <div className="product-form">
-      <h1>Add Product</h1>
+      <h1 style={{ textAlign: 'center' }}>EDIT PRODUCT</h1>
       <form onSubmit={handleSubmit}>
         <div className="columns">
           <div className="column">

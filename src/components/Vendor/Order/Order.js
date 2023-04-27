@@ -1,18 +1,19 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './HomeVendor.css';
+import './Order.css';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Dropdown, Form, Modal } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import { usePagination, useSortBy, useTable } from 'react-table';
 import { debounce } from 'lodash';
 import { getOrdersByMyStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
 import { acceptOrder, cancelOrder, selectOrders } from '../../../store/slices/orders-slice';
 import cogoToast from 'cogo-toast';
-function HomeVendor() {
+import { Link } from 'react-router-dom';
+function Order() {
   const dispatch = useDispatch();
   const [showCancelOrder, setShowCancelOrder] = useState(false);
   const [showAcceptOrder, setShowAcceptOrder] = useState(false);
@@ -20,29 +21,30 @@ function HomeVendor() {
   const [orderBy, setOrderBy] = React.useState('-updateAt');
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
+  const [selectedStatus, setSelectedStatus] = React.useState({ key: 0, value: 'Tất cả' });
   const stores = useSelector(selectStores);
-  const orders = useSelector(selectOrders);
+
   useEffect(() => {
-    dispatch(getTotalStatisticStore());
     dispatch(
       getOrdersByMyStore({
         currentPage,
         pageSize: 10,
         searchText,
         orderBy,
-        otherCondition: '&status%7B%7Beq%7D%7D=0',
+        otherCondition: selectedStatus.key === 0 ? null : `&status%7B%7Beq%7D%7D=${selectedStatus.key - 1}`,
       })
     );
-  }, [currentPage, orderBy]);
-  const columns = React.useMemo(
-    () => [
+  }, [currentPage, orderBy, selectedStatus]);
+  const columns = React.useMemo(() => {
+    const baseColumns = [
       {
         Header: 'OrderID',
         accessor: 'code',
         Cell: ({ value }) => {
           return (
             <div>
-              <a href="#">{value}</a>
+              <Link to="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</Link>
+              {/* <a href="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</a> */}
             </div>
           );
         },
@@ -82,30 +84,54 @@ function HomeVendor() {
         },
       },
       {
+        Header: 'Status',
+        accessor: 'status',
+        Cell: ({ value }) => {
+          return <div>{displayStatus(value)}</div>;
+        },
+      },
+    ];
+    if (selectedStatus.key == 1 || selectedStatus.key == 0) {
+      baseColumns.push({
         Header: 'Action',
         Cell: ({ row }) => {
-          return (
-            <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
-              <Button
-                style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
-                onClick={() => handleAcceptClick(row.original.Id)}
-              >
-                Accept
-              </Button>
-              <Button
-                style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
-                onClick={() => handleCancelClick(row.original.Id)}
-              >
-                Cancel
-              </Button>
-            </div>
-          );
+          if (row.original.status == 0 || row.original.status == 1)
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleAcceptClick(row.original.Id)}
+                >
+                  Accept
+                </Button>
+                <Button
+                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleCancelClick(row.original.Id)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            );
+          else return <div>Not Permission</div>;
         },
         id: 'action',
-      },
-    ],
-    []
-  );
+      });
+    }
+    return baseColumns;
+  }, [selectedStatus]);
+
+  const displayStatus = (value) => {
+    switch (value) {
+      case '0':
+        return 'Đang chờ xử lý';
+      case '1':
+        return 'Đang xử lý';
+      case '2':
+        return 'Đang vận chuyển';
+      default:
+        return 'Đã nhận hàng';
+    }
+  };
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
@@ -120,13 +146,14 @@ function HomeVendor() {
   );
 
   const debouncedFetchOrders = debounce((searchText) => {
+    console.log(searchText);
     dispatch(
       getOrdersByMyStore({
         currentPage,
         pageSize: 10,
         searchText,
         orderBy,
-        otherCondition: '&status%7B%7Beq%7D%7D=0',
+        otherCondition: selectedStatus.key === 0 ? null : `&status%7B%7Beq%7D%7D=${selectedStatus.key - 1}`,
       })
     );
   }, 500);
@@ -195,22 +222,10 @@ function HomeVendor() {
       });
     setShowAcceptOrder(false);
   };
+  useEffect(() => {}, [selectedStatus]);
   return (
     <div className="content-wrapper">
-      <h1 className="title main-title">HomeVendor</h1>
-      <div className="total-count-container">
-        <div className="total-count-card total-users">
-          <h3>Total Products</h3>
-          <p>{stores.total?.totalProduct}</p>
-        </div>
-        <div className="total-count-card total-stores">
-          <h3>Total Revenues</h3>
-          <p>{stores.total?.totalRevenue}</p>
-        </div>
-      </div>
-      <h4 style={{ fontWeight: 'bold', textAlign: 'center', color: 'orange' }}>
-        Danh sách các order đang chờ xử lý
-      </h4>
+      <h1 className="title main-title">Order</h1>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
           <span className="search-wrapper">
@@ -223,6 +238,34 @@ function HomeVendor() {
             />
           </span>
         </div>
+        <Dropdown>
+          <Dropdown.Toggle variant="secondary" id="statusDropdown" style={{ maxWidth: '200px' }}>
+            {selectedStatus.value || 'Chọn trạng thái'}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item
+              eventKey={selectedStatus}
+              onClick={() => setSelectedStatus({ key: 0, value: 'Tất cả' })}
+            >
+              Tất cả
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSelectedStatus({ key: 1, value: 'Đang chờ xử lý' })}>
+              Đang chờ xử lý
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSelectedStatus({ key: 2, value: 'Đang xử lý' })}>
+              Đang xử lý
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSelectedStatus({ key: 3, value: 'Đang vận chuyển' })}>
+              Đang vận chuyển
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSelectedStatus({ key: 4, value: 'Đã nhận hàng' })}>
+              Đã nhận hàng
+            </Dropdown.Item>
+            <Dropdown.Item onClick={() => setSelectedStatus({ key: 5, value: 'Đã hủy' })}>
+              Đã hủy
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
       <table
         {...getTableProps()}
@@ -335,4 +378,4 @@ function HomeVendor() {
   );
 }
 
-export default HomeVendor;
+export default Order;
