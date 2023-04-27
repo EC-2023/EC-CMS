@@ -75,7 +75,7 @@ function FormOverlay(props) {
     console.log("update user");
     props.handleAddressChange(props.index, childState);
     props.closeEdit();
-    props.handleUpdateMyUserAddress(props.index);
+    props.handleUpdateMyUserAddress(props.index,childState);
   };
   return (
     <>

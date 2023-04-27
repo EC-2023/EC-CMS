@@ -14,9 +14,9 @@ const UserAddress = {
     const url = '/user-addresses/my-address/';
     return axiosClient.delete(url + params)
   },
-  updateMyUserAddress : (params) =>{
-    const url = '/user-addresses/my-address/';
-    return axiosClient.patch(url + params)
+  updateMyUserAddress : (id,params) =>{
+    const url = `/user-addresses/my-address/${id}`;
+    return axiosClient.patch(url,{...params})
   }
 }
 

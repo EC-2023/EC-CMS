@@ -94,10 +94,12 @@ const MyAccount = () => {
     }
   };
 
-  const handleUpdateMyUserAddress = async (index) => {
+  const handleUpdateMyUserAddress = async (index,childState) => {
     try {
+      const { Id, ...params } = childState;
+      console.log(params);
       const response = await toast.promise(
-        UserAddressAPI.updateMyUserAddress(addressUser[index].Id),
+        UserAddressAPI.updateMyUserAddress(addressUser[index].Id,params),
         {
           pending: "Đang Lưu...",
           success: "Lưu thành công!",
