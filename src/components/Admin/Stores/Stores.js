@@ -20,6 +20,13 @@ function Stores() {
   const [searchText, setSearchText] = React.useState('');
   const [currentPage, setCurrentPage] = React.useState(0);
   const [size] = React.useState(5);
+  useEffect(() => {
+    dispatch(fetchStores({ currentPage, pageSize: size, searchText, orderBy }));
+  }, [currentPage, orderBy]);
+
+  const debouncedFetchStores = debounce((searchText) => {
+    dispatch(fetchStores({ currentPage, pageSize: size, searchText, orderBy }));
+  }, 500);
   const [orderBy, setOrderBy] = React.useState('-updateAt');
   const columns = React.useMemo(
     () => [
@@ -118,7 +125,7 @@ function Stores() {
           const isDeleted = !row.original.isDeleted;
           const isActive = !row.original.isDeleted;
           return (
-            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fas fa-ellipsis-v"></i>}>
+            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
               {isDeleted ? (
                 <Dropdown.Item
                   style={{ color: 'red' }}
@@ -170,14 +177,6 @@ function Stores() {
     useSortBy,
     usePagination
   );
-
-  useEffect(() => {
-    dispatch(fetchStores({ currentPage, pageSize: size, searchText, orderBy }));
-  }, [currentPage, orderBy]);
-
-  const debouncedFetchStores = debounce((searchText) => {
-    dispatch(fetchStores({ currentPage, pageSize: size, searchText, orderBy }));
-  }, 500);
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
@@ -253,7 +252,7 @@ function Stores() {
       </Breadcrumb>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
-          <i className="fas fa-search"></i>
+          <i className="fa fa-search"></i>
           <input
             type="text"
             placeholder="Search stores..."
