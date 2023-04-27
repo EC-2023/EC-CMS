@@ -3,20 +3,11 @@ import axiosClient from '../../api/axiosClient';
 export const fetchStores = createAsyncThunk(
   'stores/fetchStores',
   async ({ currentPage, pageSize, searchText, orderBy }) => {
-    console.log({ currentPage, pageSize, searchText, orderBy });
-
-    console.log(
-      `/stores/pagination?skip=${
-        currentPage * pageSize
-      }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
-    );
-
     const response = await axiosClient.get(
       `/stores/pagination?skip=${
         currentPage * pageSize
       }&limit=${pageSize}&orderBy=${orderBy}&name%7B%7Bsearch%7D%7D=${searchText}`
     );
-    console.log(response);
     return response;
   }
 );
@@ -76,6 +67,24 @@ export const updateStore = createAsyncThunk('stores/updateStore', async (store) 
   return response;
 });
 
+export const updateActiveStore = createAsyncThunk('stores/updateActiveStore', async ({ Id, isActive }) => {
+  const response = await axiosClient.patch(`/stores/${Id}/set-active-store?status=${isActive}`, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return response;
+});
+export const updateDeleteStore = createAsyncThunk('stores/updateDeleteStore', async ({ Id, isDeleted }) => {
+  const response = await axiosClient.patch(`/stores/${Id}/set-delete-store?status=${isDeleted}`, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return response;
+});
 export const storesSlice = createSlice({
   name: 'stores',
   initialState: {
@@ -88,6 +97,14 @@ export const storesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(updateActiveStore.fulfilled, (state, action) => {
+        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
+      })
+      .addCase(updateDeleteStore.fulfilled, (state, action) => {
+        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
+      })
       .addCase(getProductsByStore.fulfilled, (state, action) => {
         state.loading = false;
         state.data = action.payload.data.data;
@@ -98,9 +115,7 @@ export const storesSlice = createSlice({
         state.data = action.payload.data.data;
         state.pagination = action.payload.data.pagination;
       })
-      .addCase(fetchStores.pending, (state, action) => {
-        state.total = action.payload.data;
-      })
+
       .addCase(getTotalStatisticStore.fulfilled, (state, action) => {
         state.total = action.payload.data;
       })
@@ -108,10 +123,6 @@ export const storesSlice = createSlice({
         state.loading = false;
         state.data = action.payload.data.data;
         state.pagination = action.payload.data.pagination;
-      })
-      .addCase(fetchStores.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
       })
       .addCase(deleteStore.fulfilled, (state, action) => {
         state.data = state.data.filter((store) => store.Id !== action.payload.data);

@@ -177,7 +177,7 @@ function Categories() {
     setParentCategory(selectedOption);
   };
 
-  const parentCategoryOptions = categories.list.map((category) => ({
+  let parentCategoryOptions = categories.list.map((category) => ({
     value: category.Id,
     label: category.name,
   }));
@@ -194,17 +194,20 @@ function Categories() {
         position: 'bottom-right',
       })
       .then(() => {
-        dispatch(fetchAllCategories());
         return dispatch(addCategory(newCategory));
       })
       .then((res) => {
-        if (!res.error)
+        if (!res.error) {
+          parentCategoryOptions = categories.list.map((category) => ({
+            value: category.Id,
+            label: category.name,
+          }));
           cogoToast.success('Successfully add new category', {
             position: 'bottom-right',
             hideAfter: 3,
             onClick: () => console.log('Clicked'),
           });
-        else
+        } else
           cogoToast.error(res.error.message, {
             position: 'bottom-right',
             hideAfter: 3,

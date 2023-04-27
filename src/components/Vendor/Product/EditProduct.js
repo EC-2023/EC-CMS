@@ -6,7 +6,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllCategories, selectCategories } from '../../../store/slices/categories-slice';
 import Select from 'react-select';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import cogoToast from 'cogo-toast';
 
 function EditProduct() {
   const dispatch = useDispatch();
@@ -27,7 +28,7 @@ function EditProduct() {
   const [listEditAttributeValue, setListEditAttributeValue] = useState([]);
   const [listAddImage, setListAddImage] = useState([]);
   const [listRemoveImage, setListRemoveImage] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchAllCategories());
     dispatch(fetchProductById(productId)).then((response) => {
@@ -76,6 +77,17 @@ function EditProduct() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    console.log(
+      listAddAttribute,
+      listAddAttributeValue,
+      listRemoveAttributeValue,
+      listRemoveAttribute,
+      listEditAttribute,
+      listEditAttributeValue,
+      listAddImage,
+      listRemoveImage
+    );
+
     dispatch(
       editProduct({
         basic: {
@@ -98,7 +110,18 @@ function EditProduct() {
         listRemoveImage,
         id: product.Id,
       })
-    );
+    ).then((res) => {
+      if (res.payload.status === 200) {
+        setTimeout(() => {
+          navigate('/vendor/products');
+        }, 3000);
+        cogoToast.success('Successfully add new category, retun list after 3 sec', {
+          position: 'bottom-right',
+          hideAfter: 3,
+          onClick: () => console.log('Clicked'),
+        });
+      }
+    });
   };
 
   const handleImageUpload = (e, index) => {
@@ -182,7 +205,7 @@ function EditProduct() {
     newAttributes[index].values.push({
       name: '',
       new: true,
-      Id: generateRandomId(),
+      Id: newAttributes[index]['Id'].includes('my-id-') ? generateRandomId() : newAttributes[index]['Id'],
       attributeId: newAttributes[index].Id,
     });
     setAttributes(newAttributes);
