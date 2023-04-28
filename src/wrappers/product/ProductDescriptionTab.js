@@ -48,11 +48,11 @@ const ProductDescriptionTab = ({
                 <div className="product-anotherinfo-wrapper">
                   {product.attributes.map((attribute, index) => (
                     <>
-                      {attribute[" attributeValues"].length < 2 ? (
+                      {attribute.attributeValues.length < 2 ? (
                         <div key={index} className="attribute-group">
                           <p>{attribute.name}:</p>
                           <ul>
-                            {attribute[" attributeValues"].map(
+                            {attribute.attributeValues.map(
                               (value, index) => (
                                 <li key={index}>
                                   <span>{value.name}</span>

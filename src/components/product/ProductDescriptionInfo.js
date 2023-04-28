@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { getProductCartQuantity } from "../../helpers/product";
@@ -8,6 +8,9 @@ import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
 import { addToCompare } from "../../store/slices/compare-slice";
 import "./ProductDescriptionInfo.scss";
+import CartAPI from "../../api/CartAPI";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductDescriptionInfo = ({
   product,
@@ -19,6 +22,19 @@ const ProductDescriptionInfo = ({
   wishlistItem,
   compareItem,
 }) => {
+
+  const [selectedBtnAttibute, setSelectedBtnAttibute] = useState({});
+
+    const handleButtonClick = (attributeName, valueName) => {
+      setSelectedBtnAttibute({ ...selectedAttributes, [attributeName]: valueName });
+      handleAttributeChange(attributeName, valueName);
+    };
+  
+    const isSelected = (attributeName, valueName) => {
+      return selectedBtnAttibute[attributeName] === valueName;
+    };
+  
+  
   const dispatch = useDispatch();
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
@@ -38,6 +54,62 @@ const ProductDescriptionInfo = ({
     selectedProductSize
   );
 
+  function attributesToString(attributes) {
+    if (!Array.isArray(attributes)) {
+      return "";
+    }
+    return attributes.map(attr => `${attr.name}: ${attr.value}`).join(", ");
+  }
+
+  const [selectedAttributes, setSelectedAttributes] = useState([]);
+
+  useEffect(() => {
+    console.log(selectedAttributes);
+    console.log(product.Id, quantityCount, attributesToString(selectedAttributes))
+  }, [selectedAttributes]);
+
+  const addProductTocart = async () => {
+    try {
+      const params = {productId: product.Id, quantity : quantityCount, attributesValues : [attributesToString(selectedAttributes)]}
+      console.log(params);
+      const response = await toast.promise(
+        CartAPI.addToCart(params),
+        {
+          pending: "Đang Lưu...",
+          success: "Lưu thành công!",
+          error: "Lưu thất bại!",
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    } 
+  }
+
+
+  function handleAttributeChange(attributeName, selectedValue) {
+    setSelectedAttributes((prevSelectedAttributes) => {
+      const attributesArray = Array.isArray(prevSelectedAttributes) ? prevSelectedAttributes : [];
+      const attributeIndex = attributesArray.findIndex(attr => attr.name === attributeName);
+      if (attributeIndex !== -1) {
+        // Nếu thuộc tính đã tồn tại trong mảng, ghi đè giá trị của nó
+        const updatedAttributes = [...attributesArray];
+        updatedAttributes[attributeIndex] = { name: attributeName, value: selectedValue };
+        return updatedAttributes;
+      } else {
+        // Nếu thuộc tính chưa tồn tại trong mảng, thêm vào mảng
+        return [...attributesArray, { name: attributeName, value: selectedValue }];
+      }
+    });
+  }
+
   return (
     <div className="product-details-content ml-70">
       <h2>{product.name}</h2>
@@ -53,6 +125,7 @@ const ProductDescriptionInfo = ({
           <span>{currency.currencySymbol + finalProductPrice} </span>
         )}
       </div>
+      <ToastContainer/>
       {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
           <div className="pro-details-rating">
@@ -180,28 +253,15 @@ const ProductDescriptionInfo = ({
           <div className="pro-details-cart btn-hover">
             {product.quantity && product.quantity > 0 ? (
               <button
-                onClick={() =>
-                  dispatch(
-                    addToCart({
-                      ...product,
-                      quantity: quantityCount,
-                      selectedProductColor: selectedProductColor
-                        ? selectedProductColor
-                        : product.selectedProductColor
-                        ? product.selectedProductColor
-                        : null,
-                      selectedProductSize: selectedProductSize
-                        ? selectedProductSize
-                        : product.selectedProductSize
-                        ? product.selectedProductSize
-                        : null,
-                    })
-                  )
-                }
+                // onClick={() => {
+                //       dispatch(addToCart({...product, quantity : quantityCount}));
+                //       console.log({...product, quantity : quantityCount});
+                //       }}
+                onClick={() => {addProductTocart()}}
                 disabled={productCartQty >= product.quantity}
               >
                 {" "}
-                Add To Cart{" "}
+                Thêm vào giỏ hàng{" "}
               </button>
             ) : (
               <button disabled>Hết Hàng</button>
@@ -221,7 +281,7 @@ const ProductDescriptionInfo = ({
               <i className="pe-7s-like" />
             </button>
           </div>
-          <div className="pro-details-compare">
+          {/* <div className="pro-details-compare">
             <button
               className={compareItem !== undefined ? "active" : ""}
               disabled={compareItem !== undefined}
@@ -234,7 +294,7 @@ const ProductDescriptionInfo = ({
             >
               <i className="pe-7s-shuffle" />
             </button>
-          </div>
+          </div> */}
         </div>
       )}
       {product.category && product.category.name ? (
@@ -253,32 +313,32 @@ const ProductDescriptionInfo = ({
       )}
       {/* {console.log(product.attributes[0][" attributeValues"][0])} */}
       <div className="attribute">
-        <span>Thuộc tính:</span>
-          {product.attributes.map((attribute, index) => (
-          <>
-          {attribute[" attributeValues"].length > 1 ? (
+      <span>Thuộc tính:</span>
+      {product.attributes.map((attribute, index) => (
+        <>
+          {attribute.attributeValues.length > 1 ? (
             <div key={index} className="attribute-group">
-            <p>{attribute.name}:</p>
-            <ul>
-              {attribute[" attributeValues"].map((value, index) => (
-                <li key={index}>
-                  <label>
-                    <input
-                      className="attribute-input"
-                      type="radio"
-                      name={attribute.name}
-                      value={value.value}
-                    />
-                    <span>{value.name}</span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          </div>
-          ): ""}
-          </>
-        ))}
-      </div>
+              <p>{attribute.name}:</p>
+              <div>
+                {attribute.attributeValues.map((value, index) => (
+                  <button
+                    key={index}
+                    className={`attribute-button ${
+                      isSelected(attribute.name, value.name) ? "selected" : ""
+                    }`}
+                    onClick={() => handleButtonClick(attribute.name, value.name)}
+                  >
+                    {value.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+        </>
+      ))}
+    </div>
       {product.tag ? (
         <div className="pro-details-meta">
           <span>Tags :</span>
