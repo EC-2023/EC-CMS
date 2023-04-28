@@ -1,6 +1,6 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './Order.css';
+import './Orders.css';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -10,9 +10,15 @@ import ReactPaginate from 'react-paginate';
 import { usePagination, useSortBy, useTable } from 'react-table';
 import { debounce } from 'lodash';
 import { getOrdersByMyStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
-import { acceptOrder, cancelOrder, selectOrders } from '../../../store/slices/orders-slice';
+import {
+  acceptOrder,
+  cancelDeliver,
+  cancelOrder,
+  deliveryOrder,
+  fetchOrders,
+  selectOrders,
+} from '../../../store/slices/orders-slice';
 import cogoToast from 'cogo-toast';
-import { Link } from 'react-router-dom';
 function Order() {
   const dispatch = useDispatch();
   const [showCancelOrder, setShowCancelOrder] = useState(false);
@@ -22,11 +28,11 @@ function Order() {
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState({ key: 0, value: 'Tất cả' });
-  const stores = useSelector(selectStores);
+  const orders = useSelector(selectOrders);
 
   useEffect(() => {
     dispatch(
-      getOrdersByMyStore({
+      fetchOrders({
         currentPage,
         pageSize: 10,
         searchText,
@@ -40,13 +46,8 @@ function Order() {
       {
         Header: 'OrderID',
         accessor: 'code',
-        Cell: ({ row }) => {
-          return (
-            <div>
-              <Link to={`/vendor/orders/${row.original.Id}`}>{row.original.value}</Link>
-              {/* <a href="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</a> */}
-            </div>
-          );
+        Cell: ({ value }) => {
+          return <div>{value}</div>;
         },
       },
       {
@@ -95,24 +96,29 @@ function Order() {
       baseColumns.push({
         Header: 'Action',
         Cell: ({ row }) => {
-          if (row.original.status == 0)
+          if (row.original.status == 1) {
             return (
               <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
                 <Button
                   style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
                   onClick={() => handleAcceptClick(row.original.Id)}
                 >
-                  Accept
-                </Button>
-                <Button
-                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
-                  onClick={() => handleCancelClick(row.original.Id)}
-                >
-                  Cancel
+                  Confirm Delivery
                 </Button>
               </div>
             );
-          else return <div>Not Permission</div>;
+          } else if (row.original.status == 2) {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleCancelClick(row.original.Id)}
+                >
+                  Cancel Delivery
+                </Button>
+              </div>
+            );
+          } else return <div>Not Permission</div>;
         },
         id: 'action',
       });
@@ -137,10 +143,10 @@ function Order() {
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
-      data: stores.data,
+      data: orders.data,
       initialState: { pageIndex: 0 },
       manualPagination: true,
-      pageCount: Math.ceil(stores.pagination.total / 10),
+      pageCount: Math.ceil(orders.pagination.total / 10),
       manualSortBy: true,
     },
     useSortBy,
@@ -149,7 +155,7 @@ function Order() {
 
   const debouncedFetchOrders = debounce((searchText) => {
     dispatch(
-      getOrdersByMyStore({
+      fetchOrders({
         currentPage,
         pageSize: 10,
         searchText,
@@ -167,38 +173,8 @@ function Order() {
     setSelectedId(id);
     setShowAcceptOrder(true);
   };
-  const handleCancelClick = (id) => {
-    setSelectedId(id);
-    setShowCancelOrder(true);
-  };
   const handleConfirmOrderClose = (id) => {
     setShowAcceptOrder(false);
-  };
-  const handleCancelClose = (id) => {
-    setShowCancelOrder(false);
-  };
-  const handleCancelOrder = (e) => {
-    e.preventDefault();
-    cogoToast
-      .loading('Updating...', {
-        position: 'bottom-right',
-      })
-      .then(() => dispatch(cancelOrder(selectedId)))
-      .then((res) => {
-        if (!res.error)
-          cogoToast.success('Successfully Cancel Order', {
-            position: 'bottom-right',
-            hideAfter: 3,
-            onClick: () => console.log('Clicked'),
-          });
-        else
-          cogoToast.error(res.error.message, {
-            position: 'bottom-right',
-            hideAfter: 3,
-            onClick: () => console.log('Clicked'),
-          });
-      });
-    setShowCancelOrder(false);
   };
   const handleConfirmOrder = (e) => {
     e.preventDefault();
@@ -206,7 +182,7 @@ function Order() {
       .loading('Updating...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(acceptOrder(selectedId)))
+      .then(() => dispatch(deliveryOrder(selectedId)))
       .then((res) => {
         if (!res.error)
           cogoToast.success('Successfully Accept Order', {
@@ -222,6 +198,36 @@ function Order() {
           });
       });
     setShowAcceptOrder(false);
+  };
+  const handleCancelClick = (id) => {
+    setSelectedId(id);
+    setShowCancelOrder(true);
+  };
+  const handleCancelClose = (id) => {
+    setShowCancelOrder(false);
+  };
+  const handleCancelDelivery = (e) => {
+    e.preventDefault();
+    cogoToast
+      .loading('Updating...', {
+        position: 'bottom-right',
+      })
+      .then(() => dispatch(cancelDeliver(selectedId)))
+      .then((res) => {
+        if (!res.error)
+          cogoToast.success('Successfully Cancel Order', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
+    setShowCancelOrder(false);
   };
   useEffect(() => {}, [selectedStatus]);
   return (
@@ -327,7 +333,7 @@ function Order() {
       <div className="pagination-wrapper">
         <ReactPaginate
           containerClassName="pagination"
-          pageCount={Math.ceil(stores.pagination.total / 10)}
+          pageCount={Math.ceil(orders.pagination.total / 10)}
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
           onPageChange={({ selected }) => setCurrentPage(selected)}
@@ -346,9 +352,9 @@ function Order() {
       <Modal show={showAcceptOrder} onHide={handleConfirmOrderClose} centered backdrop="static">
         <Form onSubmit={handleConfirmOrder}>
           <Modal.Header closeButton>
-            <Modal.Title>Confirm Order</Modal.Title>
+            <Modal.Title>Delivery Order</Modal.Title>
           </Modal.Header>
-          <Modal.Body>Are you sure to confirm this order?</Modal.Body>
+          <Modal.Body>Are you sure to delivery this order?</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleConfirmOrderClose}>
               Cancel
@@ -360,7 +366,7 @@ function Order() {
         </Form>
       </Modal>
       <Modal show={showCancelOrder} onHide={handleCancelClose} centered backdrop="static">
-        <Form onSubmit={handleCancelOrder}>
+        <Form onSubmit={handleCancelDelivery}>
           <Modal.Header closeButton>
             <Modal.Title>Cancel Order</Modal.Title>
           </Modal.Header>

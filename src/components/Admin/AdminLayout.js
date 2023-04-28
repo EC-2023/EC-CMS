@@ -15,6 +15,7 @@ import StoreLevels from './StoreLevels/StoreLevels';
 import Stores from './Stores/Stores';
 import Statistics from './Statistics/Statistics';
 import HomeAdmin from './Home/Home';
+import Order from './Orders/Orders';
 
 const AdminLayout = () => {
   const [selectedNavItem, setSelectedNavItem] = useState(1);
@@ -49,7 +50,7 @@ const AdminLayout = () => {
       content = <Products />;
       break;
     case 10:
-      content = <Products />;
+      content = <Order />;
       break;
     case 11:
       content = <Statistics />;

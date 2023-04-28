@@ -6,7 +6,7 @@ export const fetchOrders = createAsyncThunk(
     const response = await axiosClient.get(
       `/orders/pagination?skip=${
         currentPage * pageSize
-      }&limit=${pageSize}&orderBy=${orderBy}&displayName%7B%7Bsearch%7D%7D=${searchText}`
+      }&limit=${pageSize}&orderBy=${orderBy}&code%7B%7Bsearch%7D%7D=${searchText}`
     );
 
     return response;
@@ -28,6 +28,24 @@ export const acceptOrder = createAsyncThunk('orders/acceptOrder', async (id) => 
   return response;
 });
 
+export const deliveryOrder = createAsyncThunk('orders/deliveryOrder', async (id) => {
+  const response = await axiosClient.patch(`/orders/${id}/update-delivery`, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return response;
+});
+export const cancelDeliver = createAsyncThunk('orders/cancelDeliver', async (id) => {
+  const response = await axiosClient.patch(`/orders/${id}/cancel-delivery`, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  return response;
+});
 export const cancelOrder = createAsyncThunk('orders/cancelOrder', async (id) => {
   const response = await axiosClient.patch(`/orders/${id}/update-cancel`, {
     headers: {
@@ -75,12 +93,39 @@ export const ordersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(cancelDeliver.fulfilled, (state, action) => {
+        if (state.data.length > 0) {
+          const index = state.data.findIndex((order) => order.Id === action.payload.data.Id);
+          state.data[index] = action.payload.data;
+        }
+      })
       .addCase(getOrder.fulfilled, (state, action) => {
         state.order = action.payload.data;
       })
-      .addCase(acceptOrder.fulfilled, (state) => {})
-      .addCase(cancelOrder.fulfilled, (state) => {})
-      .addCase(doneOrder.fulfilled, (state) => {})
+      .addCase(deliveryOrder.fulfilled, (state, action) => {
+        if (state.data.length > 0) {
+          const index = state.data.findIndex((order) => order.Id === action.payload.data.Id);
+          state.data[index] = action.payload.data;
+        }
+      })
+      .addCase(acceptOrder.fulfilled, (state, action) => {
+        if (state.data.length > 0) {
+          const index = state.data.findIndex((order) => order.Id === action.payload.data.Id);
+          state.data[index] = action.payload.data;
+        }
+      })
+      .addCase(cancelOrder.fulfilled, (state, action) => {
+        if (state.data.length > 0) {
+          const index = state.data.findIndex((order) => order.Id === action.payload.data.Id);
+          state.data[index] = action.payload.data;
+        }
+      })
+      .addCase(doneOrder.fulfilled, (state, action) => {
+        if (state.data.length > 0) {
+          const index = state.data.findIndex((order) => order.Id === action.payload.data.Id);
+          state.data[index] = action.payload.data;
+        }
+      })
       .addCase(fetchOrders.pending, (state) => {
         state.loading = true;
       })
