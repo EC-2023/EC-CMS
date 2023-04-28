@@ -112,7 +112,7 @@ export const updateQuantity = createAsyncThunk('products/update-quantity', async
 });
 
 export const updateStatus = createAsyncThunk('products/update-status', async ({ id, status }) => {
-  const response = await axiosClient.patch(`/products/${id}/update-status?$status=${status}`, {
+  const response = await axiosClient.patch(`/products/${id}/update-status?status=${status}`, {
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
@@ -121,8 +121,8 @@ export const updateStatus = createAsyncThunk('products/update-status', async ({ 
   return response;
 });
 
-export const productsSlice = createSlice({
-  name: 'products',
+export const productVendorSlice = createSlice({
+  name: 'productVendors',
   initialState: {
     product: null,
     data: [],
@@ -134,7 +134,8 @@ export const productsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(activeProduct.fulfilled, (state, action) => {
-        state.product = action.payload.data;
+        const index = state.data.findIndex((product) => product.Id === action.payload.data.Id);
+        state.data[index] = action.payload.data;
       })
       .addCase(editProduct.fulfilled, (state, action) => {
         state.product = action.payload.data;
@@ -148,11 +149,13 @@ export const productsSlice = createSlice({
       .addCase(updateQuantity.fulfilled, (state, action) => {
         state.data = action.payload.data;
       })
-      .addCase(updateStatus.pending, (state, action) => {
+      .addCase(updateStatus.fulfilled, (state, action) => {
         const index = state.data.findIndex((product) => product.Id === action.payload.data.Id);
         state.data[index] = action.payload.data;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
+        console.log(action.payload.data);
+
         state.loading = false;
         state.data = action.payload.data.data;
         state.pagination = action.payload.data.pagination;
@@ -171,5 +174,5 @@ export const productsSlice = createSlice({
   },
 });
 
-export const selectProducts = (state) => state.products;
-export default productsSlice.reducer;
+export const selectProducts = (state) => state.productVendors;
+export default productVendorSlice.reducer;

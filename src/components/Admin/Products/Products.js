@@ -1,40 +1,73 @@
 import React from 'react';
-import { useTable, useSortBy, usePagination } from 'react-table';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './Product.css';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import 'react-datepicker/dist/react-datepicker.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { Button, Form, Modal } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
-import { Button, Modal, Form } from 'react-bootstrap';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
-import { Breadcrumb } from 'react-bootstrap';
-function Products() {
-  const [products, setProducts] = React.useState([
-    {
-      id: 1,
-      name: 'Product 1',
-      price: 10,
-    },
-    {
-      id: 2,
-      name: 'Product 2',
-      price: 20,
-    },
-    // Add more rows as needed
-  ]);
+import { usePagination, useSortBy, useTable } from 'react-table';
+import { debounce } from 'lodash';
+import { getProductsByStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
+import cogoToast from 'cogo-toast';
+import { useNavigate } from 'react-router-dom';
+import {
+  activeProduct,
+  fetchProducts,
+  selectProducts,
+  updateStatus,
+} from '../../../store/slices/product-vendor-slice';
 
-  const [showAddModal, setShowAddModal] = React.useState(false);
-  const [showEditModal, setShowEditModal] = React.useState(false);
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [selectedProduct, setSelectedProduct] = React.useState(null);
+function Product() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [showInactiveModel, setshowInactiveModel] = useState(false);
+  const [showDisableModel, setShowDisableModel] = useState(false);
+  const [currentPage, setCurrentPage] = React.useState(0);
+  const [orderBy, setOrderBy] = React.useState('-updateAt');
   const [searchText, setSearchText] = React.useState('');
-
+  const [selectedId, setSelectedId] = React.useState(null);
+  const products = useSelector(selectProducts);
+  useEffect(() => {
+    dispatch(
+      fetchProducts({
+        currentPage,
+        pageSize: 10,
+        searchText,
+        orderBy,
+      })
+    );
+  }, [currentPage, orderBy]);
   const columns = React.useMemo(
     () => [
       {
         Header: 'ID',
         accessor: 'id',
+        Cell: ({ row }) => {
+          const rowIndex = row.index + 1 + currentPage * 10;
+          return <div>{rowIndex}</div>;
+        },
       },
       {
         Header: 'Name',
         accessor: 'name',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Image',
+        accessor: 'images',
+        Cell: ({ value }) => {
+          return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <img
+                src={value?.length > 0 ? value[0]?.location : ''}
+                alt="Hình ảnh thể loại"
+                style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+              />
+            </div>
+          );
+        },
       },
       {
         Header: 'Price',
@@ -42,129 +75,267 @@ function Products() {
         sortType: 'basic',
       },
       {
+        Header: 'Quantity',
+        accessor: 'quantity',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Sold',
+        accessor: 'sold',
+        sortType: 'basic',
+      },
+      {
+        Header: 'Status',
+        accessor: 'isActive',
+        sortType: 'basic',
+        Cell: ({ value }) => {
+          return (
+            <div
+              style={{
+                color: value ? 'green' : 'red',
+                fontWeight: 'bold',
+              }}
+            >
+              {value ? 'ACTIVE' : 'INACTIVE'}
+            </div>
+          );
+        },
+      },
+      {
         Header: 'Action',
-        Cell: ({ row }) => (
-          <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
-            <Dropdown.Item onClick={() => handleEditClick(row.original.id)}>Edit</Dropdown.Item>
-            <Dropdown.Item onClick={() => handleDeleteClick(row.original.id)}>Delete</Dropdown.Item>
-          </DropdownButton>
-        ),
+        Cell: ({ row }) => {
+          return (
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              {row.original.isDeleted ? (
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleEnable(row.original.Id)}
+                >
+                  ENABLE
+                </Button>
+              ) : (
+                <Button
+                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleDisable(row.original.Id)}
+                >
+                  DISABLE
+                </Button>
+              )}
+              {!row.original.isActive ? (
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleActive(row.original.Id)}
+                >
+                  ACTIVE
+                </Button>
+              ) : (
+                <Button
+                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleInActive(row.original.Id)}
+                >
+                  INACTIVE
+                </Button>
+              )}
+            </div>
+          );
+        },
         id: 'action',
       },
     ],
     []
   );
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    page,
-    nextPage,
-    previousPage,
-    canPreviousPage,
-    pageOptions,
-    state,
-    prepareRow,
-  } = useTable({ columns, data: products }, useSortBy, usePagination);
+  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
+    {
+      columns,
+      data: products.data,
+      initialState: { pageIndex: 0 },
+      manualPagination: true,
+      pageCount: Math.ceil(products.pagination.total / 10),
+      manualSortBy: true,
+    },
+    useSortBy,
+    usePagination
+  );
 
+  const debouncedFetchOrders = debounce((searchText) => {
+    dispatch(
+      fetchProducts({
+        currentPage,
+        pageSize: 10,
+        searchText,
+        orderBy,
+      })
+    );
+  }, 500);
+  const handleAddClick = () => {
+    navigate(`/vendor/products/create`);
+  };
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
+    debouncedFetchOrders(event.target.value);
+  };
+  const handleInActiveSubmit = () => {
+    setshowInactiveModel(false);
+    cogoToast
+      .loading('Updating product...', {
+        position: 'bottom-right',
+      })
+      .then(() => {
+        return dispatch(activeProduct({ id: selectedId, status: false }));
+      })
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully edit product', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
+  };
+  const handleInactiveClose = () => {
+    setshowInactiveModel(false);
+  };
+  const handleActive = (id) => {
+    cogoToast
+      .loading('Updating product...', {
+        position: 'bottom-right',
+      })
+      .then(() => {
+        return dispatch(activeProduct({ id, status: true }));
+      })
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully edit product', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
+  };
+  const handleInActive = (id) => {
+    setSelectedId(id);
+    setshowInactiveModel(true);
   };
 
-  const filteredProducts = React.useMemo(() => {
-    return products.filter((product) => product.name.toLowerCase().includes(searchText.toLowerCase()));
-  }, [products, searchText]);
+  /// deleted
 
-  const handleAddClick = () => {
-    setShowAddModal(true);
+  const handleDisableSubmit = () => {
+    setShowDisableModel(false);
+    cogoToast
+      .loading('Updating product...', {
+        position: 'bottom-right',
+      })
+      .then(() => {
+        return dispatch(updateStatus({ id: selectedId, status: true }));
+      })
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully edit product', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
   };
-
-  const handleAddClose = () => {
-    setShowAddModal(false);
+  const handleDisableClose = () => {
+    setShowDisableModel(false);
   };
-
-  const handleAddSubmit = (event) => {
-    event.preventDefault();
-    const id = products.length + 1;
-    const name = event.target.elements.name.value;
-    const price = parseInt(event.target.elements.price.value);
-    const newProduct = { id, name, price };
-    setProducts([...products, newProduct]);
-    setShowAddModal(false);
+  const handleEnable = (id) => {
+    cogoToast
+      .loading('Updating product...', {
+        position: 'bottom-right',
+      })
+      .then(() => {
+        return dispatch(updateStatus({ id, status: false }));
+      })
+      .then((res) => {
+        if (!res.error)
+          cogoToast.info('Successfully edit product', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
   };
-
-  const handleEditClick = (productId) => {
-    const product = products.find((product) => product.id === productId);
-    setSelectedProduct(product);
-    setShowEditModal(true);
+  const handleDisable = (id) => {
+    setSelectedId(id);
+    setShowDisableModel(true);
   };
-
-  const handleEditClose = () => {
-    setShowEditModal(false);
-  };
-
-  const handleEditSubmit = (event) => {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    const price = parseInt(event.target.elements.price.value);
-    const updatedProduct = { ...selectedProduct, name, price };
-    const updatedProducts = products.map((product) =>
-      product.id === selectedProduct.id ? updatedProduct : product
-    );
-    setProducts(updatedProducts);
-    setShowEditModal(false);
-  };
-
-  const handleDeleteClick = (productId) => {
-    const product = products.find((product) => product.id === productId);
-    setSelectedProduct(product);
-    setShowDeleteModal(true);
-  };
-
-  const handleDeleteClose = () => {
-    setShowDeleteModal(false);
-  };
-
-  const handleDeleteSubmit = (event) => {
-    event.preventDefault();
-    const updatedProducts = products.filter((product) => product.id !== selectedProduct.id);
-    setProducts(updatedProducts);
-    setShowDeleteModal(false);
-  };
-
   return (
     <div className="content-wrapper">
-      <Breadcrumb>
-        <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Products</Breadcrumb.Item>
-      </Breadcrumb>
+      <h1 className="title main-title">Product</h1>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
-          <i className="fa fa-search"></i>
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={searchText}
-            onChange={handleSearchChange}
-          />
+          <span className="search-wrapper">
+            <i className="fa fa-search"></i>
+            <input
+              type="text"
+              placeholder="Search orders..."
+              value={searchText}
+              onChange={handleSearchChange}
+            />
+          </span>
         </div>
         <button className="btn btn-primary" onClick={handleAddClick}>
           Add Product
         </button>
       </div>
-      <table {...getTableProps()} className="table table-bordered table-striped">
+      <table
+        {...getTableProps()}
+        className="table table-bordered table-striped"
+        style={{ textAlign: 'center' }}
+      >
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
                 <th
                   {...column.getHeaderProps(column.getSortByToggleProps())}
+                  onClick={(e) => {
+                    column.getSortByToggleProps().onClick(e);
+                    setTimeout(() => {
+                      if (column.isSorted === true) {
+                        if (column.id !== 'id' && column.id !== 'status')
+                          setOrderBy(column.isSortedDesc ? `-${column.id}` : column.id);
+                        else if (column.id === 'status')
+                          setOrderBy(column.isSortedDesc ? '-isDeleted' : 'isDeleted');
+                        else setOrderBy(column.isSortedDesc ? '-updateAt' : 'updateAt');
+                      } else {
+                        setOrderBy('-updateAt');
+                      }
+                    });
+                  }}
                   className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${
                     column.id === 'action' ? 'action-column' : ''
                   }`}
                 >
                   {column.render('Header')}
+                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
                 </th>
               ))}
             </tr>
@@ -193,10 +364,10 @@ function Products() {
       <div className="pagination-wrapper">
         <ReactPaginate
           containerClassName="pagination"
-          pageCount={pageOptions.length}
+          pageCount={Math.ceil(products.pagination.total / 10)}
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
-          onPageChange={({ selected }) => state.gotoPage(selected)}
+          onPageChange={({ selected }) => setCurrentPage(selected)}
           activeClassName="active"
           previousClassName="page-item"
           nextClassName="page-item"
@@ -209,68 +380,34 @@ function Products() {
           disableInitialCallback={true}
         />
       </div>
-      <Modal show={showAddModal} onHide={handleAddClose} centered>
-        <Form onSubmit={handleAddSubmit}>
+      <Modal show={showInactiveModel} onHide={handleInactiveClose} centered>
+        <Form onSubmit={handleInActiveSubmit}>
           <Modal.Header closeButton>
-            <Modal.Title>Add Product</Modal.Title>
+            <Modal.Title>InActive Product</Modal.Title>
           </Modal.Header>
-          <Modal.Body>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" placeholder="Enter name" />
-            </Form.Group>
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control type="number" placeholder="Enter price" />
-            </Form.Group>
-          </Modal.Body>
+          <Modal.Body>Are you sure you want to InActive the product?</Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleAddClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Add
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-      <Modal show={showEditModal} onHide={handleEditClose} centered>
-        <Form onSubmit={handleEditSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Edit Product</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control type="text" defaultValue={selectedProduct?.name} />
-            </Form.Group>
-            <Form.Group controlId="price">
-              <Form.Label>Price</Form.Label>
-              <Form.Control type="number" defaultValue={selectedProduct?.price} />
-            </Form.Group>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleEditClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" type="submit">
-              Save Changes
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-      <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-        <Form onSubmit={handleDeleteSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Delete Product</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to delete the product?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleDeleteClose}>
+            <Button variant="secondary" onClick={handleInactiveClose}>
               Cancel
             </Button>
             <Button variant="danger" type="submit">
-              Delete
+              InActive
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+      <Modal show={showDisableModel} onHide={handleDisableClose} centered>
+        <Form onSubmit={handleDisableSubmit}>
+          <Modal.Header closeButton>
+            <Modal.Title>Disable Product</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to disable the product?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleDisableClose}>
+              Cancel
+            </Button>
+            <Button variant="danger" type="submit">
+              Disable
             </Button>
           </Modal.Footer>
         </Form>
@@ -279,4 +416,4 @@ function Products() {
   );
 }
 
-export default Products;
+export default Product;

@@ -45,7 +45,7 @@ export const rootReducer = combineReducers({
   users: usersReducer,
   stores: storesReducer,
   statistics: statisticReducer,
-  productVendor: productVendorReducer,
+  productVendors: productVendorReducer,
   orders: ordersReducer,
 });
 
