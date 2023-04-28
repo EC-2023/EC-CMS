@@ -1,14 +1,16 @@
 import { Suspense, lazy } from 'react';
 import ScrollToTop from './helpers/scroll-top';
-import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
-import Home from './components/Admin/Home/Home';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomeVendor from './components/Vendor/Home/HomeVendor';
 import OrderDetail from './components/Vendor/Order/OrderDetail';
 import StatsPage from './components/Vendor/Statistic/Statistic';
+import ConfirmPin from './components/Password/ConfirmPin';
+import EmailSent from './components/Password/EmailSent';
+import PhoneSent from './components/Password/PhoneSent';
+import ForgotPassword from './components/Password/ForgotPassword';
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
-const UserLevels = lazy(() => import('./components/Admin/UserLevels/UserLevels'));
 const Order = lazy(() => import('./components/Vendor/Order/Order'));
 
 // Vendor
@@ -16,6 +18,9 @@ const VendorLayout = lazy(() => import('./components/Vendor/VendorLayout'));
 const AddProduct = lazy(() => import('./components/Vendor/Product/AddProduct'));
 const EditPdoduct = lazy(() => import('./components/Vendor/Product/EditProduct'));
 const ProductVendor = lazy(() => import('./components/Vendor/Product/Product'));
+// test
+const ResestPassword = lazy(() => import('./components/Password/ResetPassword'));
+
 // home pages
 const HomeFashion = lazy(() => import('./pages/home/HomeFashion'));
 const HomeFashionTwo = lazy(() => import('./pages/home/HomeFashionTwo'));
@@ -202,8 +207,13 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
             <Route path={process.env.PUBLIC_URL + '/checkout'} element={<Checkout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
-            <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
+            <Route path={process.env.PUBLIC_URL + '/reset-password/:token'} element={<ResestPassword />} />
+            <Route path={process.env.PUBLIC_URL + '/confirm-pin/:phoneNumber'} element={<ConfirmPin />} />
+            <Route path={process.env.PUBLIC_URL + '/forgot-password/email-sent'} element={<EmailSent />} />
+            <Route path={process.env.PUBLIC_URL + '/forgot-password/phone-sent'} element={<PhoneSent />} />
+            <Route path={process.env.PUBLIC_URL + '/forgot-password'} element={<ForgotPassword />} />
 
+            <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route
               path={process.env.PUBLIC_URL + '/vendor/home'}
               element={
