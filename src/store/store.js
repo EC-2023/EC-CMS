@@ -25,6 +25,9 @@ import ordersReducer from './slices/orders-slice';
 import storesReducer from './slices/stores-slice';
 import statisticReducer from './slices/statistics-slice';
 import productVendorReducer from './slices/product-vendor-slice';
+
+import authReducer from './slices/auth-slice';
+
 const persistConfig = {
   key: 'flone',
   version: 1.1,
@@ -47,6 +50,7 @@ export const rootReducer = combineReducers({
   statistics: statisticReducer,
   productVendors: productVendorReducer,
   orders: ordersReducer,
+  auth: authReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

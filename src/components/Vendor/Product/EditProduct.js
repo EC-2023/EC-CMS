@@ -36,10 +36,10 @@ function EditProduct() {
       const newAttributes = [];
       for (let i = 0; i < response.payload.data.attributes.length; i++) {
         const values = [];
-        for (let id = 0; id < response.payload.data.attributes[i][' attributeValues'].length; id++) {
+        for (let id = 0; id < response.payload.data.attributes[i]['attributeValues'].length; id++) {
           values.push({
-            name: response.payload.data.attributes[i][' attributeValues'][id].name,
-            Id: response.payload.data.attributes[i][' attributeValues'][id].Id,
+            name: response.payload.data.attributes[i]['attributeValues'][id].name,
+            Id: response.payload.data.attributes[i]['attributeValues'][id].Id,
           });
         }
         newAttributes.push({

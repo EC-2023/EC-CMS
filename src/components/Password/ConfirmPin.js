@@ -1,8 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { Form, Button, Modal } from 'react-bootstrap';
 import './ConfirmPin.css';
 import { createRef } from 'react';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { requestPin, validatePin } from '../../store/slices/auth-slice';
+import { useParams } from 'react-router-dom';
+
 const ConfirmPin = () => {
   const [pinValues, setPinValues] = useState(Array(6).fill(''));
   const [error, setError] = useState(false);
@@ -11,12 +15,14 @@ const ConfirmPin = () => {
   const [showResendButton, setShowResendButton] = useState(false);
   const [countdown, setCountdown] = useState(60);
   const [Alert, setAlert] = useState(false);
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+  const { phoneNumber } = useParams();
   useEffect(() => {
     if (countdown > 0 && !showResendButton) {
       const timer = setTimeout(() => {
         setCountdown(countdown - 1);
       }, 1000);
-
       return () => clearTimeout(timer);
     } else if (countdown === 0) {
       setAlert(false);
@@ -26,11 +32,16 @@ const ConfirmPin = () => {
 
   const resendPin = () => {
     // Thực hiện gửi lại mã pin ở đây
-
-    // Khởi động lại đếm ngược
-    setShowResendButton(false);
-    setAlert(() => true);
-    setCountdown(60);
+    dispatch(requestPin(phoneNumber)).then((res) => {
+      if (!res.error) {
+        setShowResendButton(false);
+        setAlert(() => true);
+        setCountdown(60);
+      } else {
+        setError(true);
+        setTextError(res.error);
+      }
+    });
   };
 
   const handleFocus = (e) => {
@@ -59,10 +70,21 @@ const ConfirmPin = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (pinValues.join('').length === 6) {
+      dispatch(validatePin({ phone: phoneNumber, token: pinValues.join('') })).then((res) => {
+        setLoading(false);
+        if (!res.error) {
+          window.location.assign(res.payload.data);
+        } else {
+          setError(true);
+          setTextError('Sai mã PIN');
+        }
+      });
     } else {
       setTextError('Please enter 6 digits');
       setError(true);
+      setLoading(false);
     }
   };
   return (
@@ -106,6 +128,14 @@ const ConfirmPin = () => {
                   </Button>
                 </div>
               </Form>
+              <Modal show={loading} onHide={() => {}} centered backdrop="static">
+                <Modal.Body className="text-center">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <p>Requesting...</p>
+                </Modal.Body>
+              </Modal>
               <Modal show={error} onHide={() => {}}>
                 <Modal.Body className="text-center">
                   <i className="fa fa-times-circle text-danger fa-3x mb-3"></i>
