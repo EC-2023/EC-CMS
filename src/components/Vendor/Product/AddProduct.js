@@ -40,19 +40,19 @@ function AddProduct() {
         attributes,
         images,
         category,
-      }).then((res) => {
-        if (res.payload.status === 200) {
-          setTimeout(() => {
-            navigate('/vendor/products');
-          }, 3000);
-          cogoToast.success('Successfully add new category, retun list after 3 sec', {
-            position: 'bottom-right',
-            hideAfter: 3,
-            onClick: () => console.log('Clicked'),
-          });
-        }
       })
-    );
+    ).then((res) => {
+      if (!res.error) {
+        setTimeout(() => {
+          navigate('/vendor/products');
+        }, 3000);
+        cogoToast.success('Successfully add new category, retun list after 3 sec', {
+          position: 'bottom-right',
+          hideAfter: 3,
+          onClick: () => console.log('Clicked'),
+        });
+      }
+    });
   };
 
   const handleImageUpload = (e, index) => {

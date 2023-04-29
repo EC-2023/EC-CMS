@@ -207,7 +207,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
             <Route path={process.env.PUBLIC_URL + '/checkout'} element={<Checkout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
-            <Route path={process.env.PUBLIC_URL + '/reset-password/:token'} element={<ResestPassword />} />
+            <Route path={process.env.PUBLIC_URL + '/reset-password'} element={<ResestPassword />} />
             <Route path={process.env.PUBLIC_URL + '/confirm-pin/:phoneNumber'} element={<ConfirmPin />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password/email-sent'} element={<EmailSent />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password/phone-sent'} element={<PhoneSent />} />

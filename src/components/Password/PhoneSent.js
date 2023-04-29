@@ -3,19 +3,33 @@ import { Row, Col, Form, Button, Alert, Modal } from 'react-bootstrap';
 import { CheckCircle } from 'react-bootstrap-icons';
 import './ResetPassword.css';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { requestPin } from '../../store/slices/auth-slice';
 const PhoneSent = () => {
   const [phone, setPhone] = useState('');
   const [isValidPhone, setIsValidPhone] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
   const phoneRegex = /^\d{10,11}$/;
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    setLoading(true);
     if (phoneRegex.test(phone)) {
-      setIsValidPhone(true);
-      setShowSuccess(true);
-      navigate(`/confirm-pin/${phone}`);
+      dispatch(requestPin(phone)).then((res) => {
+        if (!res.error) {
+          setIsValidPhone(true);
+          setShowSuccess(true);
+          navigate(`/confirm-pin/${phone}`);
+        } else {
+        }
+        setLoading(false);
+      });
     } else {
+      setLoading(false);
+
       setIsValidPhone(false);
     }
   };
@@ -51,7 +65,14 @@ const PhoneSent = () => {
                   </Form>
                 </Col>
               </Row>
-
+              <Modal show={loading} onHide={() => {}} centered backdrop="static">
+                <Modal.Body className="text-center">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <p>Requesting...</p>
+                </Modal.Body>
+              </Modal>
               <Modal show={showSuccess} onHide={handleClose} centered>
                 <Modal.Header closeButton>
                   <Modal.Title>

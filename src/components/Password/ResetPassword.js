@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import { CheckCircle } from 'react-bootstrap-icons';
-import styles from './ResetPassword.css';
 import './ResetPassword.css';
+import { useDispatch } from 'react-redux';
+import { resetPasswordByToken } from '../../store/slices/auth-slice';
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
@@ -12,6 +13,10 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const params = new URLSearchParams(window.location.search);
+
   useEffect(() => {
     checkPasswordsMatch();
   }, [confirmNewPassword]);
@@ -20,14 +25,19 @@ const ResetPassword = () => {
     if (newPassword.trim() !== '' && newPassword === confirmNewPassword) {
       setLoading(true);
       // Thực hiện đặt lại mật khẩu
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập thời gian chờ 2 giây
+      const token = decodeURIComponent(params.get('token'));
 
-      setLoading(false);
-      setSuccess(true);
-      setTimeout(() => {
-        // Chuyển đến trang đăng nhập
-        navigate('/login');
-      }, 2000);
+      dispatch(resetPasswordByToken({ newPassword, token })).then((res) => {
+        if (!res.error) {
+          setLoading(false);
+          setSuccess(true);
+          setTimeout(() => {
+            // Chuyển đến trang đăng nhập
+            navigate('/login');
+          }, 2000);
+        }
+      });
+      // await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập thời gian chờ 2 giây
     } else {
       setShowError(true);
     }
@@ -51,7 +61,7 @@ const ResetPassword = () => {
             <div className="card bg-dark text-white">
               <div className="card-body p-4 text-center">
                 <Row className="justify-content-center mt-5">
-                  <Col xs={12} md={6} className={styles.loginContainer}>
+                  <Col xs={12} md={6}>
                     <h1 className="text-center title-header">Reset Password</h1>
                     <Form onSubmit={handleSubmit}>
                       <Form.Group className="mb-3">
