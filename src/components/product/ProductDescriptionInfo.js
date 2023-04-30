@@ -70,24 +70,12 @@ const ProductDescriptionInfo = ({
 
   const addProductTocart = async () => {
     try {
+      
       const params = {productId: product.Id, quantity : quantityCount, attributesValues : [attributesToString(selectedAttributes)]}
       console.log(params);
-      const response = await toast.promise(
-        CartAPI.addToCart(params),
-        {
-          pending: "Đang Lưu...",
-          success: "Lưu thành công!",
-          error: "Lưu thất bại!",
-          position: "top-right",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
+      const response = await CartAPI.addToCart(params);
+      dispatch(addToCart({...product, quantity : params.quantity}));
+
     } catch (error) {
       console.log(error);
     } 

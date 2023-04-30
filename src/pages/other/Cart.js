@@ -1,22 +1,71 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import SEO from "../../components/seo";
 import { getDiscountPrice } from "../../helpers/product";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { addToCart, decreaseQuantity, deleteFromCart, deleteAllFromCart } from "../../store/slices/cart-slice";
+import {
+  addToCart,
+  decreaseQuantity,
+  deleteFromCart,
+  deleteAllFromCart,
+} from "../../store/slices/cart-slice";
 import { cartItemStock } from "../../helpers/product";
+import CartAPI from "../../api/CartAPI"
 
 const Cart = () => {
-  let cartTotalPrice = 0;
+  const [isLoading, setIsLoading] = useState(true);
+  const [cartItems, setCartItems] = useState([]);
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
+
+  const dispatch = useDispatch();
+  const getCart = async () =>{
+    try{
+      const params = {skip : 0, limit : 10};
+    const response = await CartAPI.getCartItems(params);
+    console.log(response.data.data[0].cartItems)
+    if (response.data.data){
+      dispatch(deleteAllFromCart());
+      setCartItems(response.data.data[0].cartItems);
+      response.data.data[0].cartItems.forEach((cartItem) => {
+      console.log("add to cart",cartItem.product);
+      dispatch(addToCart({...cartItem.product, quantity : cartItem.quantity}));
+    });
+    }
+    }
+    
+    catch{
+
+    }
+    setIsLoading(false);  
+  }
+
+  const deleteProductInCart = async (cartItemId) =>{
+      const response = await CartAPI.deleteProductInCart(cartItemId);
+      console.log(response)
+    }
+
+  useEffect(() => {
+    getCart();
+  }, []);
+  
+  const totalPrice = useMemo(() => {
+    let totalPrice = 0;
+    cartItems.forEach((cartItem) => {
+      totalPrice += cartItem.product.price * cartItem.quantity;
+    });
+    return totalPrice;
+  }, [cartItems]);
+  
+  useEffect(() => {
+    setCartTotalPrice(totalPrice);
+  }, [totalPrice]);
 
   const [quantityCount] = useState(1);
-  const dispatch = useDispatch();
   let { pathname } = useLocation();
-  
+
   const currency = useSelector((state) => state.currency);
-  const { cartItems } = useSelector((state) => state.cart);
 
   return (
     <Fragment>
@@ -27,11 +76,11 @@ const Cart = () => {
 
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
-        <Breadcrumb 
+        <Breadcrumb
           pages={[
-            {label: "Home", path: process.env.PUBLIC_URL + "/" },
-            {label: "Cart", path: process.env.PUBLIC_URL + pathname }
-          ]} 
+            { label: "Home", path: process.env.PUBLIC_URL + "/" },
+            { label: "Cart", path: process.env.PUBLIC_URL + pathname },
+          ]}
         />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
@@ -44,12 +93,13 @@ const Cart = () => {
                       <table>
                         <thead>
                           <tr>
-                            <th>Image</th>
-                            <th>Product Name</th>
-                            <th>Unit Price</th>
-                            <th>Qty</th>
-                            <th>Subtotal</th>
-                            <th>action</th>
+                            <th>Hình</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Thuộc tính</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Tổng</th>
+                            <th>Xoá</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -68,7 +118,7 @@ const Cart = () => {
                                       className="img-fluid"
                                       src={
                                         process.env.PUBLIC_URL +
-                                        cartItem.images[0].location
+                                        cartItem.product.images[0].location
                                       }
                                       alt=""
                                     />
@@ -80,10 +130,10 @@ const Cart = () => {
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      cartItem.Id
+                                      cartItem.product.Id
                                     }
                                   >
-                                    {cartItem.name}
+                                    {cartItem.product.name}
                                   </Link>
                                   {cartItem.selectedProductColor &&
                                   cartItem.selectedProductSize ? (
@@ -100,10 +150,14 @@ const Cart = () => {
                                   )}
                                 </td>
 
+                                <td className="product-attributes">
+                                    {cartItem.attributeValues[0].name + " VNĐ"}
+                                </td>
+
                                 <td className="product-price-cart">
-                                    <span className="amount">
-                                      {cartItem.price + " VNĐ"}
-                                    </span>
+                                  <span className="amount">
+                                    {cartItem.product.price}
+                                  </span>
                                 </td>
 
                                 <td className="product-quantity">
@@ -111,7 +165,7 @@ const Cart = () => {
                                     <button
                                       className="dec qtybutton"
                                       onClick={() =>
-                                        dispatch(decreaseQuantity(cartItem))
+                                        console.log("giảm")
                                       }
                                     >
                                       -
@@ -125,30 +179,30 @@ const Cart = () => {
                                     <button
                                       className="inc qtybutton"
                                       onClick={() =>
-                                        dispatch(addToCart({
-                                          ...cartItem,
-                                          quantity: quantityCount
-                                        }))
+                                        console.log("tăng")
                                       }
-                                      disabled={
-                                        cartItem === undefined
-                                      }
+                                      disabled={cartItem === undefined}
                                     >
                                       +
                                     </button>
                                   </div>
                                 </td>
                                 <td className="product-subtotal">
-                                    {
-                                      (
-                                        cartItem.price * cartItem.quantity
-                                      ).toFixed(2) + " VNĐ"}
+                                  {(cartItem.product.price * cartItem.quantity).toFixed(
+                                    2
+                                  ) + " VNĐ"}
                                 </td>
 
                                 <td className="product-remove">
                                   <button
-                                    onClick={() =>
-                                      dispatch(deleteFromCart(cartItem.cartItemId))
+                                    onClick={() =>{
+                                      // dispatch(
+                                      //   deleteFromCart(cartItem.cartItemId)
+                                      // )
+                                      deleteProductInCart(cartItem.Id)
+                                      
+                                    }
+                                      
                                     }
                                   >
                                     <i className="fa fa-times"></i>
@@ -183,7 +237,7 @@ const Cart = () => {
 
                 <div className="row">
                   <div className="col-lg-4 col-md-6">
-                    <div className="cart-tax">
+                    {/* <div className="cart-tax">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gray">
                           Estimate Shipping And Tax
@@ -223,11 +277,11 @@ const Cart = () => {
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="col-lg-4 col-md-6">
-                    <div className="discount-code-wrapper">
+                    {/* <div className="discount-code-wrapper">
                       <div className="title-wrap">
                         <h4 className="cart-bottom-title section-bg-gray">
                           Use Coupon Code
@@ -242,7 +296,7 @@ const Cart = () => {
                           </button>
                         </form>
                       </div>
-                    </div>
+                    </div> */}
                   </div>
 
                   <div className="col-lg-4 col-md-12">
@@ -252,21 +306,14 @@ const Cart = () => {
                           Cart Total
                         </h4>
                       </div>
-                      <h5>
-                        Total products{" "}
-                        <span>
-                          {currency.currencySymbol + cartTotalPrice.toFixed(2)}
-                        </span>
-                      </h5>
-
                       <h4 className="grand-totall-title">
-                        Grand Total{" "}
+                        Tổng đơn hàng{" "}
                         <span>
                           {currency.currencySymbol + cartTotalPrice.toFixed(2)}
                         </span>
                       </h4>
                       <Link to={process.env.PUBLIC_URL + "/checkout"}>
-                        Proceed to Checkout
+                        Chuyển đến trang thanh toán
                       </Link>
                     </div>
                   </div>

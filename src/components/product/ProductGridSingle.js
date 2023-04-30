@@ -8,6 +8,8 @@ import ProductModal from "./ProductModal";
 import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
 import { propTypes } from "react-hooks-paginator";
+import { FaMoneyBillAlt } from 'react-icons/fa';
+import CartAPI from "../../api/CartAPI";
 
 const ProductGridSingle = ({
   product,
@@ -18,6 +20,18 @@ const ProductGridSingle = ({
 }) => {
   const [modalShow, setModalShow] = useState(false);
   const dispatch = useDispatch();
+  const addProductTocart = async () => {
+    try {
+      
+      const params = {productId: product.Id, quantity : 1, attributesValues : ""}
+      console.log(params);
+      const response = await CartAPI.addToCart(params);
+      dispatch(addToCart({...product, quantity : params.quantity}));
+
+    } catch (error) {
+      console.log(error);
+    } 
+  }
   // return (
   //   <Fragment>
   //     <div className={clsx("product-wrap", spaceBottomClass)}>
@@ -230,9 +244,9 @@ const ProductGridSingle = ({
               )}
             </div>
             <div className="pro-same-action pro-quickview">
-              <button title="Quick View" onClick={() => setModalShow(true)}>
-                <i className="pe-7s-look" />
-              </button>
+            <button onClick={() => localStorage.setItem("product", JSON.stringify({...product, quantity : 1}))} title="Mua Ngay">
+                  <FaMoneyBillAlt />
+                </button>
             </div>
           </div>
         </div>

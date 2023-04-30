@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getDiscountPrice } from "../../../helpers/product";
 import { deleteFromCart } from "../../../store/slices/cart-slice"
+import { array } from "prop-types";
 
 const MenuCart = () => {
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ const MenuCart = () => {
       {cartItems && cartItems.length > 0 ? (
         <Fragment>
           <ul>
-            {cartItems.map((item) => {
+            { cartItems.map((item) => {
               return (
                 <li className="single-shopping-cart" key={item.cartItemId}>
                   <div className="shopping-cart-img">

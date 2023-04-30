@@ -9,6 +9,7 @@ import ProductModal from "./ProductModal";
 import { addToCart } from "../../store/slices/cart-slice";
 import { addToWishlist } from "../../store/slices/wishlist-slice";
 import { addToCompare } from "../../store/slices/compare-slice";
+import { FaMoneyBillAlt } from 'react-icons/fa';
 
 const ProductGridListSingle = ({
   product,
@@ -109,8 +110,8 @@ const ProductGridListSingle = ({
                 )}
               </div>
               <div className="pro-same-action pro-quickview">
-                <button onClick={() => setModalShow(true)} title="Quick View">
-                  <i className="pe-7s-look" />
+                <button onClick={() => localStorage.setItem("product", product)} title="Mua Ngay">
+                  <FaMoneyBillAlt />
                 </button>
               </div>
             </div>

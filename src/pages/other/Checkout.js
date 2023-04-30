@@ -1,18 +1,37 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { getDiscountPrice } from "../../helpers/product";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import UserAddressAPI from "../../api/UserAddressAPI";
 
 const Checkout = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [selectedAddress, setSelectedAddress] = useState(null);
+const addresses = [
+  { id: 1, name: 'Địa chỉ 1', address: '123 Đường A, Quận 1, TP.HCM' },
+  { id: 2, name: 'Địa chỉ 2', address: '456 Đường B, Quận 2, TP.HCM' },
+  { id: 3, name: 'Địa chỉ 3', address: '789 Đường C, Quận 3, TP.HCM' },
+];
   let cartTotalPrice = 0;
 
   let { pathname } = useLocation();
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
 
+  if (isLoading) {
+    return (
+      <div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+    );
+  }
   return (
     <Fragment>
       <SEO
@@ -21,11 +40,11 @@ const Checkout = () => {
       />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
-        <Breadcrumb 
+        <Breadcrumb
           pages={[
-            {label: "Home", path: process.env.PUBLIC_URL + "/" },
-            {label: "Checkout", path: process.env.PUBLIC_URL + pathname }
-          ]} 
+            { label: "Home", path: process.env.PUBLIC_URL + "/" },
+            { label: "Checkout", path: process.env.PUBLIC_URL + pathname },
+          ]}
         />
         <div className="checkout-area pt-95 pb-100">
           <div className="container">
@@ -34,6 +53,23 @@ const Checkout = () => {
                 <div className="col-lg-7">
                   <div className="billing-info-wrap">
                     <h3>Billing Details</h3>
+                    <select
+                      value={selectedAddress?.id}
+                      onChange={(event) => {
+                        const selectedId = parseInt(event.target.value);
+                        const selectedAddress = addresses.find(
+                          (address) => address.id === selectedId
+                        );
+                        setSelectedAddress(selectedAddress);
+                      }}
+                    >
+                      <option value="">Lựa chọn địa chỉ</option>
+                      {addresses.map((address) => (
+                        <option key={address.id} value={address.id}>
+                          {address.name}
+                        </option>
+                      ))}
+                    </select>
                     <div className="row">
                       <div className="col-lg-6 col-md-6">
                         <div className="billing-info mb-20">
