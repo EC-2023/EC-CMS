@@ -25,10 +25,10 @@ const ProductDescriptionInfo = ({
 
   const [selectedBtnAttibute, setSelectedBtnAttibute] = useState({});
 
-    const handleButtonClick = (attributeName, valueName) => {
-      setSelectedBtnAttibute({ ...selectedAttributes, [attributeName]: valueName });
-      handleAttributeChange(attributeName, valueName);
-    };
+  const handleButtonClick = (attributeName, valueName) => {
+    setSelectedBtnAttibute(prevState => ({ ...prevState, [attributeName]: valueName }));
+    handleAttributeChange(attributeName, valueName);
+  };
   
     const isSelected = (attributeName, valueName) => {
       return selectedBtnAttibute[attributeName] === valueName;

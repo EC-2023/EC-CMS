@@ -23,7 +23,7 @@ const ProductGridSingle = ({
   const addProductTocart = async () => {
     try {
       
-      const params = {productId: product.Id, quantity : 1, attributesValues : ""}
+      const params = {productId: product.Id, quantity : 1, attributesValues : []}
       console.log(params);
       const response = await CartAPI.addToCart(params);
       dispatch(addToCart({...product, quantity : params.quantity}));
@@ -220,7 +220,10 @@ const ProductGridSingle = ({
                 </Link>
               ) : product.quantity && product.quantity > 0 ? (
                 <button
-                  onClick={() => dispatch(addToCart({...product, quantity : 1}))}
+                  onClick={() => {
+                    addProductTocart();
+                  }}
+
                   className={
                     cartItem !== undefined && cartItem.quantity > 0
                       ? "active"
@@ -244,7 +247,7 @@ const ProductGridSingle = ({
               )}
             </div>
             <div className="pro-same-action pro-quickview">
-            <button onClick={() => localStorage.setItem("product", JSON.stringify({...product, quantity : 1}))} title="Mua Ngay">
+            <button onClick={() => localStorage.setItem("productBN", JSON.stringify({...product, quantity : 1}))} title="Mua Ngay">
                   <FaMoneyBillAlt />
                 </button>
             </div>

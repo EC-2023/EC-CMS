@@ -110,7 +110,7 @@ const ProductGridListSingle = ({
                 )}
               </div>
               <div className="pro-same-action pro-quickview">
-                <button onClick={() => localStorage.setItem("product", product)} title="Mua Ngay">
+                <button onClick={() => localStorage.setItem("productBuyNow", product)} title="Ngay">
                   <FaMoneyBillAlt />
                 </button>
               </div>
