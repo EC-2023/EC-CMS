@@ -53,6 +53,7 @@ const Cart = () => {
         response.data.data[0].cartItems.forEach((cartItem) => {
           console.log("add to cart", cartItem.product);
           response.data.data.forEach((Item) => {
+            if(Item?.store)
             setStoreList(
               storeList.includes(Item.store)
                 ? storeList
@@ -91,6 +92,12 @@ const Cart = () => {
     setCartItems(updatedCartItems);
     const response = await CartAPI.deleteProductInCart(cartItem.Id);
     console.log(response);
+  };
+
+  const deleteAllProductInCart = async () => {
+    dispatch(deleteAllFromCart());
+    setCartItems([]);
+    const response = await CartAPI.deleteAllProductInCart();
   };
 
   useEffect(() => {
@@ -152,7 +159,7 @@ const Cart = () => {
                         storeList.map((store, key) => {
                           return (
                             <div key={key}>
-                              <h3 style={{ color: "green" }}>{store.name}</h3>
+                              <h3 style={{ color: "green" }}>{store?.name}</h3>
                               <div className="table-content table-responsive cart-table-content">
                                 <table>
                                   <thead>
@@ -170,7 +177,7 @@ const Cart = () => {
                                   <tbody>
                                     {cartItems.map((cartItem, key) => {
                                       if (
-                                        cartItem.product.storeId !== store.Id
+                                        cartItem.product.storeId !== store?.Id
                                       ) {
                                         return null; // skip rendering this cart item
                                       }
@@ -335,7 +342,7 @@ const Cart = () => {
                         </Link>
                       </div>
                       <div className="cart-clear">
-                        <button onClick={() => dispatch(deleteAllFromCart())}>
+                        <button onClick={() =>  deleteAllProductInCart()}>
                           Clear Shopping Cart
                         </button>
                       </div>

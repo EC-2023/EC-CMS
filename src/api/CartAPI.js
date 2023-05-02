@@ -17,6 +17,10 @@ const CartAPI = {
   deleteProductInCart : (params) =>{
     const url = '/carts/remove/';
     return axiosClient.delete(url+ params);
+  },
+  deleteAllProductInCart : () =>{
+    const url = '/carts/remove-all';
+    return axiosClient.delete(url);
   }
 }
 
