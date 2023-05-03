@@ -17,11 +17,17 @@ import {
   getProvinceNameFromCode,
   getWardNameFromCode,
 } from "../../helpers/other";
+import DeliveryAPI from "../../api/DeliveryAPI";
+import OrderAPI from "../../api/OrderAPI";
 
 const Checkout = () => {
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cod");
+  const [selectedShippingCarrier, setSelectedShippingCarrier] = useState();
+  const [shippingCarriers, setShippingCarriers] = useState([]);
+  
 
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -63,6 +69,15 @@ const Checkout = () => {
     });
   };
 
+  function handlePaymentMethodChange(event) {
+    setSelectedPaymentMethod(event.target.value);
+  }
+  
+  function handleShippingCarrierChange(event) {
+    console.log(event.target.value);
+    setSelectedShippingCarrier(event.target.value);
+  }
+
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
     setSelectedWard("");
@@ -86,6 +101,9 @@ const Checkout = () => {
         const response = await UserAddressAPI.getMyUserAddressList();
         console.log(response.data);
         setAddressUser(response.data);
+        const response2 = await DeliveryAPI.getDeliverys();
+        console.log(response2.data);
+        setShippingCarriers(response2.data);
         setIsLoading(false);
       } catch (error) {
         console.log("faild", error);
@@ -99,8 +117,20 @@ const Checkout = () => {
     setSelectedAddress({ ...selectedAddress, [key]: value });
   };
 
+  const addOrder = async () => {
+    try {
+      const isCOD = selectedPaymentMethod === "cod" ? true : false;
+      const params = {orders: cartItems, storeId : cartItems[0].storeId ,isCOD, option : 0, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + " - " + selectedAddress.ward +  " - " +  selectedAddress.district +  " - " +  selectedAddress.city};
+      console.log(params);
+      const response = await OrderAPI.addOrder(params);
+      console.log(response.data);
+    } catch (error) {
+      console.log("faild", error);
+    }
+  };
+
   const [addressUser, setAddressUser] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [selectedAddress, setSelectedAddress] = useState(null);
 
@@ -141,19 +171,20 @@ const Checkout = () => {
                 <div className="col-lg-7">
                   <div className="billing-info-wrap">
                     <h3>Địa chỉ chi tiết</h3>
-                      <select
-                        value={addressUser?.Id}
-                        onChange={(event) => {
-                          const selectedId = event.target.value;
-                          const selectedAddress = addressUser.find(
-                            (address) => address.Id === selectedId
-                          );
-                          setSelectedAddress(selectedAddress);
-                          
-                          // setDistricts(selectedAddress.district);
-                          // selectedWard(selectedAddress.ward);
-                        }}
-                      >
+                    <select
+                    style={{backgroundColor: "#f5f5f5"}}
+                      value={addressUser?.Id}
+                      onChange={(event) => {
+                        const selectedId = event.target.value;
+                        const selectedAddress = addressUser.find(
+                          (address) => address.Id === selectedId
+                        );
+                        setSelectedAddress(selectedAddress);
+
+                        // setDistricts(selectedAddress.district);
+                        // selectedWard(selectedAddress.ward);
+                      }}
+                    >
                       <option value="">Lựa chọn địa chỉ</option>
                       {addressUser.map((address) => (
                         <option key={address.Id} value={address.Id}>
@@ -172,61 +203,115 @@ const Checkout = () => {
                           <input
                             type="text"
                             value={selectedAddress?.nameRecipient}
-                            onChange={(e) => handleChangeState("nameRecipient", e.target.value)}
-
+                            onChange={(e) =>
+                              handleChangeState("nameRecipient", e.target.value)
+                            }
                           />
                         </div>
                       </div>
                       <div className="col-lg-12">
-                        <div className="billing-select mb-20">
-                          <label>
-                            Tỉnh: {selectedAddress.city}
-                            <select
-                              value={selectedProvince}
-                              onChange={handleProvinceChange}
-                              name=""
-                            >
-                              <option value="">Chọn Tỉnh</option>
-                              {provinces.map((province) => (
-                                <option key={province.id} value={province.code}>
-                                  {province.name}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label>
-                            Huyện: {selectedAddress.district}
-                            <select
-                              value={selectedDistrict}
-                              onChange={handleDistrictChange}
-                              name="district"
-                            >
-                              <option value="">Chọn Huyện</option>
-                              {districts.map((district) => (
+                        <div className="billing-select mb-20 row">
+                          <div className="col-sm-4">
+                            <label>
+                              <span>Tỉnh: {selectedAddress?.city}</span>
+                              <select
+                                value={selectedProvince}
+                                onChange={handleProvinceChange}
+                                name=""
+                                style={{ width: "100%" }}
+                              >
+                                <option value="">Chọn Tỉnh</option>
+                                {provinces.map((province) => (
                                   <option
-                                  key={district.id}
-                                  value={district.code}
-                                  name={district.name}
+                                    key={province.id}
+                                    value={province.code}
+                                  >
+                                    {province.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-sm-4">
+                            <label>
+                              Huyện: {selectedAddress?.district}
+                              <select
+                                value={selectedDistrict}
+                                onChange={handleDistrictChange}
+                                name="district"
+                                style={{ width: "100%" }}
+                              >
+                                <option value="">Chọn Huyện</option>
+                                {districts.map((district) => (
+                                  <option
+                                    key={district.id}
+                                    value={district.code}
+                                    name={district.name}
+                                  >
+                                    {district.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="col-sm-4">
+                            <label>
+                              Phường: {selectedAddress?.ward}
+                              <select
+                                value={selectedWard}
+                                onChange={handleWardChange}
+                                style={{ width: "100%" }}
+                              >
+                                <option value="">Chọn phường</option>
+                                {wards.map((ward) => (
+                                  <option key={ward.id} value={ward.code}>
+                                    {ward.name}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          </div>
+                          <div className="row">
+                            <div className="col-sm-6 mb-20">
+                              <label>
+                                Phương thức thanh toán:
+                                <select
+                                  value={selectedPaymentMethod}
+                                  onChange={handlePaymentMethodChange}
+                                  style={{ width: "100%" }}
                                 >
-                                  {district.name}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label>
-                            Phường: {selectedAddress.ward}
-                            <select
-                              value={selectedWard}
-                              onChange={handleWardChange}
-                            >
-                              <option value="">Chọn phường</option>
-                              {wards.map((ward) => (
-                                <option key={ward.id} value={ward.code}>
-                                  {ward.name}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
+                                  <option value="cod">
+                                    Thanh toán khi nhận hàng
+                                  </option>
+                                  <option value="card">
+                                    Thanh toán bằng thẻ tín dụng
+                                  </option>
+                                </select>
+                              </label>
+                            </div>
+                            <div className="col-sm-6 mb-20">
+                              <label>
+                                Đơn vị vận chuyển:
+                                <select
+                                  value={selectedShippingCarrier}
+                                  onChange={handleShippingCarrierChange}
+                                  style={{ width: "100%" }}
+                                >
+                                  <option value="">
+                                    Chọn đơn vị vận chuyển
+                                  </option>
+                                  {shippingCarriers.map((carrier) => (
+                                    <option
+                                      key={carrier.Id}
+                                      value={carrier.Id}
+                                    >
+                                      {carrier.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              </label>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className="col-lg-12">
@@ -237,23 +322,33 @@ const Checkout = () => {
                             placeholder="Số nhà tên đường"
                             type="text"
                             value={selectedAddress?.detailAddress}
-                            onChange={(e) => handleChangeState("detailAddress", e.target.value)}
+                            onChange={(e) =>
+                              handleChangeState("detailAddress", e.target.value)
+                            }
                           />
                         </div>
                       </div>
                       <div className="col-lg-6 col-md-6">
                         <div className="billing-info mb-20">
                           <label>Phone</label>
-                          <input type="text" value={selectedAddress?.numberPhone} 
-                            onChange={(e) => handleChangeState("numberPhone", e.target.value)}
+                          <input
+                            type="text"
+                            value={selectedAddress?.numberPhone}
+                            onChange={(e) =>
+                              handleChangeState("numberPhone", e.target.value)
+                            }
                           />
                         </div>
                       </div>
                       <div className="col-lg-6 col-md-6">
                         <div className="billing-info mb-20">
                           <label>Postcode / ZIP</label>
-                          <input type="text" value={selectedAddress?.zipcode} 
-                            onChange={(e) => handleChangeState("zipcode", e.target.value)}
+                          <input
+                            type="text"
+                            value={selectedAddress?.zipcode}
+                            onChange={(e) =>
+                              handleChangeState("zipcode", e.target.value)
+                            }
                           />
                         </div>
                       </div>
@@ -298,15 +393,15 @@ const Checkout = () => {
                                   </span>{" "}
                                   <span className="order-price">
                                     {discountedPrice !== null
-                                      ? currency.currencySymbol +
+                                      ? 
                                         (
                                           finalDiscountedPrice *
                                           cartItem.quantity
-                                        ).toFixed(2)
-                                      : currency.currencySymbol +
+                                        ).toFixed(2) + " "+ currency.currencySymbol
+                                      : 
                                         (
                                           finalProductPrice * cartItem.quantity
-                                        ).toFixed(2)}
+                                        ).toFixed(2) + " "+ currency.currencySymbol}
                                   </span>
                                 </li>
                               );
@@ -321,10 +416,10 @@ const Checkout = () => {
                         </div> */}
                         <div className="your-order-total">
                           <ul>
-                            <li className="order-total">Total</li>
+                            <li className="order-total">Tổng</li>
                             <li>
-                              {currency.currencySymbol +
-                                cartTotalPrice.toFixed(2)}
+                              {
+                                cartTotalPrice.toFixed(2) + " "+ currency.currencySymbol}
                             </li>
                           </ul>
                         </div>
@@ -332,7 +427,7 @@ const Checkout = () => {
                       <div className="payment-method"></div>
                     </div>
                     <div className="place-order mt-25">
-                      <button className="btn-hover">Place Order</button>
+                      <button className="btn-hover" onClick={addOrder}>Place Order</button>
                     </div>
                   </div>
                 </div>
