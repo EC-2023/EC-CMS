@@ -11,6 +11,35 @@ export const fetchStores = createAsyncThunk(
     return response;
   }
 );
+export const register = createAsyncThunk('stores/register', async (input) => {
+  const payload = { name: input.name, address: input.address, bio: input.bio };
+  const indexImage = ['avatar', 'cover', 'featuredImages'];
+  const listUpload = [];
+  for (let i = 0; i < 3; i++) {
+    const formData = new FormData();
+    formData.append('file', input[indexImage[i]], { contentType: 'image/jpeg' });
+    listUpload.push(
+      axiosClient.post('/files/cloud/upload', formData, {
+        headers: {
+          'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+          'Accept': '*/*',
+        },
+      })
+    );
+  }
+  const [a, b, c] = await Promise.all(listUpload);
+  payload.avatar = a.data.data;
+  payload.cover = b.data.data;
+  payload.featuredImages = c.data.data;
+  const res = await axiosClient.post(`/stores/register`, payload, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+
+  return res;
+});
 
 export const deleteStore = createAsyncThunk('stores/deleteStore', async (id) => {
   await axiosClient.delete(`/stores/${id}`);
@@ -97,6 +126,7 @@ export const storesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(register.fulfilled, () => {})
       .addCase(updateActiveStore.fulfilled, (state, action) => {
         const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
         state.data[index] = action.payload.data;

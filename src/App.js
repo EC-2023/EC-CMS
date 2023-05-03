@@ -8,6 +8,7 @@ import ConfirmPin from './components/Password/ConfirmPin';
 import EmailSent from './components/Password/EmailSent';
 import PhoneSent from './components/Password/PhoneSent';
 import ForgotPassword from './components/Password/ForgotPassword';
+import RegisterShop from './components/Store/register-store';
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
@@ -212,6 +213,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/forgot-password/email-sent'} element={<EmailSent />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password/phone-sent'} element={<PhoneSent />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password'} element={<ForgotPassword />} />
+            <Route path={process.env.PUBLIC_URL + '/register-store'} element={<RegisterShop />} />
 
             <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route
