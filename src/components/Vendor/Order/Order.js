@@ -41,9 +41,10 @@ function Order() {
         Header: 'OrderID',
         accessor: 'code',
         Cell: ({ row }) => {
+          console.log(row.original);
           return (
             <div>
-              <Link to={`/vendor/orders/${row.original.Id}`}>{row.original.value}</Link>
+              <Link to={`/vendor/orders/${row.original.Id}`}>{row.original.code}</Link>
               {/* <a href="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</a> */}
             </div>
           );
