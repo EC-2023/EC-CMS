@@ -1,17 +1,16 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import Accordion from "react-bootstrap/Accordion";
-import SEO from "../seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import EditAdressOverlay from "../other/editAdress_overlay";
-import "./MyAccount.scss";
-import UploadImage from "./UploadImage";
-import UserAddressAPI from "../../api/UserAddressAPI";
-import UserAPI from "../../api/UserAPI";
+import React, { Fragment, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import Accordion from 'react-bootstrap/Accordion';
+import SEO from '../seo';
+import LayoutOne from '../../layouts/LayoutOne';
+import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
+import EditAdressOverlay from '../other/editAdress_overlay';
+import './MyAccount.scss';
+import UploadImage from './UploadImage';
+import UserAddressAPI from '../../api/UserAddressAPI';
+import UserAPI from '../../api/UserAPI';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 
 const MyAccount = () => {
   let { pathname } = useLocation();
@@ -25,7 +24,7 @@ const MyAccount = () => {
         setAddressUser(response.data);
         setIsLoading(false);
       } catch (error) {
-        console.log("faild", error);
+        console.log('faild', error);
         setIsLoading(false);
       }
     };
@@ -42,7 +41,7 @@ const MyAccount = () => {
           phoneNumber: response.data.phoneNumber,
         });
       } catch (error) {
-        console.log("faild", error);
+        console.log('faild', error);
       }
     };
 
@@ -53,23 +52,23 @@ const MyAccount = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [isNew, setIsNew] = useState(false);
   const [userInfor, setUserInfor] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    phoneNumber: "",
+    email: '',
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    phoneNumber: '',
   });
   const [addressUser, setAddressUser] = useState([]);
   const [editingAddressIndex, setEditingAddressIndex] = useState(null);
   const [newAddress, setNewAddress] = useState({
-    city: "",
-    country: "",
-    district: "",
-    nameRecipient: "",
-    detailAddress: "",
-    numberPhone: "",
-    ward: "",
-    zipcode: "",
+    city: '',
+    country: '',
+    district: '',
+    nameRecipient: '',
+    detailAddress: '',
+    numberPhone: '',
+    ward: '',
+    zipcode: '',
   });
 
   const handleAddClick = () => {
@@ -83,35 +82,31 @@ const MyAccount = () => {
 
   const handleDeleteClick = async (index) => {
     try {
-      setAddressUser((prevState) =>
-      prevState.filter((address, i) => i !== index)
-    );
-      const response = await UserAddressAPI.deleteMyUserAddress(
-        addressUser[index].Id
-      );
+      setAddressUser((prevState) => prevState.filter((address, i) => i !== index));
+      const response = await UserAddressAPI.deleteMyUserAddress(addressUser[index].Id);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleUpdateMyUserAddress = async (index,childState) => {
+  const handleUpdateMyUserAddress = async (index, childState) => {
     try {
       const { Id, ...params } = childState;
       console.log(params);
       const response = await toast.promise(
-        UserAddressAPI.updateMyUserAddress(addressUser[index].Id,params),
+        UserAddressAPI.updateMyUserAddress(addressUser[index].Id, params),
         {
-          pending: "Đang Lưu...",
-          success: "Lưu thành công!",
-          error: "Lưu thất bại!",
-          position: "top-right",
+          pending: 'Đang Lưu...',
+          success: 'Lưu thành công!',
+          error: 'Lưu thất bại!',
+          position: 'top-right',
           autoClose: 2000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
-          theme: "light",
+          theme: 'light',
         }
       );
     } catch (error) {
@@ -121,22 +116,19 @@ const MyAccount = () => {
 
   const handleUpdateMyProfile = async () => {
     try {
-      const response = await toast.promise(
-        UserAPI.updateMyUserInfor(userInfor),
-        {
-          pending: "Đang Lưu...",
-          success: "Lưu thành công!",
-          error: "Lưu thất bại!",
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
+      const response = await toast.promise(UserAPI.updateMyUserInfor(userInfor), {
+        pending: 'Đang Lưu...',
+        success: 'Lưu thành công!',
+        error: 'Lưu thất bại!',
+        position: 'top-right',
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
       console.log(response.data);
     } catch (error) {
       console.log(error);
@@ -146,44 +138,37 @@ const MyAccount = () => {
     setAddressUser((prevState) =>
       addressIndex === null
         ? [...prevState, updatedAddress]
-        : prevState.map((address, index) =>
-            index === addressIndex ? updatedAddress : address
-          )
+        : prevState.map((address, index) => (index === addressIndex ? updatedAddress : address))
     );
     try {
       // const response = await UserAddressAPI.createMyUserAddress(updatedAddress);
     } catch (error) {
       console.log(error);
     }
-    
   };
 
   const handleAddUserAddress = async (updatedAddress) => {
     try {
-      const response = await toast.promise(
-        UserAddressAPI.createMyUserAddress(updatedAddress),
-        {
-          pending: "Đang Lưu...",
-          success: "Lưu thành công!",
-          error: "Lưu thất bại!",
-          position: "top-right",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        }
-      );
+      const response = await toast.promise(UserAddressAPI.createMyUserAddress(updatedAddress), {
+        pending: 'Đang Lưu...',
+        success: 'Lưu thành công!',
+        error: 'Lưu thất bại!',
+        position: 'top-right',
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
       console.log(response.data);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleUserInforChange = (event) => {
-    console.log(event.target.name);
     setUserInfor({
       ...userInfor,
       [event.target.name]: event.target.value,
@@ -213,7 +198,7 @@ const MyAccount = () => {
 
   return (
     <Fragment>
-      <ToastContainer/>
+      <ToastContainer />
       <SEO
         titleTemplate="My Account"
         description="My Account page of flone react minimalist eCommerce template."
@@ -222,8 +207,8 @@ const MyAccount = () => {
         {/* breadcrumb */}
         <Breadcrumb
           pages={[
-            { label: "Home", path: process.env.PUBLIC_URL + "/" },
-            { label: "My Account", path: process.env.PUBLIC_URL + pathname },
+            { label: 'Home', path: process.env.PUBLIC_URL + '/' },
+            { label: 'My Account', path: process.env.PUBLIC_URL + pathname },
           ]}
         />
         <div className="myaccount-area pb-80 pt-100">
@@ -232,12 +217,9 @@ const MyAccount = () => {
               <div className="ms-auto me-auto col-lg-9">
                 <div className="myaccount-wrapper">
                   <Accordion defaultActiveKey="0">
-                    <Accordion.Item
-                      eventKey="0"
-                      className="single-my-account mb-20"
-                    >
+                    <Accordion.Item eventKey="0" className="single-my-account mb-20">
                       <Accordion.Header className="panel-heading">
-                        <span>1 .</span> Edit your account information{" "}
+                        <span>1 .</span> Edit your account information{' '}
                       </Accordion.Header>
                       <Accordion.Body>
                         <div className="myaccount-info-wrapper">
@@ -304,10 +286,7 @@ const MyAccount = () => {
                           </div>
                           <div className="billing-back-btn">
                             <div className="billing-btn">
-                              <button
-                                type="submit"
-                                onClick={handleUpdateMyProfile}
-                              >
+                              <button type="submit" onClick={handleUpdateMyProfile}>
                                 Lưu
                               </button>
                             </div>
@@ -316,10 +295,7 @@ const MyAccount = () => {
                       </Accordion.Body>
                     </Accordion.Item>
 
-                    <Accordion.Item
-                      eventKey="1"
-                      className="single-my-account mb-20"
-                    >
+                    <Accordion.Item eventKey="1" className="single-my-account mb-20">
                       <Accordion.Header className="panel-heading">
                         <span>2 .</span> Change your password
                       </Accordion.Header>
@@ -352,10 +328,7 @@ const MyAccount = () => {
                       </Accordion.Body>
                     </Accordion.Item>
 
-                    <Accordion.Item
-                      eventKey="2"
-                      className="single-my-account mb-20"
-                    >
+                    <Accordion.Item eventKey="2" className="single-my-account mb-20">
                       <Accordion.Header className="panel-heading">
                         <span>3 .</span> Sửa địa chỉ
                       </Accordion.Header>
@@ -370,9 +343,7 @@ const MyAccount = () => {
                                 <div className="row" key={index}>
                                   <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
                                     <div className="entries-info text-center">
-                                      <p>
-                                        Tên người nhận: {address.nameRecipient}
-                                      </p>
+                                      <p>Tên người nhận: {address.nameRecipient}</p>
                                       <p>SĐT: {address.numberPhone}</p>
                                       <p>Địa chi: {address.detailAddress}</p>
                                       <p>District: {address.district}</p>
@@ -384,36 +355,23 @@ const MyAccount = () => {
                                   <div className="col-lg-6 col-md-6 d-flex align-items-center justify-content-center">
                                     <div className="entries-edit-delete text-center d-flex justify-content-center">
                                       <div>
-                                        <button
-                                          className="edit"
-                                          onClick={() => handleEditClick(index)}
-                                        >
+                                        <button className="edit" onClick={() => handleEditClick(index)}>
                                           Edit
                                         </button>
                                         {isEditing && editingAddressIndex === index && (
-                                            <EditAdressOverlay
-                                              index={index}
-                                              isEditing={isEditing}
-                                              closeEdit={closeEdit}
-                                              childState={getAddress(address)}
-                                              handleAddressChange={
-                                                handleAddressChange
-                                              }
-                                              handleUpdateMyUserAddress={
-                                                handleUpdateMyUserAddress
-                                              }
-                                              handleAddUserAddress={handleAddUserAddress}
-                                            />
-                                          )}
+                                          <EditAdressOverlay
+                                            index={index}
+                                            isEditing={isEditing}
+                                            closeEdit={closeEdit}
+                                            childState={getAddress(address)}
+                                            handleAddressChange={handleAddressChange}
+                                            handleUpdateMyUserAddress={handleUpdateMyUserAddress}
+                                            handleAddUserAddress={handleAddUserAddress}
+                                          />
+                                        )}
                                       </div>
                                       <div>
-                                        <button
-                                          onClick={() =>
-                                            handleDeleteClick(index)
-                                          }
-                                        >
-                                          Delete
-                                        </button>
+                                        <button onClick={() => handleDeleteClick(index)}>Delete</button>
                                       </div>
                                     </div>
                                   </div>
@@ -423,10 +381,7 @@ const MyAccount = () => {
                           </div>
                           <div className="billing-back-btn ">
                             <div className="billing-btn entries-edit-delete text-center">
-                              <button
-                                onClick={handleAddClick}
-                                className="btn add"
-                              >
+                              <button onClick={handleAddClick} className="btn add">
                                 add
                               </button>
                               {isNew && (
@@ -444,10 +399,7 @@ const MyAccount = () => {
                       </Accordion.Body>
                     </Accordion.Item>
 
-                    <Accordion.Item
-                      eventKey="4"
-                      className="single-my-account mb-20"
-                    >
+                    <Accordion.Item eventKey="4" className="single-my-account mb-20">
                       <Accordion.Header className="panel-heading">
                         <span>4 .</span> Upload Ảnh đại diện
                       </Accordion.Header>

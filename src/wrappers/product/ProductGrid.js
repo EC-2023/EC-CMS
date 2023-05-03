@@ -14,12 +14,9 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const params = { size: 8, page: 0, orderBy: '-createAt' };
+        const params = { limit: 8, skip: 0, orderBy: '-createAt' };
         const response = await productAPI.getNewProduct(params);
-        console.log(response.data.data);
         dispatch(setProducts(response.data.data));
-        console.log(products);
-
         setIsLoading(false);
       } catch (error) {
         console.log('faild', error);

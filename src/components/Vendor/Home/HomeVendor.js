@@ -21,7 +21,6 @@ function HomeVendor() {
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const stores = useSelector(selectStores);
-  const orders = useSelector(selectOrders);
   useEffect(() => {
     dispatch(getTotalStatisticStore());
     dispatch(

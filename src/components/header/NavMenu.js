@@ -1,34 +1,26 @@
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import clsx from "clsx";
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 
 const NavMenu = ({ menuWhiteClass, sidebarMenu }) => {
   const { t } = useTranslation();
-  
+
   return (
-    <div
-      className={clsx(sidebarMenu
-          ? "sidebar-menu"
-          : `main-menu ${menuWhiteClass ? menuWhiteClass : ""}`)}
-    >
+    <div className={clsx(sidebarMenu ? 'sidebar-menu' : `main-menu ${menuWhiteClass ? menuWhiteClass : ''}`)}>
       <nav>
         <ul>
           <li>
-            <Link to={process.env.PUBLIC_URL + "/"}>
-              {t("home")}
-            </Link>
-            
+            <Link to={process.env.PUBLIC_URL + '/'}>{t('home')}</Link>
           </li>
           <li>
-            <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-              {t("collection")}
-            </Link>
+            <Link to={process.env.PUBLIC_URL + '/shop-grid-standard'}>{t('collection')}</Link>
           </li>
           <li>
-            <Link to={process.env.PUBLIC_URL + "/contact"}>
-              {t("contact_us")}
-            </Link>
+            <Link to={process.env.PUBLIC_URL + '/contact'}>{t('contact_us')}</Link>
+          </li>
+          <li>
+            <Link to={process.env.PUBLIC_URL + '/vendor/home'}>My Store</Link>
           </li>
         </ul>
       </nav>
