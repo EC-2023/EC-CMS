@@ -1,13 +1,13 @@
-import React, { Fragment, useEffect, useState } from "react"; 
-import { useSelector } from "react-redux";
-import { useParams, useLocation } from "react-router-dom";
-import SEO from "../../components/seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import RelatedProductSlider from "../../wrappers/product/RelatedProductSlider";
-import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab";
-import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
-import ProductAPI from "../../api/ProductAPI";
+import React, { Fragment, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useParams, useLocation } from 'react-router-dom';
+import SEO from '../../components/seo';
+import LayoutOne from '../../layouts/LayoutOne';
+import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
+import RelatedProductSlider from '../../wrappers/product/RelatedProductSlider';
+import ProductDescriptionTab from '../../wrappers/product/ProductDescriptionTab';
+import ProductImageDescription from '../../wrappers/product/ProductImageDescription';
+import ProductAPI from '../../api/ProductAPI';
 
 const Product = () => {
   let { pathname } = useLocation();
@@ -19,15 +19,16 @@ const Product = () => {
 
   useEffect(() => {
     const getProduct = async () => {
+      console.log(Id);
+
       try {
         const response = await ProductAPI.getProduct(Id);
-        console.log(response.data);
         setProduct(response.data);
         setIsLoading(false);
       } catch (error) {
-        console.log("faild to fetch product: ", error);
+        console.log('faild to fetch product: ', error);
       }
-    }
+    };
     getProduct();
   }, []);
 
@@ -41,7 +42,6 @@ const Product = () => {
       </div>
     );
   }
-  
 
   return (
     <Fragment>
@@ -52,19 +52,15 @@ const Product = () => {
 
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
-        <Breadcrumb 
+        <Breadcrumb
           pages={[
-            {label: "Home", path: process.env.PUBLIC_URL + "/" },
-            {label: "Shop Product", path: process.env.PUBLIC_URL + pathname }
-          ]} 
+            { label: 'Home', path: process.env.PUBLIC_URL + '/' },
+            { label: 'Shop Product', path: process.env.PUBLIC_URL + pathname },
+          ]}
         />
 
         {/* product description with image */}
-        <ProductImageDescription
-          spaceTopClass="pt-100"
-          spaceBottomClass="pb-100"
-          product={product}
-        />
+        <ProductImageDescription spaceTopClass="pt-100" spaceBottomClass="pb-100" product={product} />
 
         {/* product description tab */}
         <ProductDescriptionTab
@@ -74,10 +70,7 @@ const Product = () => {
         />
 
         {/* related product slider */}
-        <RelatedProductSlider
-          spaceBottomClass="pb-95"
-          category={"product.category[0]"}
-        />
+        <RelatedProductSlider spaceBottomClass="pb-95" category={'product.category[0]'} />
       </LayoutOne>
     </Fragment>
   );

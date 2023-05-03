@@ -9,6 +9,9 @@ import EmailSent from './components/Password/EmailSent';
 import PhoneSent from './components/Password/PhoneSent';
 import ForgotPassword from './components/Password/ForgotPassword';
 import RegisterShop from './components/Store/register-store';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { setCurrency } from './store/slices/currency-slice';
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
@@ -186,7 +189,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/shop-list-full-width'} element={<ShopListFullWidth />} />
             <Route path={process.env.PUBLIC_URL + '/shop-list-two-column'} element={<ShopListTwoColumn />} />
             {/* Shop product pages */}
-            <Route path={process.env.PUBLIC_URL + '/product/:id'} element={<Product />} />
+            <Route path={process.env.PUBLIC_URL + '/product/:Id'} element={<Product />} />
             <Route path={process.env.PUBLIC_URL + '/product-tab-left/:id'} element={<ProductTabLeft />} />
             <Route path={process.env.PUBLIC_URL + '/product-tab-right/:id'} element={<ProductTabRight />} />
             <Route path={process.env.PUBLIC_URL + '/product-sticky/:id'} element={<ProductSticky />} />

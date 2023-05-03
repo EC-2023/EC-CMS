@@ -1,7 +1,7 @@
-import PropTypes from "prop-types";
-import HeaderFour from "../wrappers/header/HeaderFour";
-import FooterTwo from "../wrappers/footer/FooterTwo";
-import ScrollToTop from "../components/scroll-to-top"
+import PropTypes from 'prop-types';
+import HeaderFour from '../wrappers/header/HeaderFour';
+import FooterTwo from '../wrappers/footer/FooterTwo';
+import ScrollToTop from '../components/scroll-to-top';
 
 const LayoutFive = ({ children }) => {
   return (
@@ -16,13 +16,13 @@ const LayoutFive = ({ children }) => {
         spaceBottomClass="pb-25"
         footerLogo="/assets/img/logo/logo-2.png"
       />
-      <ScrollToTop/>
+      <ScrollToTop />
     </div>
   );
 };
 
 LayoutFive.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
 export default LayoutFive;
