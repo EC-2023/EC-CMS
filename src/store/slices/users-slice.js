@@ -12,7 +12,10 @@ export const fetchUsers = createAsyncThunk(
     return response;
   }
 );
-
+export const updateAvatar = createAsyncThunk('users/updateAvatar', async (avatar) => {
+  const res = await axiosClient.post(`/users/update-avatar`, { avatar });
+  return res;
+});
 export const deleteUser = createAsyncThunk('users/deleteUser', async (id) => {
   await axiosClient.delete(`/users/${id}`);
   return id;
@@ -38,6 +41,7 @@ export const usersSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      .addCase(updateAvatar.fulfilled, () => {})
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
       })

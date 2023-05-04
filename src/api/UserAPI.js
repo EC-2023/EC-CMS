@@ -18,6 +18,10 @@ const UserAPI = {
     });
   },
 
+  updateAvatar: (avatar) => {
+    return axiosClient.patch(`/users/update-avatar`, { avatar });
+  },
+
   register: (params) => {
     const url = '/users';
     return axiosClient.post(url, params);

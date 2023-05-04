@@ -4,6 +4,9 @@ import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import drag_drop from '../../assets/Images/drag_drop.jpg';
 import sha1 from 'js-sha1';
+import axiosClient from '../../api/axiosClient';
+import UserAPI from '../../api/UserAPI';
+import cogoToast from 'cogo-toast';
 
 function MyEditor() {
   const [image, setImage] = useState(drag_drop);
@@ -17,25 +20,25 @@ function MyEditor() {
     noKeyboard: true,
   });
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editor) {
       const canvas = editor.getImageScaledToCanvas();
-      canvas.toBlob((blob) => {
-        const timestamp = Math.round(new Date().getTime() / 1000);
-        const apiKey = '181975331748428';
-        const apiSecret = '2R3O056NMmxBXUMwL2apc6CH6aQ';
-        const cloudName = 'dommm7bzh';
-        const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-
+      canvas.toBlob(async (blob) => {
         const formData = new FormData();
         formData.append('file', blob, 'avatar.jpg');
-        formData.append('timestamp', timestamp);
-        formData.append('api_key', apiKey);
-
-        const signature = sha1(`timestamp=${timestamp}&${apiSecret}`);
-        formData.append('signature', signature);
-
-        axios.post(url, formData).then((response) => {});
+        const response = await axiosClient.post('/files/cloud/upload', formData, {
+          headers: {
+            'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+            'Accept': '*/*',
+          },
+        });
+        const res = await UserAPI.updateAvatar(response.data.data);
+        if (!res.error)
+          cogoToast.success('Successfully update avatar', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
       });
     }
   };
