@@ -33,12 +33,14 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, product }) =
   };
   useEffect(() => {
     const getPreview = async () => {
-      const [reviews, checkBuy] = await Promise.all([
-        ReviewAPI.getReviewByProduct(product.Id),
-        ReviewAPI.checkBuy(product.Id),
-      ]);
-      setCheckBuy(checkBuy.data);
+      // const [reviews, checkBuy] = await Promise.all([
+      //   ReviewAPI.getReviewByProduct(product.Id),
+      //   ReviewAPI.checkBuy(product.Id),
+      // ]);
+      const reviews = await ReviewAPI.getReviewByProduct(product.Id);
       setReviews(reviews.data);
+      const checkBuy = await ReviewAPI.checkBuy(product.Id);
+      setCheckBuy(checkBuy.data);
     };
     getPreview();
   }, []);

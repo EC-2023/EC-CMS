@@ -11,10 +11,14 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
   const currency = useSelector((state) => state.currency);
   const { cartItems } = useSelector((state) => state.cart);
   const { wishlistItems } = useSelector((state) => state.wishlist);
+
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        const params = { limit: 8, skip: 0, orderBy: '-createAt' };
+        let params;
+        if (type === 'new') params = { limit: 8, skip: 0, orderBy: '-createAt' };
+        else if (type === 'bestSeller') params = { limit: 8, skip: 0, orderBy: '-sold' };
+        else if (type === 'saleItems') params = { limit: 8, skip: 0, orderBy: '-dateValidPromote' };
         const response = await productAPI.getNewProduct(params);
         dispatch(setProducts(response.data.data));
         setIsLoading(false);
@@ -24,7 +28,7 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
     };
 
     fetchProductList();
-  }, []);
+  }, [type]);
 
   if (isLoading) {
     return (

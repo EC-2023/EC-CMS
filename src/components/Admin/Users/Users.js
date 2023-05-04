@@ -192,7 +192,7 @@ function Users() {
         <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
         <Breadcrumb.Item active>Users</Breadcrumb.Item>
       </Breadcrumb>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3 w-100">
         <div className="search-box">
           <i className="fa fa-search"></i>
           <input type="text" placeholder="Search users..." value={searchText} onChange={handleSearchChange} />

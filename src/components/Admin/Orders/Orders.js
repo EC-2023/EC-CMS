@@ -233,7 +233,7 @@ function Order() {
   return (
     <div className="content-wrapper">
       <h1 className="title main-title">Order</h1>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3 w-100">
         <div className="search-box">
           <span className="search-wrapper">
             <i className="fa fa-search"></i>
