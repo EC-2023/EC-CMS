@@ -68,24 +68,23 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const result = await toast
-        .promise
-        // AuthService.login(formValues.username, formValues.password),
-        // {
-        //   pending: "Logging in...",
-        //   success: "Logged in successfully!",
-        //   error: "Login failed. Please try again.",
-        //   position: "top-right",
-        //   autoClose: 2000,
-        //   hideProgressBar: false,
-        //   closeOnClick: true,
-        //   pauseOnHover: true,
-        //   draggable: true,
-        //   progress: undefined,
-        //   theme: "light",
-        // }
-        ();
-      console.log(result); // Kết quả trả về từ AuthService.login()
+      const params = { username: formValues.email, password: formValues.password };
+      const response = await toast.promise(UserAPI.login(params), {
+        pending: 'Đang đăng nhập...',
+        success: 'Đăng nhập thành công!',
+        error: 'Đăng nhập thất bại.',
+        position: 'top-right',
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+      localStorage.setItem('accessToken', response.data.accessToken);
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      if (response.data.user.role === 'admin') navigate('/admin');
       setTimeout(() => {
         navigate('/my-account');
       }, 2000);
@@ -132,6 +131,7 @@ const LoginRegister = () => {
   return (
     <Fragment>
       <ToastContainer />
+
       <SEO titleTemplate="Login" description="Login page of flone react minimalist eCommerce template." />
       <LayoutOne headerTop="visible">
         {/* breadcrumb */}
@@ -183,7 +183,9 @@ const LoginRegister = () => {
                               />
                               <div className="button-box">
                                 <div className="login-toggle-btn">
-                                  <Link to={process.env.PUBLIC_URL + '/'}>Forgot Password?</Link>
+                                  <Link to={process.env.PUBLIC_URL + '/forgot-password'}>
+                                    Forgot Password?
+                                  </Link>
                                 </div>
                                 <button type="submit">
                                   <span>Login</span>
@@ -263,11 +265,7 @@ const LoginRegister = () => {
                                 onChange={handleChange}
                               />
                               <div className="button-box">
-                                <button
-                                  onClick={() => alert()}
-                                  type="submit"
-                                  disabled={!error.rePasswordWrong && !error.passowordWeak}
-                                >
+                                <button type="submit" disabled={error.rePasswordWrong && error.passowordWeak}>
                                   <span
                                     className={`${
                                       (error.rePasswordWrong || error.passowordWeak) &&

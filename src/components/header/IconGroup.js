@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import clsx from 'clsx';
 import MenuCart from './sub-components/MenuCart';
@@ -10,7 +10,7 @@ import { RiBillLine } from 'react-icons/ri';
 
 const IconGroup = ({ iconWhiteClass }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -53,7 +53,23 @@ const IconGroup = ({ iconWhiteClass }) => {
   const { compareItems } = useSelector((state) => state.compare);
   const { wishlistItems } = useSelector((state) => state.wishlist);
   const { cartItems } = useSelector((state) => state.cart);
-
+  const location = useLocation();
+  const handleSearch = (e) => {
+    e.preventDefault();
+    let newQueryString = '';
+    const currentQueryString = location.search;
+    if (currentQueryString) {
+      const searchIndex = currentQueryString.indexOf('category=');
+      if (searchIndex !== -1) {
+        newQueryString = `${currentQueryString}&search=${search}`;
+      } else {
+        newQueryString = `?search=${search}`;
+      }
+    } else {
+      newQueryString = `?search=${search}`;
+    }
+    navigate(newQueryString);
+  };
   return (
     <div className={clsx('header-right-wrap', iconWhiteClass)}>
       <ToastContainer />
@@ -62,9 +78,9 @@ const IconGroup = ({ iconWhiteClass }) => {
           <i className="pe-7s-search" />
         </button>
         <div className="search-content">
-          <form action="#">
-            <input type="text" placeholder="Search" />
-            <button className="button-search">
+          <form action={handleSearch}>
+            <input onChange={(e) => setSearch(e.target.value)} type="text" placeholder="Search" />
+            <button className="button-search" onClick={(e) => handleSearch(e)}>
               <i className="pe-7s-search" />
             </button>
           </form>
@@ -124,7 +140,7 @@ const IconGroup = ({ iconWhiteClass }) => {
         <MenuCart />
       </div>
       <div className="same-style cart-wrap d-none d-lg-block">
-        <Link to={process.env.PUBLIC_URL + '/order'}>
+        <Link to={process.env.PUBLIC_URL + '/myorder'}>
           <RiBillLine />
         </Link>
       </div>

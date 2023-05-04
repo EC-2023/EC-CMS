@@ -2,8 +2,50 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import Tab from 'react-bootstrap/Tab';
 import Nav from 'react-bootstrap/Nav';
+import { useState } from 'react';
+import { FaStar } from 'react-icons/fa';
+import { useEffect } from 'react';
+import ReviewAPI from '../../api/ReviewAPI';
+import { set } from 'lodash';
 
 const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, product }) => {
+  const [hover, setHover] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  let [reviews, setReviews] = useState([]);
+  const [checkBuy, setCheckBuy] = useState(false);
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!checkBuy) {
+      alert('bạn phải mua hàng mới được đánh giá.');
+    }
+    if (comment.trim() === '' || rating === 0) return;
+    const res = await ReviewAPI.createReview({
+      content: comment,
+      rating: rating,
+      productId: product.Id,
+    });
+    if (!res.error) {
+      setComment('');
+      setRating(5);
+      setReviews([...reviews, res.data]);
+    }
+  };
+  useEffect(() => {
+    const getPreview = async () => {
+      const [reviews, checkBuy] = await Promise.all([
+        ReviewAPI.getReviewByProduct(product.Id),
+        ReviewAPI.checkBuy(product.Id),
+      ]);
+      setCheckBuy(checkBuy.data);
+      setReviews(reviews.data);
+    };
+    getPreview();
+  }, []);
+  const disabledStyle = {
+    pointerEvents: 'none',
+    opacity: 0.5,
+  };
   return (
     <div className={clsx('description-review-area', spaceBottomClass)}>
       <div className="container">
@@ -22,23 +64,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, product }) =
             </Nav>
             <Tab.Content className="description-review-bottom">
               <Tab.Pane eventKey="additionalInfo">
-                {/* <div className="product-anotherinfo-wrapper">
-                  <ul>
-                    <li>
-                      <span>Weight</span> 400 g
-                    </li>
-                    <li>
-                      <span>Dimensions</span>10 x 10 x 15 cm{" "}
-                    </li>
-                    <li>
-                      <span>Materials</span> 60% cotton, 40% polyester
-                    </li>
-                    <li>
-                      <span>Other Info</span> American heirloom jean shorts pug
-                      seitan letterpress
-                    </li>
-                  </ul>
-                </div> */}
                 <div className="product-anotherinfo-wrapper">
                   {product.attributes.map((attribute, index) => (
                     <>
@@ -65,100 +90,83 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, product }) =
                 <div className="row">
                   <div className="col-lg-7">
                     <div className="review-wrapper">
-                      <div className="single-review">
-                        <div className="review-img">
-                          <img src={process.env.PUBLIC_URL + '/assets/img/testimonial/1.jpg'} alt="" />
-                        </div>
-                        <div className="review-content">
-                          <div className="review-top-wrap">
-                            <div className="review-left">
-                              <div className="review-name">
-                                <h4>White Lewis</h4>
+                      {reviews.length > 0
+                        ? reviews.map((review, index) => (
+                            <div className="single-review">
+                              <div className="review-img">
+                                <img
+                                  src={
+                                    review.avatar
+                                      ? review.avatar
+                                      : process.env.PUBLIC_URL + '/assets/img/testimonial/1.jpg'
+                                  }
+                                  alt=""
+                                />
                               </div>
-                              <div className="review-rating">
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                              </div>
-                            </div>
-                            <div className="review-left">
-                              <button>Reply</button>
-                            </div>
-                          </div>
-                          <div className="review-bottom">
-                            <p>
-                              Vestibulum ante ipsum primis aucibus orci luctustrices posuere cubilia Curae
-                              Suspendisse viverra ed viverra. Mauris ullarper euismod vehicula. Phasellus quam
-                              nisi, congue id nulla.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="single-review child-review">
-                        <div className="review-img">
-                          <img src={process.env.PUBLIC_URL + '/assets/img/testimonial/2.jpg'} alt="" />
-                        </div>
-                        <div className="review-content">
-                          <div className="review-top-wrap">
-                            <div className="review-left">
-                              <div className="review-name">
-                                <h4>White Lewis</h4>
-                              </div>
-                              <div className="review-rating">
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
-                                <i className="fa fa-star" />
+                              <div className="review-content">
+                                <div className="review-top-wrap">
+                                  <div className="review-left">
+                                    <div className="review-name">
+                                      <h4>{review.user.displayName}</h4>
+                                    </div>
+                                    <div className="review-rating">
+                                      {Array.from({ length: review.rating }, (v, i) => (
+                                        <i key={i} className="fa fa-star" />
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="review-bottom">
+                                  <p>{review.content}</p>
+                                </div>
                               </div>
                             </div>
-                            <div className="review-left">
-                              <button>Reply</button>
-                            </div>
-                          </div>
-                          <div className="review-bottom">
-                            <p>
-                              Vestibulum ante ipsum primis aucibus orci luctustrices posuere cubilia Curae
-                              Suspendisse viverra ed viverra. Mauris ullarper euismod vehicula. Phasellus quam
-                              nisi, congue id nulla.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
+                          ))
+                        : ''}
                     </div>
                   </div>
                   <div className="col-lg-5">
                     <div className="ratting-form-wrapper pl-50">
                       <h3>Add a Review</h3>
                       <div className="ratting-form">
-                        <form action="#">
+                        <form action={handleSubmitComment}>
                           <div className="star-box">
                             <span>Your rating:</span>
-                            <div className="ratting-star">
-                              <i className="fa fa-star" />
-                              <i className="fa fa-star" />
-                              <i className="fa fa-star" />
-                              <i className="fa fa-star" />
-                              <i className="fa fa-star" />
+                            <div>
+                              {[...Array(5)].map((star, index) => {
+                                const ratingValue = index + 1;
+                                return (
+                                  <label key={index}>
+                                    <input
+                                      type="radio"
+                                      name="rating"
+                                      value={ratingValue}
+                                      onClick={() => setRating(ratingValue)}
+                                      style={{ display: 'none' }}
+                                    />
+                                    <FaStar
+                                      size={30}
+                                      color={ratingValue <= (hover || rating) ? '#ffc107' : '#e4e5e9'}
+                                      onMouseEnter={() => setHover(ratingValue)}
+                                      onMouseLeave={() => setHover(null)}
+                                    />
+                                  </label>
+                                );
+                              })}
                             </div>
                           </div>
                           <div className="row">
-                            <div className="col-md-6">
-                              <div className="rating-form-style mb-10">
-                                <input placeholder="Name" type="text" />
-                              </div>
-                            </div>
-                            <div className="col-md-6">
-                              <div className="rating-form-style mb-10">
-                                <input placeholder="Email" type="email" />
-                              </div>
-                            </div>
                             <div className="col-md-12">
                               <div className="rating-form-style form-submit">
-                                <textarea name="Your Review" placeholder="Message" defaultValue={''} />
-                                <input type="submit" defaultValue="Submit" />
+                                <textarea
+                                  name="Your Review"
+                                  placeholder="Message"
+                                  defaultValue={''}
+                                  onChange={(e) => setComment(e.target.value)}
+                                />
+                                <div style={!checkBuy ? disabledStyle : {}}>
+                                  <input type="submit" value="Submit" onClick={handleSubmitComment} />
+                                </div>
                               </div>
                             </div>
                           </div>

@@ -7,6 +7,8 @@ import HomeVendor from './Home/HomeVendor';
 import Product from './Product/Product';
 import Order from './Order/Order';
 import OrderDetail from './Order/OrderDetail';
+import { useEffect } from 'react';
+import UserAPI from '../../api/UserAPI';
 const VendorLayout = ({ children }) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const handleToggleSidebar = () => {
@@ -21,6 +23,23 @@ const VendorLayout = ({ children }) => {
     { id: 5, name: 'My Profile', iconClass: 'fa fa-user' },
   ];
   // eslint-disable-next-line default-case
+  useEffect(() => {
+    const fetchUserInformation = async () => {
+      try {
+        const response = await UserAPI.getMyUserInfor();
+        console.log(response.data.role.name);
+
+        if (response.data.role.name === 'Vendor' || response.data.role.name === 'Admin') {
+        } else {
+          window.location.href = '/register-store';
+        }
+      } catch (error) {
+        console.log('failed', error);
+        window.location.href = '/login-register';
+      }
+    };
+    fetchUserInformation();
+  }, []);
 
   return (
     <div className="vendor-layout">

@@ -25,6 +25,7 @@ import ordersReducer from './slices/orders-slice';
 import storesReducer from './slices/stores-slice';
 import statisticReducer from './slices/statistics-slice';
 import productVendorReducer from './slices/product-vendor-slice';
+import userOdersReducer from './slices/userOders-slice';
 
 import authReducer from './slices/auth-slice';
 
@@ -51,6 +52,7 @@ export const rootReducer = combineReducers({
   productVendors: productVendorReducer,
   orders: ordersReducer,
   auth: authReducer,
+  userOrders: userOdersReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

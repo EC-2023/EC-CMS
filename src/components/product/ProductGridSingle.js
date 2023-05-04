@@ -98,7 +98,7 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
                   )}
                 </div>
                 <div className="pro-same-action pro-quickview">
-                <a href="/checkout?option=1" onClick={() => localStorage.setItem('productBN', JSON.stringify([{ quantity: 1, product : product }]))} title="Mua Ngay">
+                <a href="/checkout?option=1" onClick={() => localStorage.setItem('productBN', JSON.stringify([{id : null , quantity: 1, product : product }]))} title="Mua Ngay">
   <FaMoneyBillAlt />
 </a>
 

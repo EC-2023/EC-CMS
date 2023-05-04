@@ -1,20 +1,26 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './Order.css';
-import { useState } from 'react';
-import { useEffect } from 'react';
-import 'react-datepicker/dist/react-datepicker.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect, Fragment } from 'react';
+import { Link, useLocation } from "react-router-dom";
 import { Button, Dropdown, Form, Modal } from 'react-bootstrap';
-import ReactPaginate from 'react-paginate';
+import { getDiscountPrice } from "../../helpers/product";
+import SEO from "../../components/seo";
+import LayoutOne from "../../layouts/LayoutOne";
+import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import { addToCart } from "../../store/slices/cart-slice";
+import Product from "../shop-product/Product";
+import { getMyOrder, getTotalStatisticStore, selectStores, selectUserOrders } from '../../store/slices/userOders-slice';
+import  { doneOrder, cancelOrder, selectOrders } from '../../store/slices/orders-slice';
 import { usePagination, useSortBy, useTable } from 'react-table';
-import { debounce } from 'lodash';
-import { getOrdersByMyStore, getTotalStatisticStore, selectStores } from '../../../store/slices/stores-slice';
-import { acceptOrder, cancelOrder, selectOrders } from '../../../store/slices/orders-slice';
 import cogoToast from 'cogo-toast';
-import { Link } from 'react-router-dom';
-function Order() {
-  const dispatch = useDispatch();
+import 'react-datepicker/dist/react-datepicker.css';
+import './Order.css';
+import { debounce } from 'lodash';
+import ReactPaginate from 'react-paginate';
+
+
+
+const MyOrder = () => {
   const [showCancelOrder, setShowCancelOrder] = useState(false);
   const [showAcceptOrder, setShowAcceptOrder] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -22,18 +28,18 @@ function Order() {
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const [selectedStatus, setSelectedStatus] = React.useState({ key: 0, value: 'Tất cả' });
-  const stores = useSelector(selectStores);
+  const userOrders = useSelector(selectUserOrders);
 
   useEffect(() => {
     dispatch(
-      getOrdersByMyStore({
+      getMyOrder({
         currentPage,
         pageSize: 10,
         searchText,
         orderBy,
         otherCondition: selectedStatus.key === 0 ? null : `&status%7B%7Beq%7D%7D=${selectedStatus.key - 1}`,
       })
-    );
+    ).then((res) => {console.log(res);});
   }, [currentPage, orderBy, selectedStatus]);
   const columns = React.useMemo(() => {
     const baseColumns = [
@@ -44,7 +50,7 @@ function Order() {
           console.log(row.original);
           return (
             <div>
-              <Link to={`/vendor/orders/${row.original.Id}`}>{row.original.code}</Link>
+              <Link to={`/userOrders/${row.original.Id}`}>{row.original.code}</Link>
               {/* <a href="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</a> */}
             </div>
           );
@@ -100,12 +106,6 @@ function Order() {
             return (
               <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
                 <Button
-                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
-                  onClick={() => handleAcceptClick(row.original.Id)}
-                >
-                  Accept
-                </Button>
-                <Button
                   style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
                   onClick={() => handleCancelClick(row.original.Id)}
                 >
@@ -113,7 +113,20 @@ function Order() {
                 </Button>
               </div>
             );
+            else if (row.original.status == 2)
+            return (
+              <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                <Button
+                  style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleAcceptClick(row.original.Id)}
+                >
+                  Đã nhận hàng
+                </Button>
+              </div>
+            );
           else return <div>Not Permission</div>;
+
+
         },
         id: 'action',
       });
@@ -138,10 +151,10 @@ function Order() {
   const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
     {
       columns,
-      data: stores.data,
+      data: userOrders.data,
       initialState: { pageIndex: 0 },
       manualPagination: true,
-      pageCount: Math.ceil(stores.pagination.total / 10),
+      pageCount: Math.ceil(userOrders.pagination.total / 10),
       manualSortBy: true,
     },
     useSortBy,
@@ -150,7 +163,7 @@ function Order() {
 
   const debouncedFetchOrders = debounce((searchText) => {
     dispatch(
-      getOrdersByMyStore({
+      getMyOrder({
         currentPage,
         pageSize: 10,
         searchText,
@@ -207,7 +220,7 @@ function Order() {
       .loading('Updating...', {
         position: 'bottom-right',
       })
-      .then(() => dispatch(acceptOrder(selectedId)))
+      .then(() => dispatch(doneOrder(selectedId)))
       .then((res) => {
         if (!res.error)
           cogoToast.success('Successfully Accept Order', {
@@ -225,9 +238,28 @@ function Order() {
     setShowAcceptOrder(false);
   };
   useEffect(() => {}, [selectedStatus]);
+  const dispatch = useDispatch();
+  let { pathname } = useLocation();
+  
+  useEffect(() => {}, [selectedStatus]);
+
   return (
-    <div className="content-wrapper">
-      <h1 className="title main-title">Order</h1>
+    <Fragment>
+      <SEO
+        titleTemplate="MyOrder"
+        description=""
+      />
+      <LayoutOne headerTop="visible">
+        {/* breadcrumb */}
+        <Breadcrumb 
+          pages={[
+            {label: "Home", path: process.env.PUBLIC_URL + "/" },
+            {label: "MyOrder", path: process.env.PUBLIC_URL + pathname }
+          ]} 
+        />
+        <div className="cart-main-area pt-90 pb-100">
+          <div className="container">
+          <h1 className="title main-title">Order</h1>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div className="search-box">
           <span className="search-wrapper">
@@ -328,7 +360,7 @@ function Order() {
       <div className="pagination-wrapper">
         <ReactPaginate
           containerClassName="pagination"
-          pageCount={Math.ceil(stores.pagination.total / 10)}
+          pageCount={Math.ceil(userOrders.pagination.total / 10)}
           marginPagesDisplayed={2}
           pageRangeDisplayed={5}
           onPageChange={({ selected }) => setCurrentPage(selected)}
@@ -376,8 +408,11 @@ function Order() {
           </Modal.Footer>
         </Form>
       </Modal>
-    </div>
+          </div>
+        </div>
+      </LayoutOne>
+    </Fragment>
   );
-}
+};
 
-export default Order;
+export default MyOrder;

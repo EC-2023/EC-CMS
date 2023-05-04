@@ -59,10 +59,6 @@ const Cart = () => {
     }
   };
 
-  useEffect(() => {
-    console.log("store", storeList);
-  }, [storeList]);
-
   const dispatch = useDispatch();
   const getCart = async () => {
     try {
@@ -142,7 +138,7 @@ const Cart = () => {
   useEffect(() => {
     // tính tổng giá trị của các sản phẩm đã chọn
     const selectedItemsTotalPrice = selectedItems.reduce(
-      (total, selectedItem) => total + selectedItem.product.price,
+      (total, selectedItem) => total + (selectedItem.product.price * selectedItem.quantity ),
       0
     );
 
@@ -156,7 +152,15 @@ const Cart = () => {
   const currency = useSelector((state) => state.currency);
 
   const handleClickCheckout = () => {
-    localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
+    const newSelectedItems = selectedItems.map(item => {
+      return {
+        ...item,
+        id: item.Id,
+        Id: undefined,
+      }
+    })
+    
+    localStorage.setItem("selectedItems", JSON.stringify(newSelectedItems));
   };
 
   if (isLoading) {

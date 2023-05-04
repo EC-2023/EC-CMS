@@ -16,11 +16,28 @@ import Stores from './Stores/Stores';
 import Statistics from './Statistics/Statistics';
 import HomeAdmin from './Home/Home';
 import Order from './Orders/Orders';
+import { useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import UserAPI from '../../api/UserAPI';
 
 const AdminLayout = () => {
   const [selectedNavItem, setSelectedNavItem] = useState(1);
   let content = null;
+  useEffect(() => {
+    const fetchUserInformation = async () => {
+      try {
+        const response = await UserAPI.getMyUserInfor();
+        if (response.data.role.name !== 'Admin') {
+          window.location.href = '/login';
+        }
+      } catch (error) {
+        console.log('failed', error);
+        window.location.href = '/login-register';
+      }
+    };
 
+    fetchUserInformation();
+  }, []);
   switch (selectedNavItem) {
     case 1:
       content = <HomeAdmin />;

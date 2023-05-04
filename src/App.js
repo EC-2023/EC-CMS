@@ -95,9 +95,11 @@ const About = lazy(() => import('./pages/other/About'));
 const Contact = lazy(() => import('./pages/other/Contact'));
 const MyAccount = lazy(() => import('./components/User/MyAccount'));
 const LoginRegister = lazy(() => import('./components/User/LoginRegister'));
+const OrderUserDetail = lazy(() => import('./pages/other/OrderDetail'));
 
 const Cart = lazy(() => import('./pages/other/Cart'));
 const Wishlist = lazy(() => import('./pages/other/Wishlist'));
+const MyOrder = lazy(() => import('./pages/other/MyOrder'));
 const Compare = lazy(() => import('./pages/other/Compare'));
 const Checkout = lazy(() => import('./pages/other/Checkout'));
 
@@ -216,6 +218,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
             <Route path={process.env.PUBLIC_URL + '/checkout'} element={<Checkout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
+            <Route path={process.env.PUBLIC_URL + '/myorder'} element={<MyOrder />} />
             <Route path={process.env.PUBLIC_URL + '/reset-password'} element={<ResestPassword />} />
             <Route path={process.env.PUBLIC_URL + '/confirm-pin/:phoneNumber'} element={<ConfirmPin />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password/email-sent'} element={<EmailSent />} />
@@ -263,6 +266,13 @@ const App = () => {
                 <VendorLayout>
                   <OrderDetail />
                 </VendorLayout>
+              }
+            ></Route>
+            <Route
+              exact
+              path={process.env.PUBLIC_URL + '/userOrders/:orderCode'}
+              element={
+                  <OrderUserDetail />
               }
             ></Route>
             <Route

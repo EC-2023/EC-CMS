@@ -124,7 +124,8 @@ const Checkout = () => {
   const addOrder = async () => {
     try {
       const isCOD = selectedPaymentMethod === "cod" ? true : false;
-      const params = {orders: cartItems, storeId : cartItems[0].product.storeId ,isCOD, option : 0, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};
+      var params = {orders: cartItems, storeId : cartItems[0].product.storeId ,cod : isCOD, option : option, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};
+      if(option === "1"){ params = {orders: [{id : null, productId : cartItems[0].product.Id, quantity : cartItems[0].quantity}], storeId : cartItems[0].product.storeId ,cod : isCOD, option : option, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};}
       console.log(params);
       const response = await OrderAPI.addOrder(params);
       console.log(response.data);
@@ -150,7 +151,7 @@ const Checkout = () => {
       if (cartItemsFromStorage) {
         setCartItems(JSON.parse(cartItemsFromStorage));
       }
-    }
+    } 
     else{
       const cartItemsFromStorage = localStorage.getItem("selectedItems");
       if (cartItemsFromStorage) {
