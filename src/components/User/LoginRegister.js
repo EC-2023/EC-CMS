@@ -84,10 +84,12 @@ const LoginRegister = () => {
       });
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
-      if (response.data.user.role === 'admin') navigate('/admin');
+      console.log(response.data);
+
+      if (response.data.UserProfileDto.role.name === 'Admin') navigate('/admin');
       setTimeout(() => {
-        navigate('/my-account');
-      }, 2000);
+        navigate('/');
+      }, 500);
     } catch (error) {
       console.error(error);
     }
