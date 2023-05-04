@@ -241,7 +241,11 @@ function AddProduct() {
             <label>Images</label>
             {previewImages.map((previewImage, index) => (
               <div key={index} className="image-preview">
-                <img src={previewImage} alt={`Preview ${index}`} />
+                <img
+                  src={previewImage}
+                  alt={`Preview ${index}`}
+                  style={{ width: '200px', height: '200px' }}
+                />
                 <button className="remove-image-button" type="button" onClick={() => removeImage(index)}>
                   <MdClose />
                 </button>
