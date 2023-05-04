@@ -1,12 +1,12 @@
-import { Fragment, useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { getDiscountPrice } from "../../helpers/product";
-import SEO from "../../components/seo";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import UserAddressAPI from "../../api/UserAddressAPI";
-import { deleteFromCart } from "../../store/slices/cart-slice"
+import { Fragment, useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { getDiscountPrice } from '../../helpers/product';
+import SEO from '../../components/seo';
+import LayoutOne from '../../layouts/LayoutOne';
+import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
+import UserAddressAPI from '../../api/UserAddressAPI';
+import { deleteFromCart } from '../../store/slices/cart-slice';
 import {
   fetchProvinces,
   fetchDistricts,
@@ -17,29 +17,28 @@ import {
   getDistrictNameFromCode,
   getProvinceNameFromCode,
   getWardNameFromCode,
-} from "../../helpers/other";
-import DeliveryAPI from "../../api/DeliveryAPI";
-import OrderAPI from "../../api/OrderAPI";
+} from '../../helpers/other';
+import DeliveryAPI from '../../api/DeliveryAPI';
+import OrderAPI from '../../api/OrderAPI';
 
 const Checkout = () => {
   const dispatch = useDispatch();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const option = queryParams.get("option");
+  const option = queryParams.get('option');
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("cod");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('cod');
   const [selectedShippingCarrier, setSelectedShippingCarrier] = useState();
   const [shippingCarriers, setShippingCarriers] = useState([]);
-  
 
-  const [selectedProvince, setSelectedProvince] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedWard, setSelectedWard] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [selectedWard, setSelectedWard] = useState('');
 
   useEffect(() => {
-    console.log("option", option);
+    console.log('option', option);
     // Fetch provinces data and set it to provinces state
     // This should be replaced with your actual API call
     fetchProvinces().then((data) => setProvinces(data));
@@ -47,7 +46,7 @@ const Checkout = () => {
 
   useEffect(() => {
     if (selectedProvince) {
-      console.log("lấy distric");
+      console.log('lấy distric');
       // Fetch districts based on the selected province
       // Replace with your actual API call
       fetchDistricts(selectedProvince).then((data) => {
@@ -67,8 +66,8 @@ const Checkout = () => {
 
   const handleProvinceChange = (e) => {
     setSelectedProvince(e.target.value);
-    setSelectedDistrict("");
-    setSelectedWard("");
+    setSelectedDistrict('');
+    setSelectedWard('');
     setSelectedAddress({
       ...selectedAddress,
       city: e.target.selectedOptions[0].innerText,
@@ -78,7 +77,7 @@ const Checkout = () => {
   function handlePaymentMethodChange(event) {
     setSelectedPaymentMethod(event.target.value);
   }
-  
+
   function handleShippingCarrierChange(event) {
     console.log(event.target.value);
     setSelectedShippingCarrier(event.target.value);
@@ -86,7 +85,7 @@ const Checkout = () => {
 
   const handleDistrictChange = (e) => {
     setSelectedDistrict(e.target.value);
-    setSelectedWard("");
+    setSelectedWard('');
     setSelectedAddress({
       ...selectedAddress,
       district: e.target.selectedOptions[0].innerText,
@@ -112,7 +111,7 @@ const Checkout = () => {
         setShippingCarriers(response2.data);
         setIsLoading(false);
       } catch (error) {
-        console.log("faild", error);
+        console.log('faild', error);
         setIsLoading(false);
       }
     };
@@ -125,17 +124,47 @@ const Checkout = () => {
 
   const addOrder = async () => {
     try {
-      const isCOD = selectedPaymentMethod === "cod" ? true : false;
-      var params = {orders: cartItems, storeId : cartItems[0].product.storeId ,cod : isCOD, option : option, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};
-      if(option === "1"){ params = {orders: [{id : null, productId : cartItems[0].product.Id, quantity : cartItems[0].quantity}], storeId : cartItems[0].product.storeId ,cod : isCOD, option : option, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};}
-      console.log(params);
+      const isCOD = selectedPaymentMethod === 'cod' ? true : false;
+      var params = {
+        orders: cartItems,
+        storeId: cartItems[0].product.storeId,
+        cod: isCOD,
+        option: option,
+        deliveryId: selectedShippingCarrier,
+        phone: selectedAddress.numberPhone,
+        address:
+          selectedAddress.detailAddress +
+          '|' +
+          selectedAddress.ward +
+          '|' +
+          selectedAddress.district +
+          '|' +
+          selectedAddress.city,
+      };
+      if (option === '1') {
+        params = {
+          orders: [{ id: null, productId: cartItems[0].product.Id, quantity: cartItems[0].quantity }],
+          storeId: cartItems[0].product.storeId,
+          cod: isCOD,
+          option: option,
+          deliveryId: selectedShippingCarrier,
+          phone: selectedAddress.numberPhone,
+          address:
+            selectedAddress.detailAddress +
+            '|' +
+            selectedAddress.ward +
+            '|' +
+            selectedAddress.district +
+            '|' +
+            selectedAddress.city,
+        };
+      }
       const response = await OrderAPI.addOrder(params);
-      cartItems.map(())
-      dispatch
-      console.log(response.data);
-      window.location.href = "/MyOrder";
+      console.log(cartItems);
+      cartItems.map((it) => dispatch(deleteFromCart(it.cartId)));
+      window.location.href = '/MyOrder';
     } catch (error) {
-      console.log("faild", error);
+      console.log('faild', error);
     }
   };
 
@@ -151,22 +180,19 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
-    if (option === "1") {
-      const cartItemsFromStorage = localStorage.getItem("productBN");
+    if (option === '1') {
+      const cartItemsFromStorage = localStorage.getItem('productBN');
       if (cartItemsFromStorage) {
         setCartItems(JSON.parse(cartItemsFromStorage));
       }
-    } 
-    else{
-      const cartItemsFromStorage = localStorage.getItem("selectedItems");
+    } else {
+      const cartItemsFromStorage = localStorage.getItem('selectedItems');
       if (cartItemsFromStorage) {
         setCartItems(JSON.parse(cartItemsFromStorage));
       }
     }
-    
   }, []);
 
-      
   if (isLoading) {
     return (
       <div className="flone-preloader-wrapper">
@@ -187,8 +213,8 @@ const Checkout = () => {
         {/* breadcrumb */}
         <Breadcrumb
           pages={[
-            { label: "Home", path: process.env.PUBLIC_URL + "/" },
-            { label: "Checkout", path: process.env.PUBLIC_URL + pathname },
+            { label: 'Home', path: process.env.PUBLIC_URL + '/' },
+            { label: 'Checkout', path: process.env.PUBLIC_URL + pathname },
           ]}
         />
         <div className="checkout-area pt-95 pb-100">
@@ -199,13 +225,11 @@ const Checkout = () => {
                   <div className="billing-info-wrap">
                     <h3>Địa chỉ chi tiết</h3>
                     <select
-                    style={{backgroundColor: "#f5f5f5"}}
+                      style={{ backgroundColor: '#f5f5f5' }}
                       value={addressUser?.Id}
                       onChange={(event) => {
                         const selectedId = event.target.value;
-                        const selectedAddress = addressUser.find(
-                          (address) => address.Id === selectedId
-                        );
+                        const selectedAddress = addressUser.find((address) => address.Id === selectedId);
                         setSelectedAddress(selectedAddress);
 
                         // setDistricts(selectedAddress.district);
@@ -215,11 +239,7 @@ const Checkout = () => {
                       <option value="">Lựa chọn địa chỉ</option>
                       {addressUser.map((address) => (
                         <option key={address.Id} value={address.Id}>
-                          {address.nameRecipient +
-                            " - " +
-                            address.detailAddress +
-                            " - " +
-                            address.city}
+                          {address.nameRecipient + ' - ' + address.detailAddress + ' - ' + address.city}
                         </option>
                       ))}
                     </select>
@@ -230,9 +250,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             value={selectedAddress?.nameRecipient}
-                            onChange={(e) =>
-                              handleChangeState("nameRecipient", e.target.value)
-                            }
+                            onChange={(e) => handleChangeState('nameRecipient', e.target.value)}
                           />
                         </div>
                       </div>
@@ -245,14 +263,11 @@ const Checkout = () => {
                                 value={selectedProvince}
                                 onChange={handleProvinceChange}
                                 name=""
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                               >
                                 <option value="">Chọn Tỉnh</option>
                                 {provinces.map((province) => (
-                                  <option
-                                    key={province.id}
-                                    value={province.code}
-                                  >
+                                  <option key={province.id} value={province.code}>
                                     {province.name}
                                   </option>
                                 ))}
@@ -266,15 +281,11 @@ const Checkout = () => {
                                 value={selectedDistrict}
                                 onChange={handleDistrictChange}
                                 name="district"
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                               >
                                 <option value="">Chọn Huyện</option>
                                 {districts.map((district) => (
-                                  <option
-                                    key={district.id}
-                                    value={district.code}
-                                    name={district.name}
-                                  >
+                                  <option key={district.id} value={district.code} name={district.name}>
                                     {district.name}
                                   </option>
                                 ))}
@@ -287,7 +298,7 @@ const Checkout = () => {
                               <select
                                 value={selectedWard}
                                 onChange={handleWardChange}
-                                style={{ width: "100%" }}
+                                style={{ width: '100%' }}
                               >
                                 <option value="">Chọn phường</option>
                                 {wards.map((ward) => (
@@ -305,14 +316,10 @@ const Checkout = () => {
                                 <select
                                   value={selectedPaymentMethod}
                                   onChange={handlePaymentMethodChange}
-                                  style={{ width: "100%" }}
+                                  style={{ width: '100%' }}
                                 >
-                                  <option value="cod">
-                                    Thanh toán khi nhận hàng
-                                  </option>
-                                  <option value="card">
-                                    Thanh toán bằng thẻ tín dụng
-                                  </option>
+                                  <option value="cod">Thanh toán khi nhận hàng</option>
+                                  <option value="card">Thanh toán bằng thẻ tín dụng</option>
                                 </select>
                               </label>
                             </div>
@@ -322,16 +329,11 @@ const Checkout = () => {
                                 <select
                                   value={selectedShippingCarrier}
                                   onChange={handleShippingCarrierChange}
-                                  style={{ width: "100%" }}
+                                  style={{ width: '100%' }}
                                 >
-                                  <option value="">
-                                    Chọn đơn vị vận chuyển
-                                  </option>
+                                  <option value="">Chọn đơn vị vận chuyển</option>
                                   {shippingCarriers.map((carrier) => (
-                                    <option
-                                      key={carrier.Id}
-                                      value={carrier.Id}
-                                    >
+                                    <option key={carrier.Id} value={carrier.Id}>
                                       {carrier.name}
                                     </option>
                                   ))}
@@ -349,9 +351,7 @@ const Checkout = () => {
                             placeholder="Số nhà tên đường"
                             type="text"
                             value={selectedAddress?.detailAddress}
-                            onChange={(e) =>
-                              handleChangeState("detailAddress", e.target.value)
-                            }
+                            onChange={(e) => handleChangeState('detailAddress', e.target.value)}
                           />
                         </div>
                       </div>
@@ -361,9 +361,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             value={selectedAddress?.numberPhone}
-                            onChange={(e) =>
-                              handleChangeState("numberPhone", e.target.value)
-                            }
+                            onChange={(e) => handleChangeState('numberPhone', e.target.value)}
                           />
                         </div>
                       </div>
@@ -373,9 +371,7 @@ const Checkout = () => {
                           <input
                             type="text"
                             value={selectedAddress?.zipcode}
-                            onChange={(e) =>
-                              handleChangeState("zipcode", e.target.value)
-                            }
+                            onChange={(e) => handleChangeState('zipcode', e.target.value)}
                           />
                         </div>
                       </div>
@@ -404,31 +400,26 @@ const Checkout = () => {
                               const finalProductPrice = (
                                 cartItem.product.price * currency.currencyRate
                               ).toFixed(2);
-                              const finalDiscountedPrice = (
-                                discountedPrice * currency.currencyRate
-                              ).toFixed(2);
+                              const finalDiscountedPrice = (discountedPrice * currency.currencyRate).toFixed(
+                                2
+                              );
 
                               discountedPrice != null
-                                ? (cartTotalPrice +=
-                                    finalDiscountedPrice * cartItem.quantity)
-                                : (cartTotalPrice +=
-                                    finalProductPrice * cartItem.quantity);
+                                ? (cartTotalPrice += finalDiscountedPrice * cartItem.quantity)
+                                : (cartTotalPrice += finalProductPrice * cartItem.quantity);
                               return (
                                 <li key={key}>
                                   <span className="order-middle-left">
                                     {cartItem.product.name} X {cartItem.quantity}
-                                  </span>{" "}
+                                  </span>{' '}
                                   <span className="order-price">
                                     {discountedPrice !== null
-                                      ? 
-                                        (
-                                          finalDiscountedPrice *
-                                          cartItem.product.quantity
-                                        ).toFixed(2) + " "+ currency.currencySymbol
-                                      : 
-                                        (
-                                          finalProductPrice * cartItem.quantity
-                                        ).toFixed(2) + " "+ currency.currencySymbol}
+                                      ? (finalDiscountedPrice * cartItem.product.quantity).toFixed(2) +
+                                        ' ' +
+                                        currency.currencySymbol
+                                      : (finalProductPrice * cartItem.quantity).toFixed(2) +
+                                        ' ' +
+                                        currency.currencySymbol}
                                   </span>
                                 </li>
                               );
@@ -444,17 +435,16 @@ const Checkout = () => {
                         <div className="your-order-total">
                           <ul>
                             <li className="order-total">Tổng</li>
-                            <li>
-                              {
-                                cartTotalPrice.toFixed(2) + " "+ currency.currencySymbol}
-                            </li>
+                            <li>{cartTotalPrice.toFixed(2) + ' ' + currency.currencySymbol}</li>
                           </ul>
                         </div>
                       </div>
                       <div className="payment-method"></div>
                     </div>
                     <div className="place-order mt-25">
-                      <button className="btn-hover" onClick={addOrder}>Đặt Ngay</button>
+                      <button className="btn-hover" onClick={addOrder}>
+                        Đặt Ngay
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -467,10 +457,8 @@ const Checkout = () => {
                       <i className="pe-7s-cash"></i>
                     </div>
                     <div className="item-empty-area__text">
-                      No items found in cart to checkout <br />{" "}
-                      <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                        Shop Now
-                      </Link>
+                      No items found in cart to checkout <br />{' '}
+                      <Link to={process.env.PUBLIC_URL + '/shop-grid-standard'}>Shop Now</Link>
                     </div>
                   </div>
                 </div>

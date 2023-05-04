@@ -17,7 +17,6 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
   const addProductTocart = async () => {
     try {
       const params = { productId: product.Id, quantity: 1, attributesValues: [] };
-      console.log(params);
       const response = await CartAPI.addToCart(params);
       dispatch(addToCart({ ...product, quantity: params.quantity }));
     } catch (error) {
@@ -98,10 +97,18 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
                   )}
                 </div>
                 <div className="pro-same-action pro-quickview">
-                <a href="/checkout?option=1" onClick={() => localStorage.setItem('productBN', JSON.stringify([{id : null , quantity: 1, product : product }]))} title="Mua Ngay">
-  <FaMoneyBillAlt />
-</a>
-
+                  <a
+                    href="/checkout?option=1"
+                    onClick={() =>
+                      localStorage.setItem(
+                        'productBN',
+                        JSON.stringify([{ id: null, quantity: 1, product: product }])
+                      )
+                    }
+                    title="Mua Ngay"
+                  >
+                    <FaMoneyBillAlt />
+                  </a>
                 </div>
               </div>
             </div>
