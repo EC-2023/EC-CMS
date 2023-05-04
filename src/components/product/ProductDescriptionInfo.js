@@ -56,7 +56,7 @@ const ProductDescriptionInfo = ({
 
   function attributesToString(attributes) {
     if (!Array.isArray(attributes)) {
-      return "";
+      return undefined;
     }
     return attributes.map(attr => `${attr.name}: ${attr.value}`).join(", ");
   }
@@ -70,8 +70,8 @@ const ProductDescriptionInfo = ({
 
   const addProductTocart = async () => {
     try {
-      
-      const params = {productId: product.Id, quantity : quantityCount, attributesValues : [attributesToString(selectedAttributes)]}
+      const attributesValues = selectedAttributes.length > 0 ? [attributesToString(selectedAttributes)] : [];
+      const params = { productId: product.Id, quantity: quantityCount, attributesValues };
       console.log(params);
       const response = await CartAPI.addToCart(params);
       dispatch(addToCart({...product, quantity : params.quantity}));

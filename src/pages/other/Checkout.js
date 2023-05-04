@@ -21,6 +21,9 @@ import DeliveryAPI from "../../api/DeliveryAPI";
 import OrderAPI from "../../api/OrderAPI";
 
 const Checkout = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const option = queryParams.get("option");
   const [provinces, setProvinces] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [wards, setWards] = useState([]);
@@ -34,6 +37,7 @@ const Checkout = () => {
   const [selectedWard, setSelectedWard] = useState("");
 
   useEffect(() => {
+    console.log("option", option);
     // Fetch provinces data and set it to provinces state
     // This should be replaced with your actual API call
     fetchProvinces().then((data) => setProvinces(data));
@@ -120,7 +124,7 @@ const Checkout = () => {
   const addOrder = async () => {
     try {
       const isCOD = selectedPaymentMethod === "cod" ? true : false;
-      const params = {orders: cartItems, storeId : cartItems[0].storeId ,isCOD, option : 0, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + " - " + selectedAddress.ward +  " - " +  selectedAddress.district +  " - " +  selectedAddress.city};
+      const params = {orders: cartItems, storeId : cartItems[0].product.storeId ,isCOD, option : 0, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};
       console.log(params);
       const response = await OrderAPI.addOrder(params);
       console.log(response.data);
@@ -138,8 +142,25 @@ const Checkout = () => {
 
   let { pathname } = useLocation();
   const currency = useSelector((state) => state.currency);
-  const { cartItems } = useSelector((state) => state.cart);
+  const [cartItems, setCartItems] = useState([]);
 
+  useEffect(() => {
+    if (option === "1") {
+      const cartItemsFromStorage = localStorage.getItem("productBN");
+      if (cartItemsFromStorage) {
+        setCartItems(JSON.parse(cartItemsFromStorage));
+      }
+    }
+    else{
+      const cartItemsFromStorage = localStorage.getItem("selectedItems");
+      if (cartItemsFromStorage) {
+        setCartItems(JSON.parse(cartItemsFromStorage));
+      }
+    }
+    
+  }, []);
+
+      
   if (isLoading) {
     return (
       <div className="flone-preloader-wrapper">
@@ -371,11 +392,11 @@ const Checkout = () => {
                           <ul>
                             {cartItems.map((cartItem, key) => {
                               const discountedPrice = getDiscountPrice(
-                                cartItem.price,
-                                cartItem.discount
+                                cartItem.product.price,
+                                cartItem.product.discount
                               );
                               const finalProductPrice = (
-                                cartItem.price * currency.currencyRate
+                                cartItem.product.price * currency.currencyRate
                               ).toFixed(2);
                               const finalDiscountedPrice = (
                                 discountedPrice * currency.currencyRate
@@ -389,14 +410,14 @@ const Checkout = () => {
                               return (
                                 <li key={key}>
                                   <span className="order-middle-left">
-                                    {cartItem.name} X {cartItem.quantity}
+                                    {cartItem.product.name} X {cartItem.quantity}
                                   </span>{" "}
                                   <span className="order-price">
                                     {discountedPrice !== null
                                       ? 
                                         (
                                           finalDiscountedPrice *
-                                          cartItem.quantity
+                                          cartItem.product.quantity
                                         ).toFixed(2) + " "+ currency.currencySymbol
                                       : 
                                         (
@@ -427,7 +448,7 @@ const Checkout = () => {
                       <div className="payment-method"></div>
                     </div>
                     <div className="place-order mt-25">
-                      <button className="btn-hover" onClick={addOrder}>Place Order</button>
+                      <button className="btn-hover" onClick={addOrder}>Đặt Ngay</button>
                     </div>
                   </div>
                 </div>

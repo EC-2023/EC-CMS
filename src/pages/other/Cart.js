@@ -15,14 +15,33 @@ import { cartItemStock } from "../../helpers/product";
 import CartAPI from "../../api/CartAPI";
 
 const Cart = () => {
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  function handleCartItemSelection(cartItem) {
+    if (cartItem.product.storeId !== selectedStoreId) {
+      // Select a new store and reset the selected items
+      setSelectedStoreId(cartItem.product.storeId);
+      setSelectedItems([cartItem]);
+    } else {
+      // Toggle the selected item
+      setSelectedItems((prevSelectedItems) => {
+        const isItemSelected = prevSelectedItems.some(
+          (selectedItem) => selectedItem.Id === cartItem.Id
+        );
+        return isItemSelected
+          ? prevSelectedItems.filter(
+              (selectedItem) => selectedItem.Id !== cartItem.Id
+            )
+          : [...prevSelectedItems, cartItem];
+      });
+    }
+  }
+
   const [isLoading, setIsLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [storeList, setStoreList] = useState([]);
-
-  const [selectedItems, setSelectedItems] = useState(
-    JSON.parse(localStorage.getItem("selectedItems")) || []
-  );
 
   useEffect(() => {
     localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
@@ -40,6 +59,10 @@ const Cart = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("store", storeList);
+  }, [storeList]);
+
   const dispatch = useDispatch();
   const getCart = async () => {
     try {
@@ -48,26 +71,30 @@ const Cart = () => {
       console.log(response.data.data);
       if (response.data.data) {
         dispatch(deleteAllFromCart());
-        setCartItems(response.data.data[0].cartItems);
         setIsLoading(false);
-        response.data.data[0].cartItems.forEach((cartItem) => {
-          console.log("add to cart", cartItem.product);
-          response.data.data.forEach((Item) => {
-            if(Item?.store)
-            setStoreList(
-              storeList.includes(Item.store)
-                ? storeList
-                : storeList.concat(Item.store)
+        response.data.data.forEach((Item) => {
+          if (Item.cartItems.length > 0) {
+            const isStoreInCart = storeList.find(
+              (item) => item.store.Id === Item.store.Id
             );
-          });
-
-          dispatch(
-            addToCart({
-              ...cartItem.product,
-              Id: cartItem.Id,
-              quantity: cartItem.quantity,
-            })
-          );
+            if(!isStoreInCart) setStoreList((prevStoreList) => [...prevStoreList, Item.store]);
+            Item.cartItems.forEach((cartItem) => {
+              const isProductInCart = cartItems.find(
+                (item) => item.Id === cartItem.Id
+              );
+              if (!isProductInCart) {
+                setCartItems((prevCartItems) => [...prevCartItems, cartItem]);
+                dispatch(
+                  addToCart({
+                    ...cartItem.product,
+                    Id: cartItem.Id,
+                    quantity: cartItem.quantity,
+                    cartItem: cartItem,
+                  })
+                );
+              }
+            });
+          }
         });
       }
     } catch {}
@@ -113,13 +140,24 @@ const Cart = () => {
   }, [cartItems]);
 
   useEffect(() => {
-    setCartTotalPrice(totalPrice);
-  }, [totalPrice]);
+    // tính tổng giá trị của các sản phẩm đã chọn
+    const selectedItemsTotalPrice = selectedItems.reduce(
+      (total, selectedItem) => total + selectedItem.product.price,
+      0
+    );
+
+    // cập nhật giá trị tổng của giỏ hàng
+    setCartTotalPrice(selectedItemsTotalPrice);
+  }, [selectedItems]);
 
   const [quantityCount] = useState(1);
   let { pathname } = useLocation();
 
   const currency = useSelector((state) => state.currency);
+
+  const handleClickCheckout = () => {
+    localStorage.setItem("selectedItems", JSON.stringify(selectedItems));
+  };
 
   if (isLoading) {
     return (
@@ -149,185 +187,168 @@ const Cart = () => {
         />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
-            {cartItems && cartItems.length >= 1 ? (
+            {cartItems && cartItems?.length >= 1 ? (
               <Fragment>
                 <h3 className="cart-page-title">Your cart items</h3>
                 <div className="row">
                   <div className="col-12">
                     <div className="name-shop">
-                      {storeList.length > 0 &&
-                        storeList.map((store, key) => {
-                          return (
-                            <div key={key}>
-                              <h3 style={{ color: "green" }}>{store?.name}</h3>
-                              <div className="table-content table-responsive cart-table-content">
-                                <table>
-                                  <thead>
-                                    <tr>
-                                      <th></th>
-                                      <th>Hình</th>
-                                      <th>Tên sản phẩm</th>
-                                      <th>Thuộc tính</th>
-                                      <th>Đơn giá</th>
-                                      <th>Số lượng</th>
-                                      <th>Tổng</th>
-                                      <th>Xoá</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {cartItems.map((cartItem, key) => {
-                                      if (
-                                        cartItem.product.storeId !== store?.Id
-                                      ) {
-                                        return null; // skip rendering this cart item
-                                      }
-                                      return (
-                                        <tr key={key}>
-                                          <td>
-                                            <input
+                      {storeList.map((store, key) => {
+                        return (
+                          <div key={key}>
+                            <h3 style={{ color: "green" }}>{store?.name}</h3>
+                            <div className="table-content table-responsive cart-table-content">
+                              <table>
+                                <thead>
+                                  <tr>
+                                    <th></th>
+                                    <th>Hình</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Thuộc tính</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng</th>
+                                    <th>Xoá</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {cartItems.map((cartItem, key) => {
+                                    if (
+                                      cartItem.product.storeId !== store?.Id
+                                    ) {
+                                      return null; // skip rendering this cart item
+                                    }
+                                    const isItemSelected = selectedItems.some(
+                                      (selectedItem) =>
+                                        selectedItem.Id === cartItem.Id
+                                    );
+
+                                    return (
+                                      <tr key={key}>
+                                        <td>
+                                          <input
                                             style={{ width: "15px" }}
-                                              type="checkbox"
-                                              checked={selectedItems.includes(
-                                                cartItem.Id
-                                              )}
-                                              onChange={() => {
-                                                if (
-                                                  selectedItems.includes(
-                                                    cartItem.Id
-                                                  )
-                                                ) {
-                                                  setSelectedItems(
-                                                    selectedItems.filter(
-                                                      (id) => id !== cartItem.Id
-                                                    )
-                                                  );
-                                                } else {
-                                                  setSelectedItems([
-                                                    ...selectedItems,
-                                                    cartItem.Id,
-                                                  ]);
-                                                }
-                                              }}
+                                            type="checkbox"
+                                            checked={isItemSelected}
+                                            onChange={() =>
+                                              handleCartItemSelection(cartItem)
+                                            }
+                                          />
+                                        </td>
+                                        <td className="product-thumbnail">
+                                          <Link
+                                            to={
+                                              process.env.PUBLIC_URL +
+                                              "/product/" +
+                                              cartItem.Id
+                                            }
+                                          >
+                                            <img
+                                              className="img-fluid"
+                                              src={
+                                                process.env.PUBLIC_URL +
+                                                cartItem.product.images[0]
+                                                  .location
+                                              }
+                                              alt=""
                                             />
-                                          </td>
-                                          <td className="product-thumbnail">
-                                            <Link
-                                              to={
-                                                process.env.PUBLIC_URL +
-                                                "/product/" +
-                                                cartItem.Id
-                                              }
-                                            >
-                                              <img
-                                                className="img-fluid"
-                                                src={
-                                                  process.env.PUBLIC_URL +
-                                                  cartItem.product.images[0]
-                                                    .location
-                                                }
-                                                alt=""
-                                              />
-                                            </Link>
-                                          </td>
+                                          </Link>
+                                        </td>
 
-                                          <td className="product-name">
-                                            <Link
-                                              to={
-                                                process.env.PUBLIC_URL +
-                                                "/product/" +
-                                                cartItem.product.Id
-                                              }
-                                            >
-                                              {cartItem.product.name}
-                                            </Link>
-                                            {cartItem.selectedProductColor &&
-                                            cartItem.selectedProductSize ? (
-                                              <div className="cart-item-variation">
-                                                <span>
-                                                  Color:{" "}
-                                                  {
-                                                    cartItem.selectedProductColor
-                                                  }
-                                                </span>
-                                                <span>
-                                                  Size:{" "}
-                                                  {cartItem.selectedProductSize}
-                                                </span>
-                                              </div>
-                                            ) : (
-                                              ""
-                                            )}
-                                          </td>
-
-                                          <td className="product-attributes">
-                                            {cartItem.attributeValues.length >
-                                              0 &&
-                                              cartItem.attributeValues[0].name}
-                                          </td>
-
-                                          <td className="product-price-cart">
-                                            <span className="amount">
-                                              {cartItem.product.price}
-                                            </span>
-                                          </td>
-
-                                          <td className="product-quantity">
-                                            <div className="cart-plus-minus">
-                                              <button
-                                                className="dec qtybutton"
-                                                onClick={() =>
-                                                  console.log("giảm")
-                                                }
-                                              >
-                                                -
-                                              </button>
-                                              <input
-                                                className="cart-plus-minus-box"
-                                                type="text"
-                                                value={cartItem.quantity}
-                                                readOnly
-                                              />
-                                              <button
-                                                className="inc qtybutton"
-                                                onClick={() =>
-                                                  console.log("tăng")
-                                                }
-                                                disabled={
-                                                  cartItem === undefined
-                                                }
-                                              >
-                                                +
-                                              </button>
+                                        <td className="product-name">
+                                          <Link
+                                            to={
+                                              process.env.PUBLIC_URL +
+                                              "/product/" +
+                                              cartItem.product.Id
+                                            }
+                                          >
+                                            {cartItem.product.name}
+                                          </Link>
+                                          {cartItem.selectedProductColor &&
+                                          cartItem.selectedProductSize ? (
+                                            <div className="cart-item-variation">
+                                              <span>
+                                                Color:{" "}
+                                                {cartItem.selectedProductColor}
+                                              </span>
+                                              <span>
+                                                Size:{" "}
+                                                {cartItem.selectedProductSize}
+                                              </span>
                                             </div>
-                                          </td>
-                                          <td className="product-subtotal">
-                                            {(
-                                              cartItem.product.price *
-                                              cartItem.quantity
-                                            ).toFixed(2) + " VNĐ"}
-                                          </td>
+                                          ) : (
+                                            ""
+                                          )}
+                                        </td>
 
-                                          <td className="product-remove">
-                                            <button
-                                              onClick={() => {
-                                                // dispatch(
-                                                //   deleteFromCart(cartItem.cartItemId)
-                                                // )
-                                                deleteProductInCart(cartItem);
-                                              }}
+                                        <td className="product-attributes">
+                                          {cartItem.attributeValues.length >
+                                            0 &&
+                                            cartItem.attributeValues[0].name}
+                                        </td>
+
+                                        <td className="product-price-cart">
+                                          <span className="amount">
+                                            {cartItem.product.price}
+                                          </span>
+                                        </td>
+
+                                        <td className="product-quantity">
+                                          <div className="cart-plus-minus">
+                                            {/* <button
+                                              className="dec qtybutton"
+                                              onClick={() =>
+                                                console.log("giảm")
+                                              }
                                             >
-                                              <i className="fa fa-times"></i>
-                                            </button>
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                  </tbody>
-                                </table>
-                              </div>
+                                              -
+                                            </button> */}
+                                            <input
+                                              className="cart-plus-minus-box"
+                                              type="text"
+                                              value={cartItem.quantity}
+                                              readOnly
+                                            />
+                                            {/* <button
+                                              className="inc qtybutton"
+                                              onClick={() =>
+                                                console.log("tăng")
+                                              }
+                                              disabled={cartItem === undefined}
+                                            >
+                                              +
+                                            </button> */}
+                                          </div>
+                                        </td>
+                                        <td className="product-subtotal">
+                                          {(
+                                            cartItem.product.price *
+                                            cartItem.quantity
+                                          ).toFixed(2) + " VNĐ"}
+                                        </td>
+
+                                        <td className="product-remove">
+                                          <button
+                                            onClick={() => {
+                                              // dispatch(
+                                              //   deleteFromCart(cartItem.cartItemId)
+                                              // )
+                                              deleteProductInCart(cartItem);
+                                            }}
+                                          >
+                                            <i className="fa fa-times"></i>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+                              </table>
                             </div>
-                          );
-                        })}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -342,7 +363,7 @@ const Cart = () => {
                         </Link>
                       </div>
                       <div className="cart-clear">
-                        <button onClick={() =>  deleteAllProductInCart()}>
+                        <button onClick={() => deleteAllProductInCart()}>
                           Clear Shopping Cart
                         </button>
                       </div>
@@ -423,13 +444,18 @@ const Cart = () => {
                       </div>
                       <h4 className="grand-totall-title">
                         Tổng đơn hàng{" "}
-                        <span>
-                          {currency.currencySymbol + cartTotalPrice.toFixed(2)}
-                        </span>
+                        <span>{cartTotalPrice.toFixed(2) + " VNĐ"}</span>
                       </h4>
-                      <Link to={process.env.PUBLIC_URL + "/checkout"}>
-                        Chuyển đến trang thanh toán
-                      </Link>
+                      {selectedItems.length <= 0 ? (
+                        <span>Chuyển đến trang thanh toán</span>
+                      ) : (
+                        <Link
+                          to={{ pathname: "/checkout", search: "?option=0" }}
+                          onClick={handleClickCheckout}
+                        >
+                          Chuyển đến trang thanh toán
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>

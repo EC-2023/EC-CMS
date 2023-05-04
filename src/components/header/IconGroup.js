@@ -14,7 +14,8 @@ const IconGroup = ({ iconWhiteClass }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     toast.success('Đăng xuất thành công!', {
       position: 'top-right',
       autoClose: 2000,
@@ -33,10 +34,9 @@ const IconGroup = ({ iconWhiteClass }) => {
 
   useEffect(() => {
     // Kiểm tra nếu có token trong localStorage thì set isLoggedIn = true
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = localStorage.getItem('accessToken');
     try {
-      if (user.accessToken) {
-        console.log(user.accessToken);
+      if (user) {
         setIsLoggedIn(true);
       }
     } catch {}
