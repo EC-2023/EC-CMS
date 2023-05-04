@@ -68,7 +68,7 @@ const IconGroup = ({ iconWhiteClass }) => {
     } else {
       newQueryString = `?search=${search}`;
     }
-    navigate(newQueryString);
+    navigate('/shop-grid-standard/' + newQueryString);
   };
   return (
     <div className={clsx('header-right-wrap', iconWhiteClass)}>
