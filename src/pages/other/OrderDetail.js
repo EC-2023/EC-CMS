@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Card, Row, Col, ListGroup, Button, Table } from 'react-bootstrap';
 import './OrderDetail.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { convertTimeStamp } from '../../utils/convertDate';
 import  { getOrder, cancelOrder, selectOrders } from '../../store/slices/orders-slice';
+import LayoutOne from "../../layouts/LayoutOne";
 
 
 const OrderDetail = () => {
@@ -17,7 +18,10 @@ const OrderDetail = () => {
     dispatch(getOrder(orderCode)).then((res) => console.log(res))
   }, []);
   return (
-    <div className="order-detail">
+    <Fragment>
+      <LayoutOne headerTop="visible">
+        {/* breadcrumb */}
+        <div className="order-detail">
       <nav aria-label="breadcrumb">
         <ol className="breadcrumb">
           <li className="breadcrumb-item">
@@ -66,7 +70,7 @@ const OrderDetail = () => {
                     <ListGroup.Item>Quantity: {item.quantity}</ListGroup.Item>
                     <ListGroup.Item>Price: {item.product.price * item.quantity} VNĐ</ListGroup.Item>
                   </div>
-                </Col>
+                </Col>	
               </Row>
             </Card.Body>
           </Card>
@@ -87,7 +91,7 @@ const OrderDetail = () => {
             </tr>
             <tr>
               <td>Phí vận chuyển</td>
-              <td>{orders.order?.amountFromUser - total} VNĐ</td>
+              <td>{total - orders.order?.amountFromUser } VNĐ</td>
             </tr>
             <tr>
               <td className="grand-total-label">Số tiền shop nhận được</td>
@@ -106,6 +110,8 @@ const OrderDetail = () => {
         )}
       </div>
     </div>
+      </LayoutOne>
+    </Fragment>
   );
 };
 

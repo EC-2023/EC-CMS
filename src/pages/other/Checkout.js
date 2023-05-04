@@ -1,11 +1,12 @@
 import { Fragment, useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { getDiscountPrice } from "../../helpers/product";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import UserAddressAPI from "../../api/UserAddressAPI";
+import { deleteFromCart } from "../../store/slices/cart-slice"
 import {
   fetchProvinces,
   fetchDistricts,
@@ -21,6 +22,7 @@ import DeliveryAPI from "../../api/DeliveryAPI";
 import OrderAPI from "../../api/OrderAPI";
 
 const Checkout = () => {
+  const dispatch = useDispatch();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const option = queryParams.get("option");
@@ -128,7 +130,10 @@ const Checkout = () => {
       if(option === "1"){ params = {orders: [{id : null, productId : cartItems[0].product.Id, quantity : cartItems[0].quantity}], storeId : cartItems[0].product.storeId ,cod : isCOD, option : option, deliveryId : selectedShippingCarrier, phone : selectedAddress.numberPhone, address : selectedAddress.detailAddress + "|" + selectedAddress.ward +  "|" +  selectedAddress.district +  "|" +  selectedAddress.city};}
       console.log(params);
       const response = await OrderAPI.addOrder(params);
+      cartItems.map(())
+      dispatch
       console.log(response.data);
+      window.location.href = "/MyOrder";
     } catch (error) {
       console.log("faild", error);
     }
