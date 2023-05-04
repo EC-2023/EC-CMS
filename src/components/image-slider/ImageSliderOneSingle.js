@@ -1,7 +1,9 @@
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
+import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const ImageSliderOneSingle = ({ data }) => {
+  console.log(data);
+
   return (
     <div className="single-image">
       <Link to={process.env.PUBLIC_URL + data.link}>
@@ -12,7 +14,7 @@ const ImageSliderOneSingle = ({ data }) => {
 };
 
 ImageSliderOneSingle.propTypes = {
-  data: PropTypes.shape({})
+  data: PropTypes.shape({}),
 };
 
 export default ImageSliderOneSingle;

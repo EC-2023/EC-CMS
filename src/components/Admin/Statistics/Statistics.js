@@ -89,6 +89,7 @@ const StatsPage = () => {
         option: getValueRange(timeRangeProduct),
       })
     ).then((res) => {
+      console.log(res.payload.data);
       setStatisticProduct(res.payload.data);
     });
   }, [selectedDateProduct, timeRangeProduct]);

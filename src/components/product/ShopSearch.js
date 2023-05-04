@@ -19,6 +19,7 @@ const ShopSearch = () => {
       console.log(params);
 
       const response = await productAPI.getNewProduct(params);
+
       dispatch(setProducts(response.data.data));
     } catch (error) {
       console.log('faild', error);

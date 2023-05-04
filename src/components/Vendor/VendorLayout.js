@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
-import { HouseDoor, GraphUp, BoxArrowInRight, Person, List } from 'react-bootstrap-icons';
+import { Link, useNavigate } from 'react-router-dom';
+import { BoxArrowInRight, Person, List } from 'react-bootstrap-icons';
 import './VendorLayout.css';
 import { Nav } from 'react-bootstrap';
-import HomeVendor from './Home/HomeVendor';
-import Product from './Product/Product';
-import Order from './Order/Order';
-import OrderDetail from './Order/OrderDetail';
 import { useEffect } from 'react';
 import UserAPI from '../../api/UserAPI';
+import StoreAPI from '../../api/StoreAPI';
 const VendorLayout = ({ children }) => {
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [name, setName] = useState('');
+  const navigate = useNavigate();
   const handleToggleSidebar = () => {
     setSidebarExpanded(!sidebarExpanded);
   };
@@ -20,16 +19,14 @@ const VendorLayout = ({ children }) => {
     { id: 2, name: 'Products', iconClass: 'fa fa-users' },
     { id: 3, name: 'Orders', iconClass: 'fa fa-sharp fa-solid fa-cart-plus' },
     { id: 4, name: 'Statistics', iconClass: 'fa fa-regular fa-database' },
-    { id: 5, name: 'My Profile', iconClass: 'fa fa-user' },
   ];
   // eslint-disable-next-line default-case
   useEffect(() => {
-    const fetchUserInformation = async () => {
+    const fetchStoreInformation = async () => {
       try {
-        const response = await UserAPI.getMyUserInfor();
-        console.log(response.data.role.name);
-
-        if (response.data.role.name === 'Vendor' || response.data.role.name === 'Admin') {
+        const response = await StoreAPI.getMyStore();
+        if (response.data !== null) {
+          setName(response.data.name);
         } else {
           window.location.href = '/register-store';
         }
@@ -38,7 +35,7 @@ const VendorLayout = ({ children }) => {
         window.location.href = '/login-register';
       }
     };
-    fetchUserInformation();
+    fetchStoreInformation();
   }, []);
 
   return (
@@ -54,7 +51,7 @@ const VendorLayout = ({ children }) => {
         <aside className={`sidebar ${sidebarExpanded ? 'expanded' : 'collapsed'}`}>
           <div className="sidebar-header">
             <button className="sidebar-toggle" onClick={handleToggleSidebar}>
-              <h3 style={{ marginRight: '5px' }}>{sidebarExpanded && 'Tên Shop'}</h3>
+              <h3 style={{ marginRight: '5px' }}>{sidebarExpanded && name}</h3>
               <List size={30} />
             </button>
           </div>
@@ -76,7 +73,16 @@ const VendorLayout = ({ children }) => {
             ))}
           </div>
           <div className="sidebar-footer">
-            <button className="logout-btn">
+            <button
+              className="logout-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                localStorage.removeItem('user');
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                navigate('/');
+              }}
+            >
               <BoxArrowInRight size={20} />
               <span>{sidebarExpanded && 'Logout'}</span>
             </button>
@@ -84,7 +90,7 @@ const VendorLayout = ({ children }) => {
         </aside>
         <main className="main-content">{children}</main>
       </div>
-      <footer className="footer">Footer</footer>
+      <footer className="footer">EC &copy; {new Date().getFullYear()}</footer>
     </div>
   );
 };

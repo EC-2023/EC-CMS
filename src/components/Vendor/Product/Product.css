@@ -62,11 +62,12 @@
 
 .search-box {
   position: relative;
-  /* Các thuộc tính CSS khác cho search-box */
+  float: left;
 }
 
 .search-wrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .search-wrapper input[type='text'] {

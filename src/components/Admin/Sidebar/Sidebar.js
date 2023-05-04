@@ -24,7 +24,9 @@ const Sidebar = ({ selectedNavItem, setSelectedNavItem }) => {
   return (
     <Nav className={`sidebar d-flex flex-column${expanded ? '' : ' minimized'}`} activeKey="/home">
       <div className="sidebar-header d-flex align-items-center justify-content-between px-3 py-2">
-        <span className="sidebar-title">{expanded ? 'Floren' : ''}</span>
+        <span className="sidebar-title" style={{ textAlign: 'center' }}>
+          {expanded ? 'EC' : ''}{' '}
+        </span>
         <button className="toggle-btn" onClick={toggleSidebar}>
           <i className={`fa ${expanded ? 'fa-circle' : 'fa-circle'}`}></i>
         </button>

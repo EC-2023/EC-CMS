@@ -43,7 +43,6 @@ const ShopGridStandard = () => {
         if (parsedQuery.category) {
           params['category'] = parsedQuery.category;
         }
-
         const response = await productAPI.getNewProduct(params);
         dispatch(setProducts(response.data.data));
         dispatch(setPaginationProduct(response.data.pagination));
@@ -110,7 +109,7 @@ const ShopGridStandard = () => {
                 {/* shop product pagination */}
                 <div className="pro-pagination-style text-center mt-30">
                   <Paginator
-                    totalRecords={pagination.total}
+                    totalRecords={pagination?.total || 0}
                     pageLimit={pageLimit}
                     pageNeighbours={2}
                     setOffset={setOffset}

@@ -1,11 +1,26 @@
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import { useEffect } from 'react';
+import UserAPI from '../../api/UserAPI';
 
 const NavMenu = ({ menuWhiteClass, sidebarMenu }) => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-
+  useEffect(() => {
+    const getMyUserInfor = async () => {
+      try {
+        const response = await UserAPI.getMyUserInfor();
+        if (response.data.role.name === 'Admin') {
+          navigate('/admin');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getMyUserInfor();
+  }, []);
   return (
     <div className={clsx(sidebarMenu ? 'sidebar-menu' : `main-menu ${menuWhiteClass ? menuWhiteClass : ''}`)}>
       <nav>

@@ -45,7 +45,6 @@ function Order() {
           return (
             <div>
               <Link to={`/vendor/orders/${row.original.Id}`}>{row.original.code}</Link>
-              {/* <a href="/vendor/orders/2dc8802d-16eb-4b0e-b736-ba9d0829ac77">{value}</a> */}
             </div>
           );
         },
@@ -228,7 +227,7 @@ function Order() {
   return (
     <div className="content-wrapper">
       <h1 className="title main-title">Order</h1>
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3 w-100">
         <div className="search-box">
           <span className="search-wrapper">
             <i className="fa fa-search"></i>

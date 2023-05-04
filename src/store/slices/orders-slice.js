@@ -58,7 +58,6 @@ export const cancelOrder = createAsyncThunk('orders/cancelOrder', async (id) => 
 
 export const getOrder = createAsyncThunk('orders/getOrder', async (id) => {
   const response = await axiosClient.get(`/orders/${id}`);
-
   return response;
 });
 
