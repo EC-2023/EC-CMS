@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import Rating from './sub-components/ProductRating';
 import ProductModal from './ProductModal';
@@ -13,6 +13,7 @@ import CartAPI from '../../api/CartAPI';
 
 const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBottomClass }) => {
   const [modalShow, setModalShow] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const addProductTocart = async () => {
     try {
@@ -20,7 +21,7 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
       const response = await CartAPI.addToCart(params);
       dispatch(addToCart({ ...product, quantity: params.quantity }));
     } catch (error) {
-      console.log(error);
+      navigate('/login-register');
     }
   };
   return (

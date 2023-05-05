@@ -25,14 +25,14 @@ const VendorLayout = ({ children }) => {
     const fetchStoreInformation = async () => {
       try {
         const response = await StoreAPI.getMyStore();
-        if (response.data !== null) {
+        if (response.data?.isActive) {
           setName(response.data.name);
         } else {
-          window.location.href = '/register-store';
+          navigate('/store/announce');
         }
       } catch (error) {
-        console.log('failed', error);
-        window.location.href = '/login-register';
+        console.log(error);
+        window.location.href = '/register-store';
       }
     };
     fetchStoreInformation();
@@ -42,10 +42,6 @@ const VendorLayout = ({ children }) => {
     <div className="vendor-layout">
       <header className="topbar">
         <h3 className="shop-title">Vendor DashBoard</h3>
-        <button className="profile-btn">
-          <Person size={20} />
-          <span>Profile</span>
-        </button>
       </header>
       <div className="main">
         <aside className={`sidebar ${sidebarExpanded ? 'expanded' : 'collapsed'}`}>

@@ -12,6 +12,7 @@ import RegisterShop from './components/Store/register-store';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { setCurrency } from './store/slices/currency-slice';
+import Announce from './components/Vendor/Home/Announce';
 
 // Admin
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout.js'));
@@ -225,6 +226,7 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/forgot-password/phone-sent'} element={<PhoneSent />} />
             <Route path={process.env.PUBLIC_URL + '/forgot-password'} element={<ForgotPassword />} />
             <Route path={process.env.PUBLIC_URL + '/register-store'} element={<RegisterShop />} />
+            <Route path={process.env.PUBLIC_URL + '/store/announce'} element={<Announce />} />
 
             <Route path={process.env.PUBLIC_URL + '/admin'} element={<AdminLayout />} />
             <Route
@@ -271,10 +273,9 @@ const App = () => {
             <Route
               exact
               path={process.env.PUBLIC_URL + '/userOrders/:orderCode'}
-              element={
-                  <OrderUserDetail />
-              }
+              element={<OrderUserDetail />}
             ></Route>
+
             <Route
               exact
               path={process.env.PUBLIC_URL + '/vendor/products/create'}

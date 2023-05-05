@@ -162,7 +162,7 @@ const Checkout = () => {
       const response = await OrderAPI.addOrder(params);
       console.log(cartItems);
       cartItems.map((it) => dispatch(deleteFromCart(it.cartId)));
-      window.location.href = '/MyOrder';
+      window.location.href = '/cart';
     } catch (error) {
       console.log('faild', error);
     }

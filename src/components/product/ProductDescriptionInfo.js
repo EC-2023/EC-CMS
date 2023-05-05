@@ -1,14 +1,14 @@
-import PropTypes from "prop-types";
-import React, { Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { getProductCartQuantity } from "../../helpers/product";
-import Rating from "./sub-components/ProductRating";
-import { addToCart } from "../../store/slices/cart-slice";
-import { addToWishlist } from "../../store/slices/wishlist-slice";
-import { addToCompare } from "../../store/slices/compare-slice";
-import "./ProductDescriptionInfo.scss";
-import CartAPI from "../../api/CartAPI";
+import PropTypes from 'prop-types';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { getProductCartQuantity } from '../../helpers/product';
+import Rating from './sub-components/ProductRating';
+import { addToCart } from '../../store/slices/cart-slice';
+import { addToWishlist } from '../../store/slices/wishlist-slice';
+import { addToCompare } from '../../store/slices/compare-slice';
+import './ProductDescriptionInfo.scss';
+import CartAPI from '../../api/CartAPI';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -22,25 +22,24 @@ const ProductDescriptionInfo = ({
   wishlistItem,
   compareItem,
 }) => {
-
   const [selectedBtnAttibute, setSelectedBtnAttibute] = useState({});
+  const navigate = useNavigate();
 
   const handleButtonClick = (attributeName, valueName) => {
-    setSelectedBtnAttibute(prevState => ({ ...prevState, [attributeName]: valueName }));
+    setSelectedBtnAttibute((prevState) => ({ ...prevState, [attributeName]: valueName }));
     handleAttributeChange(attributeName, valueName);
   };
-  
-    const isSelected = (attributeName, valueName) => {
-      return selectedBtnAttibute[attributeName] === valueName;
-    };
-  
-  
+
+  const isSelected = (attributeName, valueName) => {
+    return selectedBtnAttibute[attributeName] === valueName;
+  };
+
   const dispatch = useDispatch();
   const [selectedProductColor, setSelectedProductColor] = useState(
-    product.variation ? product.variation[0].color : ""
+    product.variation ? product.variation[0].color : ''
   );
   const [selectedProductSize, setSelectedProductSize] = useState(
-    product.variation ? product.variation[0].size[0].name : ""
+    product.variation ? product.variation[0].size[0].name : ''
   );
   const [productStock, setProductStock] = useState(
     product.variation ? product.variation[0].size[0].stock : product.stock
@@ -58,14 +57,14 @@ const ProductDescriptionInfo = ({
     if (!Array.isArray(attributes)) {
       return undefined;
     }
-    return attributes.map(attr => `${attr.name}: ${attr.value}`).join(", ");
+    return attributes.map((attr) => `${attr.name}: ${attr.value}`).join(', ');
   }
 
   const [selectedAttributes, setSelectedAttributes] = useState([]);
 
   useEffect(() => {
     console.log(selectedAttributes);
-    console.log(product.Id, quantityCount, attributesToString(selectedAttributes))
+    console.log(product.Id, quantityCount, attributesToString(selectedAttributes));
   }, [selectedAttributes]);
 
   const addProductTocart = async () => {
@@ -74,18 +73,20 @@ const ProductDescriptionInfo = ({
       const params = { productId: product.Id, quantity: quantityCount, attributesValues };
       console.log(params);
       const response = await CartAPI.addToCart(params);
-      dispatch(addToCart({...product, quantity : params.quantity}));
+      console.log(response);
 
+      if (response.error) navigate('/login-register');
+
+      dispatch(addToCart({ ...product, quantity: params.quantity }));
     } catch (error) {
       console.log(error);
-    } 
-  }
-
+    }
+  };
 
   function handleAttributeChange(attributeName, selectedValue) {
     setSelectedAttributes((prevSelectedAttributes) => {
       const attributesArray = Array.isArray(prevSelectedAttributes) ? prevSelectedAttributes : [];
-      const attributeIndex = attributesArray.findIndex(attr => attr.name === attributeName);
+      const attributeIndex = attributesArray.findIndex((attr) => attr.name === attributeName);
       if (attributeIndex !== -1) {
         // Nếu thuộc tính đã tồn tại trong mảng, ghi đè giá trị của nó
         const updatedAttributes = [...attributesArray];
@@ -104,16 +105,14 @@ const ProductDescriptionInfo = ({
       <div className="product-details-price">
         {discountedPrice !== null ? (
           <Fragment>
-            <span>{currency.currencySymbol + finalDiscountedPrice}</span>{" "}
-            <span className="old">
-              {currency.currencySymbol + finalProductPrice}
-            </span>
+            <span>{currency.currencySymbol + finalDiscountedPrice}</span>{' '}
+            <span className="old">{currency.currencySymbol + finalProductPrice}</span>
           </Fragment>
         ) : (
           <span>{currency.currencySymbol + finalProductPrice} </span>
         )}
       </div>
-      <ToastContainer/>
+      <ToastContainer />
       {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
           <div className="pro-details-rating">
@@ -121,7 +120,7 @@ const ProductDescriptionInfo = ({
           </div>
         </div>
       ) : (
-        ""
+        ''
       )}
       <div className="pro-details-list">
         <p>{product.shortDescription}</p>
@@ -134,17 +133,12 @@ const ProductDescriptionInfo = ({
             <div className="pro-details-color-content">
               {product.variation.map((single, key) => {
                 return (
-                  <label
-                    className={`pro-details-color-content--single ${single.color}`}
-                    key={key}
-                  >
+                  <label className={`pro-details-color-content--single ${single.color}`} key={key}>
                     <input
                       type="radio"
                       value={single.color}
                       name="product-color"
-                      checked={
-                        single.color === selectedProductColor ? "checked" : ""
-                      }
+                      checked={single.color === selectedProductColor ? 'checked' : ''}
                       onChange={() => {
                         setSelectedProductColor(single.color);
                         setSelectedProductSize(single.size[0].name);
@@ -166,18 +160,11 @@ const ProductDescriptionInfo = ({
                   return single.color === selectedProductColor
                     ? single.size.map((singleSize, key) => {
                         return (
-                          <label
-                            className={`pro-details-size-content--single`}
-                            key={key}
-                          >
+                          <label className={`pro-details-size-content--single`} key={key}>
                             <input
                               type="radio"
                               value={singleSize.name}
-                              checked={
-                                singleSize.name === selectedProductSize
-                                  ? "checked"
-                                  : ""
-                              }
+                              checked={singleSize.name === selectedProductSize ? 'checked' : ''}
                               onChange={() => {
                                 setSelectedProductSize(singleSize.name);
                                 setProductStock(singleSize.stock);
@@ -188,22 +175,18 @@ const ProductDescriptionInfo = ({
                           </label>
                         );
                       })
-                    : "";
+                    : '';
                 })}
             </div>
           </div>
         </div>
       ) : (
-        ""
+        ''
       )}
       {product.affiliateLink ? (
         <div className="pro-details-quality">
           <div className="pro-details-cart btn-hover ml-0">
-            <a
-              href={product.affiliateLink}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <a href={product.affiliateLink} rel="noopener noreferrer" target="_blank">
               Buy Now
             </a>
           </div>
@@ -212,25 +195,16 @@ const ProductDescriptionInfo = ({
         <div className="pro-details-quality">
           <div className="cart-plus-minus">
             <button
-              onClick={() =>
-                setQuantityCount(quantityCount > 1 ? quantityCount - 1 : 1)
-              }
+              onClick={() => setQuantityCount(quantityCount > 1 ? quantityCount - 1 : 1)}
               className="dec qtybutton"
             >
               -
             </button>
-            <input
-              className="cart-plus-minus-box"
-              type="text"
-              value={quantityCount}
-              readOnly
-            />
+            <input className="cart-plus-minus-box" type="text" value={quantityCount} readOnly />
             <button
               onClick={() =>
                 setQuantityCount(
-                  quantityCount < product.quantity - productCartQty
-                    ? quantityCount + 1
-                    : quantityCount
+                  quantityCount < product.quantity - productCartQty ? quantityCount + 1 : quantityCount
                 )
               }
               className="inc qtybutton"
@@ -245,11 +219,13 @@ const ProductDescriptionInfo = ({
                 //       dispatch(addToCart({...product, quantity : quantityCount}));
                 //       console.log({...product, quantity : quantityCount});
                 //       }}
-                onClick={() => {addProductTocart()}}
+                onClick={() => {
+                  addProductTocart();
+                }}
                 disabled={productCartQty >= product.quantity}
               >
-                {" "}
-                Thêm vào giỏ hàng{" "}
+                {' '}
+                Thêm vào giỏ hàng{' '}
               </button>
             ) : (
               <button disabled>Hết Hàng</button>
@@ -257,13 +233,9 @@ const ProductDescriptionInfo = ({
           </div>
           <div className="pro-details-wishlist">
             <button
-              className={wishlistItem !== undefined ? "active" : ""}
+              className={wishlistItem !== undefined ? 'active' : ''}
               disabled={wishlistItem !== undefined}
-              title={
-                wishlistItem !== undefined
-                  ? "Added to wishlist"
-                  : "Add to wishlist"
-              }
+              title={wishlistItem !== undefined ? 'Added to wishlist' : 'Add to wishlist'}
               onClick={() => dispatch(addToWishlist(product))}
             >
               <i className="pe-7s-like" />
@@ -290,43 +262,41 @@ const ProductDescriptionInfo = ({
           <span>Category:</span>
           <ul>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                {product.category.name}
-              </Link>
+              <Link to={process.env.PUBLIC_URL + '/shop-grid-standard'}>{product.category.name}</Link>
             </li>
           </ul>
         </div>
       ) : (
-        ""
+        ''
       )}
       {/* {console.log(product.attributes[0][" attributeValues"][0])} */}
       <div className="attribute">
-      <span>Thuộc tính:</span>
-      {product.attributes.map((attribute, index) => (
-        <>
-          {attribute.attributeValues.length > 1 ? (
-            <div key={index} className="attribute-group">
-              <p>{attribute.name}:</p>
-              <div>
-                {attribute.attributeValues.map((value, index) => (
-                  <button
-                    key={index}
-                    className={`attribute-button ${
-                      isSelected(attribute.name, value.name) ? "selected" : ""
-                    }`}
-                    onClick={() => handleButtonClick(attribute.name, value.name)}
-                  >
-                    {value.name}
-                  </button>
-                ))}
+        <span>Thuộc tính:</span>
+        {product.attributes.map((attribute, index) => (
+          <>
+            {attribute.attributeValues.length > 1 ? (
+              <div key={index} className="attribute-group">
+                <p>{attribute.name}:</p>
+                <div>
+                  {attribute.attributeValues.map((value, index) => (
+                    <button
+                      key={index}
+                      className={`attribute-button ${
+                        isSelected(attribute.name, value.name) ? 'selected' : ''
+                      }`}
+                      onClick={() => handleButtonClick(attribute.name, value.name)}
+                    >
+                      {value.name}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          ) : (
-            ""
-          )}
-        </>
-      ))}
-    </div>
+            ) : (
+              ''
+            )}
+          </>
+        ))}
+      </div>
       {product.tag ? (
         <div className="pro-details-meta">
           <span>Tags :</span>
@@ -334,16 +304,14 @@ const ProductDescriptionInfo = ({
             {product.tag.map((single, key) => {
               return (
                 <li key={key}>
-                  <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                    {single}
-                  </Link>
+                  <Link to={process.env.PUBLIC_URL + '/shop-grid-standard'}>{single}</Link>
                 </li>
               );
             })}
           </ul>
         </div>
       ) : (
-        ""
+        ''
       )}
 
       {/* <div className="pro-details-social">

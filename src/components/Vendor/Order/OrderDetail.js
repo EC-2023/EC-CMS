@@ -13,7 +13,7 @@ const OrderDetail = () => {
   const { orderCode } = useParams();
   let total = 0;
   useEffect(() => {
-    dispatch(getOrder(orderCode));
+    dispatch(getOrder(orderCode)).then((res) => console.log(res));
   }, []);
   return (
     <div className="order-detail">
@@ -83,10 +83,6 @@ const OrderDetail = () => {
             <tr>
               <td>Tổng tiền hàng</td>
               <td>{total} VNĐ</td>
-            </tr>
-            <tr>
-              <td>Phí vận chuyển</td>
-              <td>{orders.order?.amountFromUser - total} VNĐ</td>
             </tr>
             <tr>
               <td className="grand-total-label">Số tiền shop nhận được</td>

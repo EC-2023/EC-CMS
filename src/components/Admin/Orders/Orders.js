@@ -15,6 +15,7 @@ import {
   cancelDeliver,
   cancelOrder,
   deliveryOrder,
+  doneOrder,
   fetchOrders,
   selectOrders,
 } from '../../../store/slices/orders-slice';
@@ -23,6 +24,7 @@ function Order() {
   const dispatch = useDispatch();
   const [showCancelOrder, setShowCancelOrder] = useState(false);
   const [showAcceptOrder, setShowAcceptOrder] = useState(false);
+  const [showDone, setShowDone] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
   const [orderBy, setOrderBy] = React.useState('-updateAt');
   const [searchText, setSearchText] = React.useState('');
@@ -109,9 +111,15 @@ function Order() {
             );
           } else if (row.original.status == 2) {
             return (
-              <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Button
                   style={{ backgroundColor: '#4CAF50', color: 'white', padding: '5px 10px' }}
+                  onClick={() => handleDoneClick(row.original.Id)}
+                >
+                  Confirm Order
+                </Button>
+                <Button
+                  style={{ backgroundColor: '#f44336', color: 'white', padding: '5px 10px' }}
                   onClick={() => handleCancelClick(row.original.Id)}
                 >
                   Cancel Delivery
@@ -164,7 +172,32 @@ function Order() {
       })
     );
   }, 500);
-
+  const handleDoneOrderClose = (id) => {
+    setShowDone(false);
+  };
+  const handleDoneOrder = (e) => {
+    e.preventDefault();
+    cogoToast
+      .loading('Updating...', {
+        position: 'bottom-right',
+      })
+      .then(() => dispatch(doneOrder(selectedId)))
+      .then((res) => {
+        if (!res.error)
+          cogoToast.success('Successfully Accept Order', {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+        else
+          cogoToast.error(res.error.message, {
+            position: 'bottom-right',
+            hideAfter: 3,
+            onClick: () => console.log('Clicked'),
+          });
+      });
+    setShowDone(false);
+  };
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
     debouncedFetchOrders(event.target.value);
@@ -202,6 +235,11 @@ function Order() {
   const handleCancelClick = (id) => {
     setSelectedId(id);
     setShowCancelOrder(true);
+  };
+
+  const handleDoneClick = (id) => {
+    setSelectedId(id);
+    setShowDone(true);
   };
   const handleCancelClose = (id) => {
     setShowCancelOrder(false);
@@ -373,6 +411,23 @@ function Order() {
           <Modal.Body>Are you sure to cancel this Order?</Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCancelClose}>
+              No
+            </Button>
+            <Button type="submit" variant="danger">
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+
+      <Modal show={showDone} onHide={handleDoneOrderClose} centered backdrop="static">
+        <Form onSubmit={handleDoneOrder}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Order</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure to confirm this Order?</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleDoneOrderClose}>
               No
             </Button>
             <Button type="submit" variant="danger">

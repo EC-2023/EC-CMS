@@ -208,13 +208,16 @@ function Order() {
       })
       .then(() => dispatch(acceptOrder(selectedId)))
       .then((res) => {
-        if (!res.error)
+        if (!res.error) {
           cogoToast.success('Successfully Accept Order', {
             position: 'bottom-right',
             hideAfter: 3,
             onClick: () => console.log('Clicked'),
           });
-        else
+          setTimeout(function () {
+            window.location.reload();
+          }, 3000);
+        } else
           cogoToast.error(res.error.message, {
             position: 'bottom-right',
             hideAfter: 3,
