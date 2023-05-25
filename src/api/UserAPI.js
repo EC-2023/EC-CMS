@@ -28,8 +28,8 @@ const UserAPI = {
   },
 
   login: (params) => {
-    const url = '/auth/login';
-    return axiosClient.post(url, { username: params.username, password: params.password });
+    const url = '/auth/authenticate';
+    return axiosClient.post(url, { email: params.username, password: params.password });
   },
 };
 

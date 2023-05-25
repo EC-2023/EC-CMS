@@ -50,7 +50,7 @@ const ShopGridStandard = () => {
       // Perform any action you need when the query string changes
     };
 
-    handleQueryChange();
+    // handleQueryChange();
   }, [location.search, currentPage]);
   const getLayout = (layout) => {
     setLayout(layout);

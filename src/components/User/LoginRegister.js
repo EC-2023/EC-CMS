@@ -24,8 +24,6 @@ const LoginRegister = () => {
     email: '',
     fName: '',
     lName: '',
-    mName: '',
-    phoneNumber: '',
   });
 
   useEffect(() => {
@@ -68,7 +66,7 @@ const LoginRegister = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const params = { username: formValues.email, password: formValues.password };
+      const params = { email: formValues.email, password: formValues.password };
       const response = await toast.promise(UserAPI.login(params), {
         pending: 'Đang đăng nhập...',
         success: 'Đăng nhập thành công!',
@@ -101,11 +99,8 @@ const LoginRegister = () => {
       const params = {
         firstName: formValues.fName,
         lastName: formValues.lName,
-        middleName: formValues.mName,
-        phoneNumber: formValues.phoneNumber,
         email: formValues.email,
-        hashedPassword: formValues.password,
-        avatar: '',
+        password: formValues.password,
       };
       const response = await toast.promise(UserAPI.register(params), {
         pending: 'Đang đăng ký...',
@@ -201,11 +196,25 @@ const LoginRegister = () => {
                         <div className="login-form-container">
                           <div className="login-register-form">
                             <form onSubmit={handleRegister}>
+                            <input
+                                type="text"
+                                name="email"
+                                placeholder="email"
+                                value={formValues.email}
+                                onChange={handleChange}
+                              />
                               <input
                                 type="text"
-                                name="username"
-                                placeholder="Username"
-                                value={formValues.username}
+                                name="fName"
+                                placeholder="First Name"
+                                value={formValues.fName}
+                                onChange={handleChange}
+                              />
+                              <input
+                                type="text"
+                                name="lName"
+                                placeholder="Last Name"
+                                value={formValues.lName}
                                 onChange={handleChange}
                               />
                               {error.passowordWeak && formValues.password.length > 0 && (
@@ -231,41 +240,8 @@ const LoginRegister = () => {
                                 value={formValues.rePassword}
                                 onChange={handleChange}
                               />
-                              <input
-                                type="text"
-                                name="fName"
-                                placeholder="First Name"
-                                value={formValues.fName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="mName"
-                                placeholder="Middle Name"
-                                value={formValues.mName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="lName"
-                                placeholder="Last Name"
-                                value={formValues.lName}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="text"
-                                name="email"
-                                placeholder="email"
-                                value={formValues.email}
-                                onChange={handleChange}
-                              />
-                              <input
-                                type="number"
-                                name="phoneNumber"
-                                placeholder="phone"
-                                value={formValues.phoneNumber}
-                                onChange={handleChange}
-                              />
+                              
+
                               <div className="button-box">
                                 <button type="submit" disabled={error.rePasswordWrong && error.passowordWeak}>
                                   <span

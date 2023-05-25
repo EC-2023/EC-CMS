@@ -24,6 +24,7 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
         setIsLoading(false);
       } catch (error) {
         console.log('faild', error);
+        setIsLoading(false);
       }
     };
 
