@@ -23,13 +23,13 @@ const UserAPI = {
   },
 
   register: (params) => {
-    const url = '/users';
+    const url = '/auth/register';
     return axiosClient.post(url, params);
   },
 
   login: (params) => {
     const url = '/auth/authenticate';
-    return axiosClient.post(url, { email: params.username, password: params.password });
+    return axiosClient.post(url, { email: params.email, password: params.password });
   },
 };
 

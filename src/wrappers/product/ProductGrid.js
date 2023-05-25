@@ -16,11 +16,12 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
     const fetchProductList = async () => {
       try {
         let params;
-        if (type === 'new') params = { limit: 8, skip: 0, orderBy: '-createAt' };
-        else if (type === 'bestSeller') params = { limit: 8, skip: 0, orderBy: '-sold' };
-        else if (type === 'saleItems') params = { limit: 8, skip: 0, orderBy: '-dateValidPromote' };
+        if (type === 'new') params = { limit: 8, skip: 0, orderBy: 'title' };
+        else if (type === 'bestSeller') params = { limit: 8, skip: 0, orderBy: 'title' };
+        else if (type === 'saleItems') params = { limit: 8, skip: 0, orderBy: 'title' };
         const response = await productAPI.getNewProduct(params);
-        dispatch(setProducts(response.data.data));
+        console.log(response.data.posts);
+        dispatch(setProducts(response.data.posts));
         setIsLoading(false);
       } catch (error) {
         console.log('faild', error);

@@ -3,7 +3,7 @@ import axiosClient from './axiosClient';
 
 const productAPI = {
   getNewProduct : (params) => {
-    const url = '/products/pagination';
+    const url = '/post';
     return axiosClient.get(url, {params});
   },
   

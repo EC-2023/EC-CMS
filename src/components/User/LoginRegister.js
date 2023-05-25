@@ -80,14 +80,14 @@ const LoginRegister = () => {
         progress: undefined,
         theme: 'light',
       });
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('accessToken', response.data.access_token);
+      localStorage.setItem('refreshToken', response.data.refresh_token);
       console.log(response.data);
 
-      if (response.data.UserProfileDto.role.name === 'Admin') navigate('/admin');
+      if (response.data.access_token != null)
       setTimeout(() => {
         navigate('/');
-      }, 500);
+      }, 1000);
     } catch (error) {
       console.error(error);
     }

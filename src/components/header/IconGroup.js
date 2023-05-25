@@ -27,9 +27,18 @@ const IconGroup = ({ iconWhiteClass }) => {
       theme: 'light',
     });
 
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+    console.log(window.location.pathname);
+    if (window.location.pathname !== '/' || window.location.pathname !== '') {
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+
+    } else {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+    }
   };
 
   useEffect(() => {

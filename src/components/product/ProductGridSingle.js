@@ -17,7 +17,7 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
   const dispatch = useDispatch();
   const addProductTocart = async () => {
     try {
-      const params = { productId: product.Id, quantity: 1, attributesValues: [] };
+      const params = { productId: product.id, quantity: 1, attributesValues: [] };
       const response = await CartAPI.addToCart(params);
       dispatch(addToCart({ ...product, quantity: params.quantity }));
     } catch (error) {
@@ -26,14 +26,14 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
   };
   return (
     <Fragment>
-      {product && product.images[0] && (
+      {product && product.postImageDTOs[0] && (
         <>
           <div className={clsx('product-wrap', spaceBottomClass)}>
             <div className="product-img">
-              <Link to={process.env.PUBLIC_URL + '/product/' + product.Id}>
+              <Link to={process.env.PUBLIC_URL + '/product/' + product.id}>
                 <img
                   className="default-img"
-                  src={process.env.PUBLIC_URL + product.images[0].location}
+                  src={process.env.PUBLIC_URL + product.postImageDTOs[0].imageDTO.url}
                   alt=""
                 />
                 {/* {product.image.length > 1 ? (
@@ -115,7 +115,7 @@ const ProductGridSingle = ({ product, currency, cartItem, wishlistItem, spaceBot
             </div>
             <div className="product-content text-center">
               <h3>
-                <Link to={process.env.PUBLIC_URL + '/product/' + product.id}>{product.name}</Link>
+                <Link to={process.env.PUBLIC_URL + '/product/' + product.id}>{product.title}</Link>
               </h3>
               {product.rating && product.rating > 0 ? (
                 <div className="product-rating">
