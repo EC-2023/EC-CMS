@@ -38,19 +38,19 @@ const ShopGridStandard = () => {
           limit: 15,
           skip: (currentPage - 1) * 15,
           orderBy: '-createAt',
-          'name{{search}}': parsedQuery.search ? parsedQuery.search : '',
+          title: parsedQuery.search ? parsedQuery.search : '',
         };
         if (parsedQuery.category) {
           params['category'] = parsedQuery.category;
         }
-        const response = await productAPI.getNewProduct(params);
-        dispatch(setProducts(response.data.data));
-        dispatch(setPaginationProduct(response.data.pagination));
+        const response = await productAPI.searchProduct(params);
+        dispatch(setProducts(response.data.posts));
+        dispatch(setPaginationProduct(response.data.totalPages));
       } catch (error) {}
       // Perform any action you need when the query string changes
     };
 
-    // handleQueryChange();
+    handleQueryChange();
   }, [location.search, currentPage]);
   const getLayout = (layout) => {
     setLayout(layout);
@@ -99,8 +99,8 @@ const ShopGridStandard = () => {
                 <ShopTopbar
                   getLayout={getLayout}
                   getFilterSortParams={getFilterSortParams}
-                  productCount={products.length}
-                  sortedProductCount={currentData.length}
+                  productCount={products?.length}
+                  sortedProductCount={currentData?.length}
                 />
 
                 {/* shop page content default */}

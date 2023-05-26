@@ -14,13 +14,13 @@ const ShopSearch = () => {
         limit: 8,
         skip: 0,
         orderBy: '-createAt',
-        'name{{search}}': searchText,
+        title: searchText,
       };
       console.log(params);
 
-      const response = await productAPI.getNewProduct(params);
+      const response = await productAPI.searchProduct(params);
 
-      dispatch(setProducts(response.data.data));
+      dispatch(setProducts(response.data.posts));
     } catch (error) {
       console.log('faild', error);
     }

@@ -7,6 +7,11 @@ const productAPI = {
     return axiosClient.get(url, {params});
   },
   
+  searchProduct : (params) => {
+    const url = '/post/search';
+    return axiosClient.get(url, {params});
+  },
+
   getAll : () =>{
     const url = '/products';
     return axiosClient.get(url);

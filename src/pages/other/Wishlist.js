@@ -258,7 +258,6 @@ const Wishlist = () => {
                             <th>Image</th>
                             <th>Product Name</th>
                             <th>Unit Price</th>
-                            <th>Add To Cart</th>
                             <th>action</th>
                           </tr>
                         </thead>
@@ -275,7 +274,7 @@ const Wishlist = () => {
                               discountedPrice * currency.currencyRate
                             ).toFixed(2);
                             const cartItem = cartItems.find(
-                              item => item.Id === wishlistItem.Id
+                              item => item.id === wishlistItem.id
                             );
                             return (
                               <tr key={key}>
@@ -284,14 +283,14 @@ const Wishlist = () => {
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      wishlistItem.Id
+                                      wishlistItem.id
                                     }
                                   >
                                     <img
                                       className="img-fluid"
                                       src={
                                         process.env.PUBLIC_URL +
-                                        wishlistItem.images[0].location
+                                        wishlistItem.postImageDTOs[0].imageDTO.url
                                       }
                                       alt=""
                                     />
@@ -303,10 +302,10 @@ const Wishlist = () => {
                                     to={
                                       process.env.PUBLIC_URL +
                                       "/product/" +
-                                      wishlistItem.Id
+                                      wishlistItem.id
                                     }
                                   >
-                                    {wishlistItem.name}
+                                    {wishlistItem.title}
                                   </Link>
                                 </td>
 
@@ -318,38 +317,10 @@ const Wishlist = () => {
                                     </Fragment>
                                 </td>
 
-                                <td className="product-wishlist-cart">
-                                    <button
-                                      onClick={() =>
-                                        dispatch(addToCart(wishlistItem))
-                                      }
-                                      className={
-                                        cartItem !== undefined &&
-                                        cartItem.quantity > 0
-                                          ? "active"
-                                          : ""
-                                      }
-                                      disabled={
-                                        cartItem !== undefined &&
-                                        cartItem.quantity > 0
-                                      }
-                                      title={
-                                        wishlistItem !== undefined
-                                          ? "Added to cart"
-                                          : "Add to cart"
-                                      }
-                                    >
-                                      {cartItem !== undefined &&
-                                      cartItem.quantity > 0
-                                        ? "Added"
-                                        : "Add to cart"}
-                                    </button>
-                                </td>
-
                                 <td className="product-remove">
                                   <button
                                     onClick={() =>
-                                      dispatch(deleteFromWishlist(wishlistItem.Id))
+                                      dispatch(deleteFromWishlist(wishlistItem.id))
                                     }
                                   >
                                     <i className="fa fa-times"></i>

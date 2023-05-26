@@ -140,25 +140,24 @@ const IconGroup = ({ iconWhiteClass }) => {
           </span>
         </Link>
       </div>
-      <div className="same-style cart-wrap d-none d-lg-block">
+      {/* <div className="same-style cart-wrap d-none d-lg-block">
         <button className="icon-cart" onClick={(e) => handleClick(e)}>
           <i className="pe-7s-shopbag" />
           <span className="count-style">{cartItems && cartItems.length ? cartItems.length : 0}</span>
         </button>
-        {/* menu cart */}
         <MenuCart />
-      </div>
-      <div className="same-style cart-wrap d-none d-lg-block">
+      </div> */}
+      {/* <div className="same-style cart-wrap d-none d-lg-block">
         <Link to={process.env.PUBLIC_URL + '/myorder'}>
           <RiBillLine />
         </Link>
-      </div>
-      <div className="same-style cart-wrap d-block d-lg-none">
+      </div> */}
+      {/* <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + '/cart'}>
           <i className="pe-7s-shopbag" />
           <span className="count-style">{cartItems && cartItems.length ? cartItems.length : 0}</span>
         </Link>
-      </div>
+      </div> */}
       <div className="same-style mobile-off-canvas d-block d-lg-none">
         <button className="mobile-aside-button" onClick={() => triggerMobileMenu()}>
           <i className="pe-7s-menu" />
