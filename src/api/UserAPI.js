@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 const UserAPI = {
   getMyUserInfor: () => {
-    const url = '/users/my-profile';
+    const url = '/app-user/';
     return axiosClient.get(url);
   },
 

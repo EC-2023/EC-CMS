@@ -11,7 +11,7 @@ const ShopCategories = ({ getSortParams }) => {
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     const getCate = async () => {
-      const res = await CategoryAPI.fetchFeature();
+      const res = await CategoryAPI.getCategory();
       setCategories(res.data);
     };
 
@@ -58,12 +58,12 @@ const ShopCategories = ({ getSortParams }) => {
                         if (currentQueryString) {
                           const searchIndex = currentQueryString.indexOf('search=');
                           if (searchIndex !== -1) {
-                            newQueryString = `${currentQueryString}&category=${category.Id}`;
+                            newQueryString = `${currentQueryString}&categoryId=${category.id}`;
                           } else {
-                            newQueryString = `?category=${category.Id}`;
+                            newQueryString = `?categoryId=${category.id}`;
                           }
                         } else {
-                          newQueryString = `?category=${category.Id}`;
+                          newQueryString = `?categoryId=${category.id}`;
                         }
                         navigate(newQueryString);
                         setActiveSort(e);

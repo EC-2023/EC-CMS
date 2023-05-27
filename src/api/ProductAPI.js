@@ -20,6 +20,10 @@ const productAPI = {
   getProduct: (id) => {
     const url = `/products/${id}`;
     return axiosClient.get(url);
+  },
+  getProductsByCategory: (params) => {
+    const url = `/post/category`;
+    return axiosClient.get(url, {params});
   }
 }
 

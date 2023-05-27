@@ -34,16 +34,26 @@ const ShopGridStandard = () => {
       const parsedQuery = queryString.parse(location.search);
       if (!parsedQuery) return;
       try {
-        const params = {
+        let params = {
           limit: 15,
           skip: (currentPage - 1) * 15,
-          orderBy: '-createAt',
+          orderBy: 'titile',
           title: parsedQuery.search ? parsedQuery.search : '',
         };
-        if (parsedQuery.category) {
-          params['category'] = parsedQuery.category;
+        let response;
+        if (parsedQuery.categoryId) {
+            params = {
+            limit: 15,
+            skip: (currentPage - 1) * 15,
+            orderBy: 'titile',
+            categoryId: parsedQuery.categoryId ? parsedQuery.categoryId : '',
+          };
+          response = await productAPI.getProductsByCategory(params);
         }
-        const response = await productAPI.searchProduct(params);
+        else{
+            response = await productAPI.searchProduct(params);
+        }
+        
         dispatch(setProducts(response.data.posts));
         dispatch(setPaginationProduct(response.data.totalPages));
       } catch (error) {}
