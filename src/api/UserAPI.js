@@ -2,18 +2,17 @@ import axiosClient from './axiosClient';
 
 const UserAPI = {
   getMyUserInfor: () => {
-    const url = '/app-user/';
+    const url = '/app-user';
     return axiosClient.get(url);
   },
 
   updateMyUserInfor: (params) => {
-    const url = '/users/my-profile';
+    const url = '/app-user';
     console.log('fName', params.firstName);
     return axiosClient.patch(url, {
       firstName: params.firstName,
       lastName: params.lastName,
-      middleName: params.middleName,
-      phoneNumber: params.phoneNumber,
+      phone: params.phoneNumber,
       email: params.email,
     });
   },
