@@ -29,7 +29,7 @@ const MyAccount = () => {
           email: response.data.email,
           firstName: response.data.firstName,
           lastName: response.data.lastName,
-          phoneNumber: response.data.phoneNumber,
+          phoneNumber: response.data.phone,
         });
         setIsLoading(false);
       } catch (error) {

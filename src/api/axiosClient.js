@@ -33,16 +33,21 @@ axiosClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response.status === 400 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
         const refreshToken = localStorage.getItem('refreshToken');
+        localStorage.removeItem('refreshToken');
+        if (!refreshToken) {
+          return Promise.reject(error);
+        }
         const response = await axiosClient.post('/auth/refresh-token', {
-          refreshToken: refreshToken,
+          refresh_token: refreshToken,
         });
 
         if (response.data.accessToken) {
-          localStorage.setItem('accessToken', response.data.accessToken);
+          localStorage.setItem('accessToken', response.data.access_Token);
+          localStorage.setItem('refreshToken', response.data.refresh_Token);
           axiosClient.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
           originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
           return axiosClient(originalRequest);
