@@ -290,7 +290,7 @@ const Wishlist = () => {
                                       className="img-fluid"
                                       src={
                                         process.env.PUBLIC_URL +
-                                        wishlistItem.postImageDTOs[0].imageDTO.url
+                                        wishlistItem?.postImageDTOs[0]?.imageDTO.url
                                       }
                                       alt=""
                                     />

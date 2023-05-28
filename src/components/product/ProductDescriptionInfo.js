@@ -109,7 +109,7 @@ const ProductDescriptionInfo = ({
             <span className="old">{currency.currencySymbol + finalProductPrice}</span>
           </Fragment>
         ) : (
-          <span>{currency.currencySymbol + finalProductPrice} </span>
+          <span>{finalProductPrice + " VNĐ"} </span>
         )}
       </div>
       <ToastContainer />
@@ -193,44 +193,6 @@ const ProductDescriptionInfo = ({
         </div>
       ) : (
         <div className="pro-details-quality">
-          <div className="cart-plus-minus">
-            <button
-              onClick={() => setQuantityCount(quantityCount > 1 ? quantityCount - 1 : 1)}
-              className="dec qtybutton"
-            >
-              -
-            </button>
-            <input className="cart-plus-minus-box" type="text" value={quantityCount} readOnly />
-            <button
-              onClick={() =>
-                setQuantityCount(
-                  quantityCount < product.quantity - productCartQty ? quantityCount + 1 : quantityCount
-                )
-              }
-              className="inc qtybutton"
-            >
-              +
-            </button>
-          </div>
-          <div className="pro-details-cart btn-hover">
-            {product.quantity && product.quantity > 0 ? (
-              <button
-                // onClick={() => {
-                //       dispatch(addToCart({...product, quantity : quantityCount}));
-                //       console.log({...product, quantity : quantityCount});
-                //       }}
-                onClick={() => {
-                  addProductTocart();
-                }}
-                disabled={productCartQty >= product.quantity}
-              >
-                {' '}
-                Thêm vào giỏ hàng{' '}
-              </button>
-            ) : (
-              <button disabled>Hết Hàng</button>
-            )}
-          </div>
           <div className="pro-details-wishlist">
             <button
               className={wishlistItem !== undefined ? 'active' : ''}
@@ -271,31 +233,7 @@ const ProductDescriptionInfo = ({
       )}
       {/* {console.log(product.attributes[0][" attributeValues"][0])} */}
       <div className="attribute">
-        <span>Thuộc tính:</span>
-        {product.attributes.map((attribute, index) => (
-          <>
-            {attribute.attributeValues.length > 1 ? (
-              <div key={index} className="attribute-group">
-                <p>{attribute.name}:</p>
-                <div>
-                  {attribute.attributeValues.map((value, index) => (
-                    <button
-                      key={index}
-                      className={`attribute-button ${
-                        isSelected(attribute.name, value.name) ? 'selected' : ''
-                      }`}
-                      onClick={() => handleButtonClick(attribute.name, value.name)}
-                    >
-                      {value.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              ''
-            )}
-          </>
-        ))}
+        <span>Thể Loại: {product.categoryDTO.name}</span>
       </div>
       {product.tag ? (
         <div className="pro-details-meta">

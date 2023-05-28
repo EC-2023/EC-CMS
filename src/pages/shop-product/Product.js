@@ -22,7 +22,7 @@ const Product = () => {
       console.log(Id);
 
       try {
-        const response = await ProductAPI.getProduct(Id);
+        const response = await ProductAPI.getPost(Id);
         setProduct(response.data);
         setIsLoading(false);
       } catch (error) {
@@ -55,7 +55,7 @@ const Product = () => {
         <Breadcrumb
           pages={[
             { label: 'Home', path: process.env.PUBLIC_URL + '/' },
-            { label: 'Shop Product', path: process.env.PUBLIC_URL + pathname },
+            { label: 'Post', path: process.env.PUBLIC_URL + pathname },
           ]}
         />
 

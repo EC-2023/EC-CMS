@@ -21,6 +21,12 @@ const productAPI = {
     const url = `/products/${id}`;
     return axiosClient.get(url);
   },
+
+  getPost: (id) => {
+    const url = `/post/${id}`;
+    return axiosClient.get(url);
+  },
+
   getProductsByCategory: (params) => {
     const url = `/post/category`;
     return axiosClient.get(url, {params});
