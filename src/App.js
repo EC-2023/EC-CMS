@@ -101,6 +101,8 @@ const OrderUserDetail = lazy(() => import('./pages/other/OrderDetail'));
 const Cart = lazy(() => import('./pages/other/Cart'));
 const Wishlist = lazy(() => import('./pages/other/Wishlist'));
 const MyOrder = lazy(() => import('./pages/other/MyOrder'));
+const MyPost = lazy(() => import('./pages/other/MyPost'));
+const CreatePost = lazy(() => import('./pages/other/CreatePost'));
 const Compare = lazy(() => import('./pages/other/Compare'));
 const Checkout = lazy(() => import('./pages/other/Checkout'));
 
@@ -219,6 +221,8 @@ const App = () => {
             <Route path={process.env.PUBLIC_URL + '/compare'} element={<Compare />} />
             <Route path={process.env.PUBLIC_URL + '/checkout'} element={<Checkout />} />
             <Route path={process.env.PUBLIC_URL + '/order'} element={<Order />} />
+            <Route path={process.env.PUBLIC_URL + '/mypost'} element={<MyPost />} />
+            <Route path={process.env.PUBLIC_URL + '/createpost'} element={<CreatePost />} />
             <Route path={process.env.PUBLIC_URL + '/myorder'} element={<MyOrder />} />
             <Route path={process.env.PUBLIC_URL + '/reset-password'} element={<ResestPassword />} />
             <Route path={process.env.PUBLIC_URL + '/confirm-pin/:phoneNumber'} element={<ConfirmPin />} />

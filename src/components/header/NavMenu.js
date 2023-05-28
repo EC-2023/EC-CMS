@@ -35,7 +35,7 @@ const NavMenu = ({ menuWhiteClass, sidebarMenu }) => {
             <Link to={process.env.PUBLIC_URL + '/contact'}>{t('contact_us')}</Link>
           </li>
           <li>
-            <Link to={process.env.PUBLIC_URL + '/vendor/home'}>My Store</Link>
+            <Link to={process.env.PUBLIC_URL + '/createpost'}>Create Post</Link>
           </li>
         </ul>
       </nav>

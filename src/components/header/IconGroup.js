@@ -147,11 +147,11 @@ const IconGroup = ({ iconWhiteClass }) => {
         </button>
         <MenuCart />
       </div> */}
-      {/* <div className="same-style cart-wrap d-none d-lg-block">
-        <Link to={process.env.PUBLIC_URL + '/myorder'}>
+      <div className="same-style cart-wrap d-none d-lg-block">
+        <Link to={process.env.PUBLIC_URL + '/mypost'}>
           <RiBillLine />
         </Link>
-      </div> */}
+      </div>
       {/* <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + '/cart'}>
           <i className="pe-7s-shopbag" />

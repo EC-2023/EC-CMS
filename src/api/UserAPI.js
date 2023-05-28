@@ -30,6 +30,11 @@ const UserAPI = {
     const url = '/auth/authenticate';
     return axiosClient.post(url, { email: params.email, password: params.password });
   },
+
+  changePassword: (params) => {
+    const url = '/me/change-password';
+    return axiosClient.post(url, params);
+  }
 };
 
 export default UserAPI;

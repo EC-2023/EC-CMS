@@ -284,7 +284,7 @@ const MyOrder = () => {
         />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
-            <h1 className="title main-title">Order</h1>
+            <h1 className="title main-title">My Post</h1>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div className="search-box">
                 <span className="search-wrapper">

@@ -24,7 +24,15 @@ const productAPI = {
   getProductsByCategory: (params) => {
     const url = `/post/category`;
     return axiosClient.get(url, {params});
-  }
+  },
+  uploadImage: (formData) => {
+    const url = '/image/cloud/upload';
+    return axiosClient.post(url, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    });
+  },
 }
 
 export default productAPI;
