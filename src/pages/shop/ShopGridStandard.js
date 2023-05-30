@@ -1,5 +1,5 @@
 import { Fragment, useState, useEffect } from 'react';
-import Paginator from 'react-hooks-paginator';
+import ReactPaginate from "react-paginate";
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useParams } from 'react-router-dom';
 import { getSortedProducts } from '../../helpers/product';
@@ -13,6 +13,7 @@ import { setProducts, setPaginationProduct } from '../../store/slices/product-sl
 import productAPI from '../../api/ProductAPI';
 import queryString from 'query-string';
 
+
 const ShopGridStandard = () => {
   const [layout, setLayout] = useState('grid three-column');
   const [sortType, setSortType] = useState('');
@@ -20,14 +21,18 @@ const ShopGridStandard = () => {
   const [filterSortType, setFilterSortType] = useState('');
   const [filterSortValue, setFilterSortValue] = useState('');
   const [offset, setOffset] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [currentData, setCurrentData] = useState([]);
   const [sortedProducts, setSortedProducts] = useState([]);
   const { products, pagination } = useSelector((state) => state.product);
+  const [totalPages, setTotalPages] = useState(0);
   const location = useLocation();
   const pageLimit = 15;
   let { pathname } = useLocation();
   const dispatch = useDispatch();
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected);
+  };
 
   useEffect(() => {
     const handleQueryChange = async () => {
@@ -35,23 +40,28 @@ const ShopGridStandard = () => {
       if (!parsedQuery) return;
       try {
         let params = {
-          limit: 15,
-          skip: (currentPage - 1) * 15,
-          orderBy: 'titile',
+          size: 15,
+          page: currentPage,
+          orderBy: "titile",
           title: parsedQuery.search ? parsedQuery.search : '',
         };
         let response;
         if (parsedQuery.categoryId) {
             params = {
-            limit: 15,
-            skip: (currentPage - 1) * 15,
-            orderBy: 'titile',
+              size: 15,
+              page: currentPage,
+              orderBy: "titile",
             categoryId: parsedQuery.categoryId ? parsedQuery.categoryId : '',
           };
           response = await productAPI.getProductsByCategory(params);
+          setTotalPages(Math.ceil(response.data.totalPages));
+
+
         }
         else{
             response = await productAPI.searchProduct(params);
+            setTotalPages(Math.ceil(response.data.totalPages));
+
         }
         
         dispatch(setProducts(response.data.posts));
@@ -117,19 +127,24 @@ const ShopGridStandard = () => {
                 <ShopProducts layout={layout} products={currentData} />
 
                 {/* shop product pagination */}
-                <div className="pro-pagination-style text-center mt-30">
-                  <Paginator
-                    totalRecords={pagination?.total || 0}
-                    pageLimit={pageLimit}
-                    pageNeighbours={2}
-                    setOffset={setOffset}
-                    currentPage={currentPage}
-                    setCurrentPage={setCurrentPage}
-                    pageContainerClass="mb-0 mt-0"
-                    pagePrevText="«"
-                    pageNextText="»"
-                  />
-                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+
+            <ReactPaginate
+              previousLabel={"Previous"}
+              nextLabel={"Next"}
+              pageCount={totalPages}
+              onPageChange={handlePageChange}
+              containerClassName={"pagination"}
+              pageClassName={"page-item"}
+              pageLinkClassName={"page-link"}
+              previousClassName={"page-item"}
+              previousLinkClassName={"page-link"}
+              nextClassName={"page-item"}
+              nextLinkClassName={"page-link"}
+              activeClassName={"active"}
+              disabledClassName={"disabled"}
+            />
+            </div>
               </div>
             </div>
           </div>

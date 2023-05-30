@@ -21,21 +21,23 @@ const MyPost = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getMyPost = async () => {
-      let params = {
-        size: 10,
-        page: currentPage,
-        orderBy: "titile",
-      };
-      try {
-        const response = await productAPI.getMyPost(params);
-        setPosts(response.data.posts);
-        setTotalPages(Math.ceil(response.data.totalPages));
-      } catch {
-        // Handle error
-      }
+  const getMyPost = async () => {
+    let params = {
+      size: 10,
+      page: currentPage,
+      orderBy: "titile",
     };
+    try {
+      const response = await productAPI.getMyPost(params);
+      setPosts(response.data.posts);
+      setTotalPages(Math.ceil(response.data.totalPages));
+    } catch {
+      // Handle error
+    }
+  };
+
+  useEffect(() => {
+    
     getMyPost();
   }, [currentPage]);
 
@@ -69,7 +71,8 @@ const MyPost = () => {
       try {
         const response = await productAPI.updatePost(params);
         if (response.status = 200) {
-          cogoToast.success("Cập nhật thành công"); 
+          cogoToast.success("Cập nhật thành công");
+          getMyPost(); 
         } else {
           cogoToast.error("Cập nhật thất bại"); 
         }
@@ -117,6 +120,7 @@ const MyPost = () => {
                 <tr>
                   <th>Post</th>
                   <th>Title</th>
+                  <th>Price</th>
                   <th>Description</th>
                   <th>Actions</th>
                 </tr>
@@ -126,6 +130,7 @@ const MyPost = () => {
                   <tr key={post.id}>
                     <td><img src={post.postImageDTOs[0].imageDTO.url} alt="" style={{height : "50px"}}></img></td>
                     <td>{post.title}</td>
+                    <td>{post.price}</td>
                     <td>{post.description}</td>
                     <td>
                     <Button

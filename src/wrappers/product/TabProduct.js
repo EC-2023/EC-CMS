@@ -15,9 +15,9 @@ const TabProduct = ({ spaceTopClass, spaceBottomClass, bgColorClass, category })
   return (
     <div className={clsx('product-area', spaceTopClass, spaceBottomClass, bgColorClass)}>
       <div className="container">
-        <SectionTitle titleText="DAILY DEALS!" positionClass="text-center" />
+        <SectionTitle titleText="News!" positionClass="text-center" />
         <Tab.Container defaultActiveKey="bestSeller" onSelect={handleSelect}>
-          <Nav variant="pills" className="product-tab-list pt-30 pb-55 text-center">
+          {/* <Nav variant="pills" className="product-tab-list pt-30 pb-55 text-center">
             <Nav.Item>
               <Nav.Link eventKey="newArrival">
                 <h4>New Arrivals</h4>
@@ -33,7 +33,7 @@ const TabProduct = ({ spaceTopClass, spaceBottomClass, bgColorClass, category })
                 <h4>Sale Items</h4>
               </Nav.Link>
             </Nav.Item>
-          </Nav>
+          </Nav> */}
           <Tab.Content>
             {currentTab === 'newArrival' && (
               <Tab.Pane eventKey="newArrival">
