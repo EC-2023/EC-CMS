@@ -1,21 +1,55 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation,useNavigate } from "react-router-dom";
 import { getDiscountPrice } from "../../helpers/product";
 import SEO from "../../components/seo";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { addToCart } from "../../store/slices/cart-slice";
-import { deleteFromWishlist, deleteAllFromWishlist } from "../../store/slices/wishlist-slice"
+import { deleteFromWishlist, deleteAllFromWishlist, setWishlist } from "../../store/slices/wishlist-slice"
 import Product from "../shop-product/Product";
+import WishListAPI from "../../api/WishListAPI";
 
 const Wishlist = () => {
+
+  useEffect(() => {
+    const handleQueryChange = async () => {
+      try {
+        let params = {
+          limit: 15,
+          skip: 0,
+          orderBy: 'titile',
+        };
+        const response = await WishListAPI.getWishList(params);
+        
+        dispatch(setWishlist(response.data.posts));
+      } catch (error) {}
+      // Perform any action you need when the query string changes
+    };
+
+    handleQueryChange();
+  },[]);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   let { pathname } = useLocation();
   
   const currency = useSelector((state) => state.currency);
   const { wishlistItems } = useSelector((state) => state.wishlist);
   const { cartItems } = useSelector((state) => state.cart);
+
+  const deletedWishlist = async (id) => {
+    try {
+      
+      const response = await WishListAPI.delete(id);
+      console.log(response);
+
+      if (response.error) navigate('/login-register');
+
+      
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
   
 
@@ -319,8 +353,11 @@ const Wishlist = () => {
 
                                 <td className="product-remove">
                                   <button
-                                    onClick={() =>
+                                    onClick={() =>{
+                                      deletedWishlist(wishlistItem.id)
                                       dispatch(deleteFromWishlist(wishlistItem.id))
+                                    }
+                                      
                                     }
                                   >
                                     <i className="fa fa-times"></i>

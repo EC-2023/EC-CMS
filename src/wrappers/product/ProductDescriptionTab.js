@@ -64,7 +64,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, product }) =
                   <p>{product.categoryDTO.name}</p>
                 </div>
               </Tab.Pane>
-              <Tab.Pane eventKey="productDescription">{productFullDesc}</Tab.Pane>
+              <Tab.Pane eventKey="productDescription"><p style={{fontSize : "20px"}}>{productFullDesc}</p> </Tab.Pane>
               
             </Tab.Content>
           </Tab.Container>

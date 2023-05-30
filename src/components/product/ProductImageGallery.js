@@ -83,9 +83,9 @@ const ProductImageGallery = ({ product }) => {
 
       </div>
       <div className="product-small-image-wrapper mt-15">
-        { product.postImageDTOs.length >2  && (
+        { product.postImageDTOs.length >=2  && (
           <Swiper options={thumbnailSwiperParams}>
-            {product.images.map((single, key) => (
+            {product.postImageDTOs.map((single, key) => (
               <SwiperSlide key={key}>
                 <div className="single-image">
                   <img

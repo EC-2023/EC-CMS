@@ -9,6 +9,7 @@ import { addToWishlist } from '../../store/slices/wishlist-slice';
 import { addToCompare } from '../../store/slices/compare-slice';
 import './ProductDescriptionInfo.scss';
 import CartAPI from '../../api/CartAPI';
+import WishListAPI from '../../api/WishListAPI';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -67,17 +68,15 @@ const ProductDescriptionInfo = ({
     console.log(product.Id, quantityCount, attributesToString(selectedAttributes));
   }, [selectedAttributes]);
 
-  const addProductTocart = async () => {
+  const addWishlist = async () => {
     try {
-      const attributesValues = selectedAttributes.length > 0 ? [attributesToString(selectedAttributes)] : [];
-      const params = { productId: product.Id, quantity: quantityCount, attributesValues };
-      console.log(params);
-      const response = await CartAPI.addToCart(params);
+      
+      const response = await WishListAPI.add(product.id);
       console.log(response);
 
       if (response.error) navigate('/login-register');
 
-      dispatch(addToCart({ ...product, quantity: params.quantity }));
+      
     } catch (error) {
       console.log(error);
     }
@@ -101,7 +100,7 @@ const ProductDescriptionInfo = ({
 
   return (
     <div className="product-details-content ml-70">
-      <h2>{product.name}</h2>
+      <h1>{product.title}</h1>
       <div className="product-details-price">
         {discountedPrice !== null ? (
           <Fragment>
@@ -113,6 +112,9 @@ const ProductDescriptionInfo = ({
         )}
       </div>
       <ToastContainer />
+      <div className="attribute">
+        <span style={{ fontSize: "30px" }}> {product.address}</span>
+      </div>
       {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
           <div className="pro-details-rating">
@@ -123,7 +125,7 @@ const ProductDescriptionInfo = ({
         ''
       )}
       <div className="pro-details-list">
-        <p>{product.shortDescription}</p>
+        <p style={{ fontSize: "30px" }}>{product.shortDescription}</p>
       </div>
 
       {product.variation ? (
@@ -198,9 +200,12 @@ const ProductDescriptionInfo = ({
               className={wishlistItem !== undefined ? 'active' : ''}
               disabled={wishlistItem !== undefined}
               title={wishlistItem !== undefined ? 'Added to wishlist' : 'Add to wishlist'}
-              onClick={() => dispatch(addToWishlist(product))}
+              onClick={() => {
+                dispatch(addToWishlist(product));
+                addWishlist();
+              }}
             >
-              <i className="pe-7s-like" />
+              <i className="pe-7s-like" style={{ fontSize: "30px" }} />
             </button>
           </div>
           {/* <div className="pro-details-compare">
@@ -233,7 +238,7 @@ const ProductDescriptionInfo = ({
       )}
       {/* {console.log(product.attributes[0][" attributeValues"][0])} */}
       <div className="attribute">
-        <span>Thể Loại: {product.categoryDTO.name}</span>
+        <span style={{ fontSize: "30px" }}>Thể Loại: {product.categoryDTO.name}</span>
       </div>
       {product.tag ? (
         <div className="pro-details-meta">
