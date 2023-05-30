@@ -25,7 +25,7 @@ const MyPost = () => {
     let params = {
       size: 10,
       page: currentPage,
-      orderBy: "titile",
+      sortBy: "postDate",
     };
     try {
       const response = await productAPI.getMyPost(params);

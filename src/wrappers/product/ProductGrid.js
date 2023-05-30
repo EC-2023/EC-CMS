@@ -15,10 +15,7 @@ const ProductGrid = ({ spaceBottomClass, category, type, limit }) => {
   useEffect(() => {
     const fetchProductList = async () => {
       try {
-        let params;
-        if (type === 'new') params = { limit: 8, skip: 0, orderBy: 'title' };
-        else if (type === 'bestSeller') params = { limit: 8, skip: 0, orderBy: 'title' };
-        else if (type === 'saleItems') params = { limit: 8, skip: 0, orderBy: 'title' };
+        const params = { size: 9, page: 0, sortBy: 'postDate' };
         const response = await productAPI.getNewProduct(params);
         console.log(response.data.posts);
         dispatch(setProducts(response.data.posts));

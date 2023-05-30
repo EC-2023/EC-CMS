@@ -25,7 +25,7 @@ function Product() {
   const [showInactiveModel, setshowInactiveModel] = useState(false);
   const [showDisableModel, setShowDisableModel] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
-  const [orderBy, setOrderBy] = React.useState('-updateAt');
+  const [orderBy, setOrderBy] = React.useState('postDate');
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const products = useSelector(selectProducts);

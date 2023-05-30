@@ -28,7 +28,7 @@ const AdminLayout = () => {
       try {
         const response = await UserAPI.getMyUserInfor();
         if (response.data.appUserRole !== "ADMIN") {
-          window.location.href = '/login';
+          window.location.href = '/login-register';
         }
       } catch (error) {
         console.log('failed', error);

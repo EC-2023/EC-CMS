@@ -18,7 +18,7 @@ const Wishlist = () => {
         let params = {
           limit: 15,
           skip: 0,
-          orderBy: 'titile',
+          sortBy: 'postDate',
         };
         const response = await WishListAPI.getWishList(params);
         

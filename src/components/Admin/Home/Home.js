@@ -57,12 +57,12 @@ function HomeAdmin() {
           <h3>Total Users</h3>
           <p>{statistics.total?.totalUser}</p>
         </div>
-        <div className="total-count-card total-stores">
+        {/* <div className="total-count-card total-stores">
           <h3>Total Stores</h3>
           <p>{statistics.total?.totalStore}</p>
-        </div>
+        </div> */}
         <div className="total-count-card total-products">
-          <h3>Total Products</h3>
+          <h3>Total Post</h3>
           <p>{statistics.total?.totalProduct}</p>
         </div>
       </div>

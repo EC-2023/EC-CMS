@@ -20,7 +20,7 @@ function Product() {
 
   const [showDisableModel, setshowDisableModel] = useState(false);
   const [currentPage, setCurrentPage] = React.useState(0);
-  const [orderBy, setOrderBy] = React.useState('-updateAt');
+  const [orderBy, setOrderBy] = React.useState('postDate');
   const [searchText, setSearchText] = React.useState('');
   const [selectedId, setSelectedId] = React.useState(null);
   const stores = useSelector(selectStores);

@@ -11,9 +11,9 @@ const ShopSearch = () => {
   const debouncedFetchSearch = debounce(async (searchText) => {
     try {
       const params = {
-        limit: 8,
-        skip: 0,
-        orderBy: '-createAt',
+        size: 9,
+        page: 0,
+        sortBy: 'postDate',
         title: searchText,
       };
       console.log(params);

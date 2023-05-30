@@ -42,7 +42,7 @@ const ShopGridStandard = () => {
         let params = {
           size: 15,
           page: currentPage,
-          orderBy: "titile",
+          sortBy: "postDate",
           title: parsedQuery.search ? parsedQuery.search : '',
         };
         let response;
@@ -50,7 +50,7 @@ const ShopGridStandard = () => {
             params = {
               size: 15,
               page: currentPage,
-              orderBy: "titile",
+              sortBy: "postDate",
             categoryId: parsedQuery.categoryId ? parsedQuery.categoryId : '',
           };
           response = await productAPI.getProductsByCategory(params);

@@ -20,7 +20,7 @@ const UsersPost = () => {
     let params = {
       size: 10,
       page: currentPage,
-      orderBy: "post_date",
+      sortBy: "postDate",
     };
     try {
       const response = await productAPI.getPostAdmin(params);
@@ -40,19 +40,21 @@ const UsersPost = () => {
   const [editedDescription, setEditedDescription] = useState("");
   const [editedAddress, setEditedAddress] = useState("");
   const [editedPrice, setEditedPrice] = useState("");
+  const [editedPost, setEditedPost] = useState();
 
   const handleEditPost = (postId) => {
     const post = posts.find((post) => post.id === postId);
     if (post) {
+      setEditedPost(post);
       setEditPostId(postId);
       setEditedTitle(post.title);
       setEditedDescription(post.description);
       setEditedAddress(post.address);
       setEditedPrice(post.price);
       setShowModal(true);
+      console.log(editedPost);
     }
   };
-
 
   const handleCancelEdit = () => {
     setShowModal(false);
@@ -152,10 +154,14 @@ const UsersPost = () => {
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formImage">
-              <Form.Label>Title</Form.Label>
-              <Form.Control type="text" value={editedTitle} />
-            </Form.Group>
+            {editedPost?.postImageDTOs.map((image, index) => (
+              <img
+              style={{height:"100px"}}
+                key={index}
+                src={image.imageDTO.url}
+                alt={`Image ${index}`}
+              />
+            ))}
             <Form.Group controlId="formTitle">
               <Form.Label>Title</Form.Label>
               <Form.Control type="text" value={editedTitle} />
