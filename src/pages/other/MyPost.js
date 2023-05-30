@@ -70,7 +70,7 @@ const MyPost = () => {
       console.log(params);
       try {
         const response = await productAPI.updatePost(params);
-        if (response.status = 200) {
+        if (response.status === 200) {
           cogoToast.success("Cập nhật thành công");
           getMyPost(); 
         } else {
@@ -93,7 +93,7 @@ const MyPost = () => {
 
   const handleRemovePost = async (postId) => {
     const response = await productAPI.deletePost(postId);
-    if(response.status = 200)
+    if(response.status === 200)
     cogoToast.success("Xoá thành công");
     else
     cogoToast.success("Xoá thất bại");
@@ -133,7 +133,7 @@ const MyPost = () => {
               <tbody>
                 {posts.map((post) => (
                   <tr key={post.id}>
-                    <td><img src={post.postImageDTOs[0].imageDTO.url} alt="" style={{height : "50px"}}></img></td>
+                    <td><img src={post.postImageDTOs[0].imageDTO.url} alt="" style={{height : "50px"}} onClick={() => navigate(`/product/${post.id}`)}></img></td>
                     <td>{post.title}</td>
                     <td>{post.price}</td>
                     <td>{post.description}</td>

@@ -1,292 +1,187 @@
-import React, { useEffect } from 'react';
-import { useTable, useSortBy, usePagination } from 'react-table';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import ReactPaginate from 'react-paginate';
-import { Button, Modal, Form } from 'react-bootstrap';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
-import { Breadcrumb } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { debounce } from 'lodash';
-import { fetchUsers, updateUser, selectUsers, addUser } from '../../../store/slices/users-slice';
-import cogoToast from 'cogo-toast';
+import React, { useState, useEffect, Fragment } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button, Dropdown, Form, Modal, Table } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import ReactPaginate from "react-paginate";
+import cogoToast from "cogo-toast";
+import productAPI from "../../../api/ProductAPI";
 
-function Users() {
-  const dispatch = useDispatch();
-  const users = useSelector(selectUsers);
+const UsersPost = () => {
+  let { pathname } = useLocation();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchText, setSearchText] = useState("");
+  const [posts, setPosts] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [showModal, setShowModal] = useState(false);
 
-  const [showDeleteModal, setShowDeleteModal] = React.useState(false);
-  const [selectedUser, setSelectedUser] = React.useState(null);
-  const [searchText, setSearchText] = React.useState('');
-  const [currentPage, setCurrentPage] = React.useState(0);
-  const [size] = React.useState(5);
-  const [orderBy, setOrderBy] = React.useState('-updateAt');
-  const columns = React.useMemo(
-    () => [
-      {
-        Header: 'ID',
-        accessor: 'id',
-        Cell: ({ row }) => {
-          const rowIndex = row.index + 1 + currentPage * size;
-          return <div>{rowIndex}</div>;
-        },
-      },
-      {
-        Header: 'Name',
-        accessor: 'displayName',
-      },
-      {
-        Header: 'Email',
-        accessor: 'email',
-        sortType: 'basic',
-      },
-      {
-        Header: 'Phone Number',
-        accessor: 'phoneNumber',
-        sortType: 'basic',
-      },
-      {
-        Header: 'Date Joined',
-        accessor: 'createAt',
-        sortType: 'basic',
-        Cell: ({ value }) => {
-          return <div>{new Date(value).toISOString()}</div>;
-        },
-      },
-      {
-        Header: 'Point',
-        accessor: 'point',
-        sortType: 'basic',
-      },
-      {
-        Header: 'Status',
-        accessor: 'isDeleted',
-        sortType: 'basic',
-        Cell: ({ value }) => {
-          return (
-            <div
-              style={{
-                color: !value ? 'green' : 'red',
-                fontWeight: 'bold',
-              }}
-            >
-              {!value ? 'ACTIVE' : 'INACTIVE'}
-            </div>
-          );
-        },
-      },
-      {
-        Header: 'Action',
-        Cell: ({ row }) => {
-          const isActive = !row.original.isDeleted;
-          return (
-            <DropdownButton id={`dropdown-button-${row.id}`} title={<i className="fa fa-ellipsis-v"></i>}>
-              {isActive ? (
-                <Dropdown.Item
-                  style={{ color: 'red' }}
-                  onClick={() => handleUpdateStatus(false, row.original.Id)}
-                >
-                  Disable
-                </Dropdown.Item>
-              ) : (
-                <Dropdown.Item
-                  style={{ color: 'green' }}
-                  onClick={() => handleUpdateStatus(true, row.original.Id)}
-                >
-                  Enable
-                </Dropdown.Item>
-              )}
-            </DropdownButton>
-          );
-        },
-        id: 'action',
-      },
-    ],
-    [users]
-  );
+  const navigate = useNavigate();
 
-  const { getTableProps, getTableBodyProps, headerGroups, page, prepareRow } = useTable(
-    {
-      columns,
-      data: users.data,
-      initialState: { pageIndex: 0 },
-      manualPagination: true,
-      pageCount: Math.ceil(users.pagination.total / size),
-      manualSortBy: true,
-    },
-    useSortBy,
-    usePagination
-  );
-
-  useEffect(() => {
-    dispatch(fetchUsers({ currentPage, pageSize: size, searchText, orderBy }));
-  }, [currentPage, orderBy]);
-
-  const debouncedFetchUsers = debounce((searchText) => {
-    dispatch(fetchUsers({ currentPage, pageSize: size, searchText, orderBy }));
-  }, 500);
-
-  const handleSearchChange = (event) => {
-    setSearchText(event.target.value);
-    debouncedFetchUsers(event.target.value);
-  };
-
-  const handleUpdateStatus = (stauts, userId) => {
-    const user = users.data.find((user) => user.Id === userId);
-    setSelectedUser(user);
-    if (stauts === true) {
-      cogoToast
-        .loading('Enabling user...', {
-          position: 'bottom-right',
-        })
-        .then(() => dispatch(updateUser({ Id: selectedUser.Id, isDeleted: false })))
-        .then((res) => {
-          if (!res.error)
-            cogoToast.info('Successfully edit user', {
-              position: 'bottom-right',
-              hideAfter: 3,
-              onClick: () => console.log('Clicked'),
-            });
-          else
-            cogoToast.error(res.error.message, {
-              position: 'bottom-right',
-              hideAfter: 3,
-              onClick: () => console.log('Clicked'),
-            });
-        });
-    } else {
-      setShowDeleteModal(true);
+  const getMyPost = async () => {
+    let params = {
+      size: 10,
+      page: currentPage,
+      orderBy: "post_date",
+    };
+    try {
+      const response = await productAPI.getPostAdmin(params);
+      setPosts(response.data.posts);
+      setTotalPages(Math.ceil(response.data.totalPages));
+    } catch {
+      // Handle error
     }
   };
 
-  const handleUpdateStatusSubmit = (event) => {
-    event.preventDefault();
-    cogoToast
-      .loading('Disabling user...', {
-        position: 'bottom-right',
-      })
-      .then(() => dispatch(updateUser({ Id: selectedUser.Id, isDeleted: true })))
-      .then((res) => {
-        if (!res.error)
-          cogoToast.info('Successfully disable user', {
-            position: 'bottom-right',
-            hideAfter: 3,
-            onClick: () => console.log('Clicked'),
-          });
-        else
-          cogoToast.error(res.error.message, {
-            position: 'bottom-right',
-            hideAfter: 3,
-            onClick: () => console.log('Clicked'),
-          });
-      });
-    setShowDeleteModal(false);
+  useEffect(() => {
+    getMyPost();
+  }, [currentPage]);
+
+  const [editPostId, setEditPostId] = useState(null);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
+  const [editedAddress, setEditedAddress] = useState("");
+  const [editedPrice, setEditedPrice] = useState("");
+
+  const handleEditPost = (postId) => {
+    const post = posts.find((post) => post.id === postId);
+    if (post) {
+      setEditPostId(postId);
+      setEditedTitle(post.title);
+      setEditedDescription(post.description);
+      setEditedAddress(post.address);
+      setEditedPrice(post.price);
+      setShowModal(true);
+    }
   };
 
-  const handleDeleteClose = () => {
-    setShowDeleteModal(false);
+
+  const handleCancelEdit = () => {
+    setShowModal(false);
+  };
+
+  const handleRemovePost = async (postId) => {
+    const response = await productAPI.deletePost(postId);
+    cogoToast.success("Xoá thành công");
+
+    getMyPost();
+  };
+
+  const handleApprovePost = async (postId) => {
+    const response = await productAPI.approvePost(postId);
+    cogoToast.success("Duyệt thành công");
+
+    getMyPost();
+  };
+
+  const handlePageChange = (selectedPage) => {
+    setCurrentPage(selectedPage.selected);
   };
 
   return (
-    <div className="content-wrapper">
-      <Breadcrumb>
-        <Breadcrumb.Item href="/admin">Home</Breadcrumb.Item>
-        <Breadcrumb.Item active>Users</Breadcrumb.Item>
-      </Breadcrumb>
-      <div className="d-flex justify-content-between align-items-center mb-3 w-100">
-        <div className="search-box">
-          <i className="fa fa-search"></i>
-          <input type="text" placeholder="Search users..." value={searchText} onChange={handleSearchChange} />
-        </div>
-      </div>
-      <table {...getTableProps()} className="table table-bordered table-striped">
+    <Fragment>
+      <Table striped bordered hover>
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  onClick={(e) => {
-                    column.getSortByToggleProps().onClick(e);
-                    setTimeout(() => {
-                      if (column.isSorted === true) {
-                        if (column.id !== 'id' && column.id !== 'status')
-                          setOrderBy(column.isSortedDesc ? `-${column.id}` : column.id);
-                        else if (column.id === 'status')
-                          setOrderBy(column.isSortedDesc ? '-isDeleted' : 'isDeleted');
-                        else setOrderBy(column.isSortedDesc ? '-updateAt' : 'updateAt');
-                      } else {
-                        setOrderBy('-updateAt');
-                      }
-                    });
-                  }}
-                  className={`${column.isSorted ? (column.isSortedDesc ? 'sort-desc' : 'sort-asc') : ''} ${
-                    column.id === 'action' ? 'action-column' : ''
-                  }`}
+          <tr>
+            <th>Post</th>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {posts.map((post) => (
+            <tr key={post.id}>
+              <td>
+                <img
+                  src={post.postImageDTOs[0].imageDTO.url}
+                  alt=""
+                  style={{ height: "50px" }}
+                  onClick={() => navigate(`/product/${post.id}`)}
+                ></img>
+              </td>
+              <td>{post.title}</td>
+              <td>{post.price}</td>
+              <td>{post.description}</td>
+              <td>
+                <Button
+                  variant="primary"
+                  onClick={() => handleEditPost(post.id)}
                 >
-                  {column.render('Header')}
-                  <span>{column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}</span>
-                </th>
-              ))}
+                  View
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => handleRemovePost(post.id)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="success"
+                  onClick={() => handleApprovePost(post.id)}
+                  disabled={post.published}
+                >
+                  Approve
+                </Button>
+              </td>
             </tr>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {page.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      className={cell.column.id === 'action' ? 'action-column' : ''}
-                    >
-                      {cell.render('Cell')}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
         </tbody>
-      </table>
-      <div className="pagination-wrapper">
+      </Table>
+      <div style={{ display: "flex", justifyContent: "center" }}>
         <ReactPaginate
-          containerClassName="pagination"
-          pageCount={Math.ceil(users.pagination.total / size)}
-          marginPagesDisplayed={2}
-          pageRangeDisplayed={5}
-          onPageChange={({ selected }) => setCurrentPage(selected)}
-          activeClassName="active"
-          previousClassName="page-item"
-          nextClassName="page-item"
-          pageClassName="page-item"
-          breakClassName="page-item"
-          pageLinkClassName="page-link"
-          previousLinkClassName="page-link"
-          nextLinkClassName="page-link"
-          breakLinkClassName="page-link"
-          disableInitialCallback={true}
+          previousLabel={"Previous"}
+          nextLabel={"Next"}
+          pageCount={totalPages}
+          onPageChange={handlePageChange}
+          containerClassName={"pagination"}
+          pageClassName={"page-item"}
+          pageLinkClassName={"page-link"}
+          previousClassName={"page-item"}
+          previousLinkClassName={"page-link"}
+          nextClassName={"page-item"}
+          nextLinkClassName={"page-link"}
+          activeClassName={"active"}
+          disabledClassName={"disabled"}
         />
       </div>
-      <Modal show={showDeleteModal} onHide={handleDeleteClose} centered>
-        <Form onSubmit={handleUpdateStatusSubmit}>
-          <Modal.Header closeButton>
-            <Modal.Title>Disable User</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Are you sure you want to disable the user?</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleDeleteClose}>
-              Cancel
-            </Button>
-            <Button variant="danger" type="submit">
-              Disable
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
-    </div>
-  );
-}
 
-export default React.memo(Users);
+      {/* Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Post</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formImage">
+              <Form.Label>Title</Form.Label>
+              <Form.Control type="text" value={editedTitle} />
+            </Form.Group>
+            <Form.Group controlId="formTitle">
+              <Form.Label>Title</Form.Label>
+              <Form.Control type="text" value={editedTitle} />
+            </Form.Group>
+            <Form.Group controlId="formDescription">
+              <Form.Label>Description</Form.Label>
+              <Form.Control as="textarea" rows={3} value={editedDescription} />
+            </Form.Group>
+            <Form.Group controlId="formAddress">
+              <Form.Label>Address</Form.Label>
+              <Form.Control type="text" value={editedAddress} />
+            </Form.Group>
+            <Form.Group controlId="formPrice">
+              <Form.Label>Price</Form.Label>
+              <Form.Control type="number" min={0} value={editedPrice} />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCancelEdit}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Fragment>
+  );
+};
+
+export default UsersPost;

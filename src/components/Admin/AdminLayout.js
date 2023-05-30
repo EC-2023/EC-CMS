@@ -5,7 +5,7 @@ import TopBar from './TopBar/TopBar';
 import Footer from './Footer/Footer';
 import './AdminLayout.css';
 import Home from './Home/Home';
-import Users from './Users/Users';
+import UsersPost from './Users/Users';
 import UserLevels from './UserLevels/UserLevels';
 import Products from './Products/Products';
 import Commissions from './Commissions/Commissions';
@@ -27,7 +27,7 @@ const AdminLayout = () => {
     const fetchUserInformation = async () => {
       try {
         const response = await UserAPI.getMyUserInfor();
-        if (response.data.role.name !== 'Admin') {
+        if (response.data.appUserRole !== "ADMIN") {
           window.location.href = '/login';
         }
       } catch (error) {
@@ -43,34 +43,7 @@ const AdminLayout = () => {
       content = <HomeAdmin />;
       break;
     case 2:
-      content = <Users />;
-      break;
-    case 3:
-      content = <UserLevels />;
-      break;
-    case 4:
-      content = <Stores />;
-      break;
-    case 5:
-      content = <StoreLevels />;
-      break;
-    case 6:
-      content = <Deliveries />;
-      break;
-    case 7:
-      content = <Categories />;
-      break;
-    case 8:
-      content = <Commissions />;
-      break;
-    case 9:
-      content = <Products />;
-      break;
-    case 10:
-      content = <Order />;
-      break;
-    case 11:
-      content = <Statistics />;
+      content = <UsersPost />;
       break;
     // Add more cases as needed
     default:

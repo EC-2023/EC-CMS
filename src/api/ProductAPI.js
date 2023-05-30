@@ -48,6 +48,10 @@ const productAPI = {
     const url = '/me/posts';
     return axiosClient.get(url, {params});
   },
+  getPostAdmin: (params) =>{
+    const url = '/post/admin';
+    return axiosClient.get(url, {params});
+  },
   updatePost: (params) => {
     const url = `/post/${params.id}`;
     return axiosClient.patch(url,params);
@@ -55,6 +59,10 @@ const productAPI = {
   deletePost: (id) => {
     const url = `/post/${id}`;
     return axiosClient.delete(url);
+  },
+  approvePost: (id) => {
+    const url = `/post/published/${id}`;
+    return axiosClient.patch(url);
   },
 
 }

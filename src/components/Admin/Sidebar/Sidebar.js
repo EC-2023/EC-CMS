@@ -3,16 +3,7 @@ import { Nav } from 'react-bootstrap';
 import './Sidebar.css';
 const navItems = [
   { id: 1, name: 'Home', iconClass: 'fa fa-home' },
-  { id: 2, name: 'Users', iconClass: 'fa fa-users' },
-  { id: 3, name: 'User Level', iconClass: 'fa fa-angle-double-up' },
-  { id: 4, name: 'Store', iconClass: 'fa fa-paper-plane' },
-  { id: 5, name: 'Store Level', iconClass: 'fa  fa-arrow-circle-up' },
-  { id: 6, name: 'Delivery', iconClass: 'fa fa-truck' },
-  { id: 7, name: 'Category', iconClass: 'fa fa-tags' },
-  { id: 8, name: 'Commission', iconClass: 'fa fa-gift' },
-  { id: 9, name: 'Product', iconClass: 'fa fa-th-large' },
-  { id: 10, name: 'Order', iconClass: 'fa fa-solid fa-credit-card' },
-  { id: 11, name: 'Statistic', iconClass: 'fa fa-solid fa-database' },
+  { id: 2, name: 'Manage Post', iconClass: 'fa fa-users' },
 ];
 
 const Sidebar = ({ selectedNavItem, setSelectedNavItem }) => {
