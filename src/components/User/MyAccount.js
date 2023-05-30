@@ -65,7 +65,7 @@ const MyAccount = () => {
           theme: 'light',
         });
       } else {
-        cogoToast.error('Lưu thất bại!', {
+        cogoToast.error('Đổi mật khẩu không thành công !', {
           position: 'top-right',
           autoClose: 1000,
           hideProgressBar: false,
