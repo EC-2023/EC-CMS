@@ -4,7 +4,7 @@ import axiosClient from '../../api/axiosClient';
 export const requestResetPasswordByEmaildateAuth = createAsyncThunk(
   'auth/requestResetPasswordByEmail',
   async (email) => {
-    const response = await axiosClient.post(`/auth/request-reset-password-by-email?email=${email}`, {
+    const response = await axiosClient.post(`/auth/forget-password?email=${email}`, {
       headers: {
         accept: 'application/json',
         'Content-Type': 'application/json',
@@ -17,7 +17,7 @@ export const requestResetPasswordByEmaildateAuth = createAsyncThunk(
 export const requestResetPasswordByEmail = createAsyncThunk(
   'auth/requestResetPasswordByEmail',
   async (email) => {
-    const response = await axiosClient.post(`/auth/request-reset-password-by-email?email=${email}`, {
+    const response = await axiosClient.post(`/auth/forget-password?email=${email}`, {
       headers: {
         accept: 'application/json',
         'Content-Type': 'application/json',

@@ -43,7 +43,16 @@ const productAPI = {
   createPost: (params) => {
     const url = '/post';
     return axiosClient.post(url, params);
-  }
+  },
+  getMyPost: (params) =>{
+    const url = '/me/posts';
+    return axiosClient.get(url, {params});
+  },
+  updatePost: (params) => {
+    const url = `/post/${params.id}`;
+    return axiosClient.patch(url,params);
+  },
+
 }
 
 export default productAPI;

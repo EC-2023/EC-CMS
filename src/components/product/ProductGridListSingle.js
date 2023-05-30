@@ -52,7 +52,7 @@ const ProductGridListSingle = ({
               ""
             )}
 
-            <div className="product-action">
+            {/* <div className="product-action">
               <div className="pro-same-action pro-wishlist">
                 <button
                   className={wishlistItem !== undefined ? "active" : ""}
@@ -114,7 +114,7 @@ const ProductGridListSingle = ({
                   <FaMoneyBillAlt />
                 </button>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="product-content text-center">
             <h3>

@@ -78,16 +78,16 @@ export const getMyOrder = createAsyncThunk(
   'orders/getMyOrder',
   async ({ currentPage, pageSize, searchText, orderBy, otherCondition }) => {
     const response = await axiosClient.get(
-      `/orders/getMyOrder?skip=${currentPage * pageSize}&limit=${pageSize}&orderBy=${orderBy}${
+      `/post?page=${currentPage}&size=${pageSize}&sortBy=${orderBy}${
         otherCondition ? otherCondition : ''
       }&code%7B%7Bsearch%7D%7D=${searchText}`
     );
-    return response;
+    return response.data;
   }
 );
 
 export const updateStore = createAsyncThunk('stores/updateStore', async (store) => {
-  const response = await axiosClient.patch(`/stores/${store.Id}`, store, {
+  const response = await axiosClient.patch(`/stores/${store.id}`, store, {
     headers: {
       accept: 'application/json',
       'Content-Type': 'application/json',
@@ -128,41 +128,41 @@ export const userOrdersSlice = createSlice({
     builder
       .addCase(register.fulfilled, () => {})
       .addCase(updateActiveStore.fulfilled, (state, action) => {
-        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
-        state.data[index] = action.payload.data;
+        const index = state.data.findIndex((store) => store.id === action.payload.id);
+        state.data[index] = action.payload;
       })
       .addCase(updateDeleteStore.fulfilled, (state, action) => {
-        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
-        state.data[index] = action.payload.data;
+        const index = state.data.findIndex((store) => store.id === action.payload.id);
+        state.data[index] = action.payload;
       })
       .addCase(getProductsByStore.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data.data;
-        state.pagination = action.payload.data.pagination;
+        state.data = action.payload.posts;
+        state.pagination = action.payload.pagination;
       })
       .addCase(getMyOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data.data;
-        state.pagination = action.payload.data.pagination;
+        state.data = action.payload.posts;
+        state.pagination = action.payload.pagination;
       })
 
       .addCase(getTotalStatisticStore.fulfilled, (state, action) => {
-        state.total = action.payload.data;
+        state.total = action.payload;
       })
       .addCase(fetchStores.fulfilled, (state, action) => {
         state.loading = false;
-        state.data = action.payload.data.data;
-        state.pagination = action.payload.data.pagination;
+        state.data = action.payload.posts;
+        state.pagination = action.payload.pagination;
       })
       .addCase(deleteStore.fulfilled, (state, action) => {
-        state.data = state.data.filter((store) => store.Id !== action.payload.data);
+        state.data = state.data.filter((store) => store.id !== action.payload);
       })
       .addCase(updateStore.fulfilled, (state, action) => {
-        const index = state.data.findIndex((store) => store.Id === action.payload.data.Id);
-        state.data[index] = action.payload.data;
+        const index = state.data.findIndex((store) => store.id === action.payload.id);
+        state.data[index] = action.payload;
       })
       .addCase(getMyProductStore.fulfilled, (state, action) => {
-        state.totalProduct = action.payload.data;
+        state.totalProduct = action.payload;
       });
   },
 });
