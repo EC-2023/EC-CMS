@@ -52,6 +52,10 @@ const productAPI = {
     const url = `/post/${params.id}`;
     return axiosClient.patch(url,params);
   },
+  deletePost: (id) => {
+    const url = `/post/${id}`;
+    return axiosClient.delete(url);
+  },
 
 }
 

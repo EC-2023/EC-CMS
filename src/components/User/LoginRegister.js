@@ -80,14 +80,24 @@ const LoginRegister = () => {
         progress: undefined,
         theme: 'light',
       });
+      
       localStorage.setItem('accessToken', response.data.access_token);
       localStorage.setItem('refreshToken', response.data.refresh_token);
       console.log(response.data);
+      
 
-      if (response.data.access_token != null)
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      if (response.data.access_token != null){
+        const response2 = await UserAPI.getMyUserInfor();
+        if(response2.data.appUserRole === "ADMIN")
+        setTimeout(() => {
+         navigate('/admin');
+        }, 1000);
+        else 
+        setTimeout(() => {
+          navigate('/');
+         }, 1000);
+      }
+      
     } catch (error) {
       console.error(error);
     }

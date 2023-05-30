@@ -91,8 +91,13 @@ const MyPost = () => {
     setEditedDescription("");
   };
 
-  const handleRemovePost = (postId) => {
-    // Handle remove post logic
+  const handleRemovePost = async (postId) => {
+    const response = await productAPI.deletePost(postId);
+    if(response.status = 200)
+    cogoToast.success("Xoá thành công");
+    else
+    cogoToast.success("Xoá thất bại");
+    getMyPost();
   };
 
   const handlePageChange = (selectedPage) => {
